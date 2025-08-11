@@ -40,10 +40,10 @@ export default {
 
     // 3) Find league player (case-insensitive exact)
     const leaguePlayer = await T2TrialsPlayer.findOne({
-      name: { $regex: `^${inputName}$`, $options: 'i' }
+      name: { $regex: `^${playerName}$`, $options: 'i' }
     });
     if (!leaguePlayer) {
-      return interaction.reply({ content: `❌ No league player found named **${inputName}**.`, ephemeral: true });
+      return interaction.reply({ content: `❌ No league player found named **${playerName}**.`, ephemeral: true });
     }
 
     // 4) Duplicate check
@@ -80,7 +80,7 @@ export default {
 
     // 7) Check for transfer authorization
     // Build proposed roster (simulate the add)
-    const proposed = [...user.team.map(String), leaguePlayer._id.toString()];
+    const proposed = [...fantasyPlayer.team.map(String), leaguePlayer._id.toString()];
 
     // Guard
     const check = await canModifyTeam(discordId, proposed);

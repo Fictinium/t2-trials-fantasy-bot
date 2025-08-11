@@ -70,7 +70,7 @@ export default {
     }
 
     // 5) Check for transfer authorization
-    const proposed = user.team.filter(id => id.toString() !== lpId).map(String);
+    const proposed = fantasyPlayer.team.filter(id => id.toString() !== lpId).map(String);
 
     const check = await canModifyTeam(discordId, proposed);
     if (!check.allowed) {
