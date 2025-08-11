@@ -1,0 +1,69 @@
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import isRegistered from '../utils/checkRegistration.js';
+import FantasyPlayer from '../models/FantasyPlayer.js';
+
+const MAX_TEAM_SIZE = 5; // keep in sync with pickPlayer
+
+export default {
+  data: new SlashCommandBuilder()
+    .setName('myteam')
+    .setDescription('View your fantasy team'),
+
+  async execute(interaction) {
+    try {
+      const discordId = interaction.user.id;
+
+      // 1) Must be registered
+      const registered = await isRegistered(discordId);
+      if (!registered) {
+        return interaction.reply({
+          content: '⚠️ You must register using `/joinleague` before using this command.',
+          ephemeral: true
+        });
+      }
+
+      // 2) Load fantasy player with populated players and each player's real team
+      const fantasyPlayer = await FantasyPlayer.findOne({ discordId })
+        .populate({ path: 'team', populate: { path: 'team', model: 'Team' } }) // nested populate
+        .lean();
+
+      if (!fantasyPlayer) {
+        return interaction.reply({
+          content: '❗ Could not find your fantasy profile. Try `/joinleague` again.',
+          ephemeral: true
+        });
+      }
+
+      const roster = Array.isArray(fantasyPlayer.team) ? fantasyPlayer.team : [];
+
+      if (!roster.length) {
+        return interaction.reply({
+          content: '📝 Your fantasy team is empty. Use `/pickplayer` to add someone!',
+          ephemeral: true
+        });
+      }
+
+      // 3) Build a nice embed
+      const displayName = fantasyPlayer.username || interaction.user.username;
+      const lines = roster.map((p, i) => {
+        const teamName = p.team?.name ? ` — *${p.team.name}*` : '';
+        return `**${i + 1}.** ${p.name}${teamName}`;
+      });
+
+      const embed = new EmbedBuilder()
+        .setTitle(`${displayName}'s Fantasy Team`)
+        .setDescription(lines.join('\n'))
+        .setFooter({
+          text: `Players: ${roster.length}/${MAX_TEAM_SIZE} • Total points: ${fantasyPlayer.totalPoints ?? 0} • Wallet: ${fantasyPlayer.wallet ?? 0}`
+        });
+
+      return interaction.reply({ embeds: [embed]});
+    } catch (err) {
+        console.error(err);
+        return interaction.reply({
+            content: '❗ Something went wrong while fetching your team.',
+            ephemeral: true
+      });
+    }
+  }
+};
