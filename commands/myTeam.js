@@ -18,7 +18,7 @@ export default {
       if (!registered) {
         return interaction.reply({
           content: '⚠️ You must register using `/joinleague` before using this command.',
-          ephemeral: true
+          flags: 64
         });
       }
 
@@ -30,7 +30,7 @@ export default {
       if (!fantasyPlayer) {
         return interaction.reply({
           content: '❗ Could not find your fantasy profile. Try `/joinleague` again.',
-          ephemeral: true
+          flags: 64
         });
       }
 
@@ -39,7 +39,7 @@ export default {
       if (!roster.length) {
         return interaction.reply({
           content: '📝 Your fantasy team is empty. Use `/pickplayer` to add someone!',
-          ephemeral: true
+          flags: 64
         });
       }
 
