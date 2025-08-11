@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { escapeRegex } from '../utils/escapeRegex.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
 import Team from '../models/Team.js';
 
@@ -35,12 +36,12 @@ export default {
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
 
     // Find by name (+ optional team filter)
-    const nameFilter = { name: { $regex: `^${name}$`, $options: 'i' } };
+    const nameFilter = { name: { $regex: `^${escapeRegex(name)}$`, $options: 'i' } };
     let teamFilter = {};
     if (teamName) {
-      const teamDoc = await Team.findOne({ name: { $regex: `^${teamName}$`, $options: 'i' } });
+      const teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamName)}$`, $options: 'i' } });
       if (!teamDoc) {
-        return interaction.reply({ content: `❌ Team "${teamName}" not found.`, ephemeral: true });
+        return interaction.reply({ content: `❌ Team "${teamName}" not found.`, flags: 64 });
       }
       teamFilter = { team: teamDoc._id };
     }
@@ -52,7 +53,7 @@ export default {
     if (!player) {
       return interaction.reply({
         content: `❌ Player **${name}**${teamName ? ` in team **${teamName}**` : ''} not found.`,
-        ephemeral: true
+        flags: 64
       });
     }
 
@@ -85,6 +86,6 @@ export default {
         }])
       );
 
-    return interaction.reply({ embeds: [embed], ephemeral });
+    return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
   }
 };

@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { escapeRegex } from '../utils/escapeRegex.js';
 import Team from '../models/Team.js';
 
 export default {
@@ -14,12 +15,10 @@ export default {
       opt.setName('week')
         .setDescription('Specific week (1-based)')
         .setMinValue(1)
-        .setRequired(false)
     )
     .addBooleanOption(opt =>
       opt.setName('ephemeral')
         .setDescription('Show only to you')
-        .setRequired(false)
     ),
 
   async execute(interaction) {
@@ -27,12 +26,12 @@ export default {
     const week = interaction.options.getInteger('week') || null;
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
 
-    const team = await Team.findOne({ name: { $regex: `^${teamName}$`, $options: 'i' } })
-      .populate({ path: 'players', select: 'name performance' })
+    const team = await Team.findOne({ name: { $regex: `^${escapeRegex(teamName)}$`, $options: 'i' } })
+      .populate({ path: 'players', select: 'name performance', options: { sort: { name: 1 } } })
       .lean();
 
     if (!team) {
-      return interaction.reply({ content: `❌ Team **${teamName}** not found.`, ephemeral: true });
+      return interaction.reply({ content: `❌ Team **${teamName}** not found.`, flags: 64 });
     }
 
     const players = Array.isArray(team.players) ? team.players : [];
@@ -61,6 +60,6 @@ export default {
       .setDescription(rows.length ? rows.join('\n') : 'No players recorded.')
       .setFooter({ text: `Team total: ${totalWins}-${totalLosses}` });
 
-    return interaction.reply({ embeds: [embed], ephemeral });
+    return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
   }
 };

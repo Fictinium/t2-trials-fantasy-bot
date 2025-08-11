@@ -36,7 +36,7 @@ export default {
     const fantasyPlayers = await FantasyPlayer.find({}, { username: 1, discordId: 1, weeklyPoints: 1, totalPoints: 1 }).lean();
 
     if (!fantasyPlayers.length) {
-      return interaction.reply({ content: 'ℹ️ No fantasy players yet.', ephemeral: true });
+      return interaction.reply({ content: 'ℹ️ No fantasy players yet.', flags: 64 });
     }
 
     // Build a list with the score we want to sort by
@@ -87,6 +87,6 @@ export default {
       .setDescription(lines.join('\n') || 'No results.')
       .setFooter({ text: callerRank ? `Your rank: #${callerRank}` : 'You are not on the board yet' });
 
-    return interaction.reply({ embeds: [embed], ephemeral });
+    return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
   }
 };

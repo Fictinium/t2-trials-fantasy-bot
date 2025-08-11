@@ -59,11 +59,13 @@ export default {
 
       return interaction.reply({ embeds: [embed]});
     } catch (err) {
-        console.error(err);
-        return interaction.reply({
-            content: '❗ Something went wrong while fetching your team.',
-            ephemeral: true
-      });
+      console.error(err);
+      const payload = { content: '❗ Something went wrong while fetching your team.', flags: 64 };
+      try {
+        if (interaction.deferred)       await interaction.editReply(payload);
+        else if (!interaction.replied)  await interaction.reply(payload);
+        else                            await interaction.followUp(payload);
+      } catch {}
     }
   }
 };

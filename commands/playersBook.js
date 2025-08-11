@@ -9,6 +9,8 @@ import {
 } from 'discord.js';
 import Team from '../models/Team.js';
 
+const PAGE_SIZE = 25;
+
 export default {
   data: new SlashCommandBuilder()
     .setName('playersbook')
@@ -29,7 +31,7 @@ export default {
       .lean();
 
     if (!teams.length) {
-      return interaction.reply({ content: 'No teams found.', ephemeral: true });
+      return interaction.reply({ content: 'No teams found.', flags: 64 });
     }
 
     // Build quick lookup for select menu
@@ -50,13 +52,33 @@ export default {
     };
 
     const buildRows = (i) => {
+      const totalPages = Math.ceil(teams.length / PAGE_SIZE);
+      const page = Math.floor(i / PAGE_SIZE);
+      const start = page * PAGE_SIZE;
+      const end = Math.min(start + PAGE_SIZE, teams.length);
+
+      // Only show options for the current page; values store the ABSOLUTE team index
+      const menuOptions = teams.slice(start, end).map((t, absIdx) => {
+        const globalIdx = start + absIdx;
+        return {
+          label: t.name,
+          value: String(globalIdx),
+          default: globalIdx === i,
+        };
+      });
+
       const select = new StringSelectMenuBuilder()
         .setCustomId(`pb_sel_${interaction.id}`)
-        .setPlaceholder('Select a team')
-        .addOptions(options)
+        .setPlaceholder(`Select a team — Page ${page + 1}/${totalPages}`)
         .setMinValues(1)
         .setMaxValues(1)
-        .setDefaultValues([String(i)]); // highlight current
+        .addOptions(menuOptions);
+
+      const prevPage = new ButtonBuilder()
+        .setCustomId(`pb_page_prev_${interaction.id}`)
+        .setLabel('« Page')
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(page === 0);
 
       const prev = new ButtonBuilder()
         .setCustomId(`pb_prev_${interaction.id}`)
@@ -70,37 +92,57 @@ export default {
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(i === teams.length - 1);
 
+      const nextPage = new ButtonBuilder()
+        .setCustomId(`pb_page_next_${interaction.id}`)
+        .setLabel('Page »')
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(page >= totalPages - 1);
+
       return [
         new ActionRowBuilder().addComponents(select),
-        new ActionRowBuilder().addComponents(prev, next)
+        new ActionRowBuilder().addComponents(prevPage, prev, next, nextPage)
       ];
     };
 
     const message = await interaction.reply({
       embeds: [buildEmbed(index)],
       components: buildRows(index),
-      ephemeral
+      flags: ephemeral ? 64 : undefined,
+      fetchReply: true
     });
+
+    const filter = (i) =>
+      i.user.id === interaction.user.id &&
+      (
+        i.customId === `pb_sel_${interaction.id}` ||
+        i.customId === `pb_prev_${interaction.id}` ||
+        i.customId === `pb_next_${interaction.id}` ||
+        i.customId === `pb_page_prev_${interaction.id}` ||
+        i.customId === `pb_page_next_${interaction.id}`
+      );
 
     // Collect only from the user who invoked, for 5 minutes
     const collector = message.createMessageComponentCollector({
-      componentType: ComponentType.ActionRow, // workaround: we’ll filter inside
+      filter,
       time: 5 * 60 * 1000
     });
 
     collector.on('collect', async (i) => {
-      if (i.user.id !== interaction.user.id) {
-        return i.reply({ content: 'This menu is not for you.', ephemeral: true });
-      }
-
       try {
-        if (i.isStringSelectMenu() && i.customId === `pb_sel_${interaction.id}`) {
-          index = Number(i.values[0]) || 0;
+        if (i.isStringSelectMenu()) {
+          index = Math.min(Math.max(Number(i.values[0]) || 0, 0), teams.length - 1);
         } else if (i.isButton()) {
           if (i.customId === `pb_prev_${interaction.id}` && index > 0) index--;
           if (i.customId === `pb_next_${interaction.id}` && index < teams.length - 1) index++;
-        } else {
-          return i.deferUpdate(); // ignore other components
+          if (i.customId === `pb_page_prev_${interaction.id}`) {
+            const page = Math.floor(index / PAGE_SIZE);
+            if (page > 0) index = (page - 1) * PAGE_SIZE; // first item of previous page
+          }
+          if (i.customId === `pb_page_next_${interaction.id}`) {
+            const page = Math.floor(index / PAGE_SIZE);
+            const nextStart = (page + 1) * PAGE_SIZE;
+            if (nextStart < teams.length) index = nextStart; // first item of next page
+          }
         }
 
         await i.update({
@@ -109,6 +151,7 @@ export default {
         });
       } catch (err) {
         console.error(err);
+        try { await i.deferUpdate(); } catch {}
       }
     });
 

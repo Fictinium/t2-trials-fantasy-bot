@@ -3,19 +3,9 @@ import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
 
 function escapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
-/**
- * Import the website JSON array (players) and upsert:
- * - Team (from team_name)
- * - Player (create or update; attach/move to team)
- * - Cost (fantasy_points)
- * - Weekly performance with per-round breakdown
- * - externalId (first time we see it)
- */
 export async function importStatsArray(playersArray) {
-  if (!Array.isArray(playersArray)) {
-    throw new Error('Expected array root');
-  }
-  
+  if (!Array.isArray(playersArray)) throw new Error('Expected array root');
+
   let createdPlayers = 0;
   let updatedPlayers = 0;
   let teamsCreated = 0;
@@ -25,25 +15,23 @@ export async function importStatsArray(playersArray) {
   for (const p of playersArray) {
     const playerIdNum = Number(p?.id);
     const playerName = String(p?.name ?? '').trim();
-    const teamName    = p?.team_name ? String(p.team_name).trim() : null;
+    const teamNameRaw = p?.team_name ? String(p.team_name).trim() : null;
     const fantasyCost = Math.max(0, Number(p?.fantasy_points ?? 0));
     const weeks = Array.isArray(p?.weeks) ? p.weeks : [];
 
-    if (!playerName || !weeks.length) { skipped++; continue; }
-    if (!teamName) { notFound++; continue; }
+    if (!playerName) { skipped++; continue; }
+    if (!teamNameRaw) { notFound++; continue; }
 
-    // Ensure Team exists
-    let teamDoc = await Team.findOne({ name: teamName });
+    // Case-insensitive exact team match (create if missing)
+    let teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamNameRaw)}$`, $options: 'i' } });
     if (!teamDoc) {
-      teamDoc = await Team.create({ name: teamName, players: [] });
+      teamDoc = await Team.create({ name: teamNameRaw, players: [] });
       teamsCreated++;
     }
 
-    // Prefer match by externalId; fallback to (name + team)
+    // Find player (prefer externalId, else name+team)
     let dbPlayer = null;
-    if (Number.isFinite(playerIdNum)) {
-      dbPlayer = await T2TrialsPlayer.findOne({ externalId: playerIdNum });
-    }
+    if (Number.isFinite(playerIdNum)) dbPlayer = await T2TrialsPlayer.findOne({ externalId: playerIdNum });
     if (!dbPlayer) {
       dbPlayer = await T2TrialsPlayer.findOne({
         name: { $regex: `^${escapeRegex(playerName)}$`, $options: 'i' },
@@ -51,22 +39,22 @@ export async function importStatsArray(playersArray) {
       });
     }
 
-    // Build per-week entry with per-round details
+    // Build per-week performance (ignore games with winner_id == null)
     const perfByWeek = new Map();
     for (const w of weeks) {
       const weekNum = Number(w?.week_number);
       const games = Array.isArray(w?.games) ? w.games : [];
-      if (!weekNum || !games.length) continue;
+      if (!weekNum) continue;
 
-      const byRound = new Map(); // round -> {wins, losses, duels}
+      const byRound = new Map();
       for (const g of games) {
         const rn = Number(g?.round);
         if (![1,2,3].includes(rn)) continue;
+        if (g?.winner_id == null) continue;           // <-- ignore unfinished
         if (!byRound.has(rn)) byRound.set(rn, { wins: 0, losses: 0, duels: 0 });
         const rec = byRound.get(rn);
         rec.duels += 1;
-        const win = Number(g?.winner_id) === playerIdNum;
-        if (win) rec.wins++; else rec.losses++;
+        if (Number(g.winner_id) === playerIdNum) rec.wins++; else rec.losses++;
       }
 
       const rounds = [...byRound.entries()]
@@ -80,7 +68,7 @@ export async function importStatsArray(playersArray) {
     }
 
     if (!dbPlayer) {
-      // Create player first time we see them
+      // Create even if performance is empty — we still want the player seeded
       dbPlayer = await T2TrialsPlayer.create({
         externalId: Number.isFinite(playerIdNum) ? playerIdNum : undefined,
         name: playerName,
@@ -93,10 +81,9 @@ export async function importStatsArray(playersArray) {
       continue;
     }
 
-    // Update existing player
+    // Update existing
     let anyChange = false;
 
-    // Move to correct team if needed
     if (String(dbPlayer.team) !== String(teamDoc._id)) {
       await Team.updateOne({ _id: dbPlayer.team }, { $pull: { players: dbPlayer._id } });
       await Team.updateOne({ _id: teamDoc._id }, { $addToSet: { players: dbPlayer._id } });
@@ -104,7 +91,6 @@ export async function importStatsArray(playersArray) {
       anyChange = true;
     }
 
-    // Upsert weekly entries
     for (const entry of perfByWeek.values()) {
       const idx = dbPlayer.performance.findIndex(e => e.week === entry.week);
       if (idx >= 0) dbPlayer.performance[idx] = entry;
@@ -112,13 +98,11 @@ export async function importStatsArray(playersArray) {
       anyChange = true;
     }
 
-    // Update cost
     if (Number.isFinite(fantasyCost) && dbPlayer.cost !== fantasyCost) {
       dbPlayer.cost = fantasyCost;
       anyChange = true;
     }
 
-    // Backfill externalId once
     if (Number.isFinite(playerIdNum) && !dbPlayer.externalId) {
       dbPlayer.externalId = playerIdNum;
       anyChange = true;
@@ -127,25 +111,18 @@ export async function importStatsArray(playersArray) {
     if (anyChange) {
       dbPlayer.performance.sort((a,b) => a.week - b.week);
       await dbPlayer.save();
-      updated++;
+      updatedPlayers++;          // <-- fixed counter
     } else {
       skipped++;
     }
   }
 
-  return {
-    createdPlayers,
-    updatedPlayers,
-    teamsCreated,
-    skipped,
-    notFound
-  };
+  return { createdPlayers, updatedPlayers, teamsCreated, skipped, notFound };
 }
 
 export async function importStatsFromUrl(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Fetch failed ${res.status}`);
-  const text = await res.text();
-  const data = JSON.parse(text);
+  const data = await res.json();
   return importStatsArray(data);
 }

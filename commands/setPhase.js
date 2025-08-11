@@ -21,8 +21,8 @@ export default {
     ),
 
   async execute(interaction) {
-    if (!interaction.memberPermissions?.has('ManageGuild')) {
-      return interaction.reply({ content: '❌ Admins only.', ephemeral: true });
+    if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
+      return interaction.reply({ content: '❌ Admins only.', flags: 64 });
     }
 
     const phase = interaction.options.getString('phase', true);

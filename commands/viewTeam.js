@@ -16,35 +16,39 @@ export default {
     .addBooleanOption(opt =>
       opt.setName('ephemeral')
         .setDescription('Show only to you')
-        .setRequired(false)
     ),
 
   async execute(interaction) {
     const targetUser = interaction.options.getUser('user', true);
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
 
-    const registered = await isRegistered(targetUser.id);
-    if (!registered) {
+    if (!await isRegistered(targetUser.id)) {
       return interaction.reply({
         content: `⚠️ ${targetUser.username} is not registered in the fantasy league.`,
-        ephemeral: true
+        flags: 64
       });
     }
 
     const fantasyPlayer = await FantasyPlayer.findOne({ discordId: targetUser.id })
-      .populate('team') // team is array of T2TrialsPlayer docs
+      .populate({
+        path: 'team',
+        populate: { path: 'team', model: 'Team', select: 'name' }
+      })
       .lean();
 
     const roster = fantasyPlayer?.team ?? [];
     if (!roster.length) {
       return interaction.reply({
         content: `📝 ${targetUser.username} has an empty fantasy team.`,
-        ephemeral
+        flags: ephemeral ? 64 : undefined
       });
     }
 
     // Build roster lines
-    const lines = roster.map((p, i) => `**${i + 1}.** ${p.name}${p.team ? ` — *${p.team}*` : ''}`);
+    const lines = roster.map((p, i) => {
+      const teamName = p.team?.name ? ` — *${p.team.name}*` : '';
+      return `**${i + 1}.** ${p.name}${teamName}`;
+    });
 
     const embed = new EmbedBuilder()
       .setTitle(`${fantasyPlayer.username || targetUser.username}’s Fantasy Team`)
@@ -53,6 +57,6 @@ export default {
         text: `Players: ${roster.length}/${MAX_TEAM_SIZE} • Total points: ${fantasyPlayer.totalPoints ?? 0}`
       });
 
-    return interaction.reply({ embeds: [embed], ephemeral });
+    return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
   }
 };

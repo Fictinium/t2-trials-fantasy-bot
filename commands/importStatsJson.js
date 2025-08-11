@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import { escapeRegex } from '../utils/escapeRegex.js';
 import Team from '../models/Team.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
 
@@ -14,12 +15,12 @@ export default {
     ),
 
   async execute(interaction) {
-    if (!interaction.inGuild() || !interaction.memberPermissions?.has('ManageGuild')) {
-      return interaction.reply({ content: '❌ Admins only.', ephemeral: true });
+    if (!interaction.inGuild() || !interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
+      return interaction.reply({ content: '❌ Admins only.', flags: 64 });
     }
 
     const file = interaction.options.getAttachment('file', true);
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: 64 });
 
     // Fetch & parse
     let payload;
@@ -32,67 +33,78 @@ export default {
       return interaction.editReply(`❌ Invalid JSON: ${e.message}`);
     }
 
-    let updatedPlayers = 0, createdPlayers = 0, skipped = 0, notFound = 0, teamCreated = 0;
+    let updatedPlayers = 0, createdPlayers = 0, skipped = 0, notFoundNoTeam = 0, teamCreated = 0;
 
     for (const p of payload) {
-      const playerIdNum = Number(p?.id);
-      const playerName = String(p?.name ?? '').trim();
-      const fantasyCost = Math.max(0, Number(p?.fantasy_points ?? 0));
+      const playerIdNum   = Number(p?.id);
+      const playerNameRaw = String(p?.name ?? '').trim();
       const teamNameRaw   = p?.team_name ? String(p.team_name).trim() : null;
-      const weeks = Array.isArray(p?.weeks) ? p.weeks : [];
+      const fantasyCost   = Math.max(0, Number(p?.fantasy_points ?? 0));
+      const weeks         = Array.isArray(p?.weeks) ? p.weeks : [];
 
-      if (!playerName || !weeks.length) { skipped++; continue; }
-      if (!teamNameRaw) {
-        notFound++;
-        console.warn(`No team_name for player "${playerName}" – skipping`);
-        continue;
-      }
+      // Must have a name + team to proceed
+      if (!playerNameRaw) { skipped++; continue; }
+      if (!teamNameRaw)   { notFoundNoTeam++; continue; }
 
-      // 1) Ensure Team exists
-      let teamDoc = await Team.findOne({ name: teamNameRaw });
+      // 1) Ensure Team exists (case-insensitive exact match)
+      let teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamNameRaw)}$`, $options: 'i' } });
       if (!teamDoc) {
-        teamDoc = await Team.create({ name: teamNameRaw, players: [] });
-        teamCreated++;
+        try {
+          teamDoc = await Team.create({ name: teamNameRaw, players: [] });
+          teamCreated++;
+        } catch {
+          // another import thread might have just created it — re-read
+          teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamNameRaw)}$`, $options: 'i' } });
+          if (!teamDoc) { skipped++; continue; }
+        }
       }
 
-      // 2) Find player (prefer externalId, else name+team)
+      // 2) Find existing player (prefer externalId, else name+team)
       let dbPlayer = null;
       if (Number.isFinite(playerIdNum)) {
         dbPlayer = await T2TrialsPlayer.findOne({ externalId: playerIdNum });
       }
       if (!dbPlayer) {
         dbPlayer = await T2TrialsPlayer.findOne({
-            name: { $regex: `^${escapeRegex(playerName)}$`, $options: 'i' },
-            team: teamDoc._id
+          name: { $regex: `^${escapeRegex(playerNameRaw)}$`, $options: 'i' },
+          team: teamDoc._id
         });
       }
-      if (!dbPlayer) { notFound++; continue; }
 
-      // Build a map of week -> {wins, losses, rounds[]}
+      // 3) Build performance map (ignore null winners)
       const perfByWeek = new Map();
-
       for (const w of weeks) {
         const weekNum = Number(w?.week_number);
         const games = Array.isArray(w?.games) ? w.games : [];
-        if (!weekNum || !games.length) continue;
+        if (!weekNum) continue;
 
-        // Group by round
         const byRound = new Map(); // roundNumber -> { wins, losses, duels }
         for (const g of games) {
           const roundNumber = Number(g?.round);
-          if (![1,2,3].includes(roundNumber)) continue;
+          if (![1, 2, 3].includes(roundNumber)) continue;
+
           if (!byRound.has(roundNumber)) byRound.set(roundNumber, { wins: 0, losses: 0, duels: 0 });
 
           const r = byRound.get(roundNumber);
+          const winId = g?.winner_id;
+
+          // Count duel only if it actually concluded for someone
+          if (winId == null) continue;
+
           r.duels += 1;
-          const win = Number(g?.winner_id) === playerIdNum;
-          if (win) r.wins += 1; else r.losses += 1;
+          if (Number(winId) === playerIdNum) r.wins += 1;
+          else r.losses += 1;
         }
 
-        // Compose rounds array sorted by round
+        // Compose rounds array
         const rounds = [...byRound.entries()]
-          .sort((a,b) => a[0]-b[0])
-          .map(([roundNumber, r]) => ({ roundNumber, wins: r.wins, losses: r.losses, duels: r.duels }));
+          .sort((a, b) => a[0] - b[0])
+          .map(([roundNumber, r]) => ({
+            roundNumber,
+            wins: r.wins,
+            losses: r.losses,
+            duels: r.duels
+          }));
 
         const totalWins = rounds.reduce((a, r) => a + r.wins, 0);
         const totalLosses = rounds.reduce((a, r) => a + r.losses, 0);
@@ -100,35 +112,35 @@ export default {
         perfByWeek.set(weekNum, { week: weekNum, wins: totalWins, losses: totalLosses, rounds });
       }
 
+      // 4) Create or update
       if (!dbPlayer) {
-        // 3A) Create new player (first-time import)
+        // CREATE even if performance is empty — players still need to exist for browsing & picking
         dbPlayer = await T2TrialsPlayer.create({
           externalId: Number.isFinite(playerIdNum) ? playerIdNum : undefined,
-          name: playerName,
+          name: playerNameRaw,
           team: teamDoc._id,
           cost: fantasyCost,
           performance: [...perfByWeek.values()].sort((a, b) => a.week - b.week)
         });
+
         // Link into Team
         await Team.updateOne({ _id: teamDoc._id }, { $addToSet: { players: dbPlayer._id } });
         createdPlayers++;
         continue;
       }
 
-      // 3B) Update existing player
+      // UPDATE existing
       let anyChange = false;
 
-      // attach/move to correct team if changed
+      // Move to correct team if changed
       if (String(dbPlayer.team) !== String(teamDoc._id)) {
-        // remove from old team list
         await Team.updateOne({ _id: dbPlayer.team }, { $pull: { players: dbPlayer._id } });
-        // add to new team list
         await Team.updateOne({ _id: teamDoc._id }, { $addToSet: { players: dbPlayer._id } });
         dbPlayer.team = teamDoc._id;
         anyChange = true;
       }
 
-      // upsert weekly entries
+      // Upsert weekly entries
       for (const entry of perfByWeek.values()) {
         const idx = dbPlayer.performance.findIndex(e => e.week === entry.week);
         if (idx >= 0) dbPlayer.performance[idx] = entry;
@@ -136,13 +148,13 @@ export default {
         anyChange = true;
       }
 
-      // set/refresh cost
+      // Cost refresh
       if (Number.isFinite(fantasyCost) && dbPlayer.cost !== fantasyCost) {
         dbPlayer.cost = fantasyCost;
         anyChange = true;
       }
 
-      // backfill externalId
+      // Backfill externalId
       if (Number.isFinite(playerIdNum) && !dbPlayer.externalId) {
         dbPlayer.externalId = playerIdNum;
         anyChange = true;
@@ -158,12 +170,12 @@ export default {
     }
 
     return interaction.editReply(
-      `✅ Import complete.\n• Created players: **${createdPlayers}**\n• Updated players: **${updatedPlayers}**\n• Teams created: **${teamCreated}**\n• Skipped: **${skipped}**\n• Not found / no team: **${notFound}**`
+      `✅ Import complete.\n` +
+      `• Created players: **${createdPlayers}**\n` +
+      `• Updated players: **${updatedPlayers}**\n` +
+      `• Teams created: **${teamCreated}**\n` +
+      `• Skipped: **${skipped}**\n` +
+      `• Not found / no team: **${notFoundNoTeam}**`
     );
   }
 };
-
-// small helper
-function escapeRegex(s) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}

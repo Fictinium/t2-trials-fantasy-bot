@@ -3,17 +3,18 @@ import './models/modelsIndex.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { Client, Collection, Events, REST, Routes } from 'discord.js';
+import { Client, Collection, Events, REST, Routes, GatewayIntentBits } from 'discord.js';
 import { startWeeklyJob } from './jobs/weeklyImport.js';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import os from 'os';
 
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const client = new Client({ intents: [] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
 
 // Load commands dynamically
@@ -61,39 +62,75 @@ const token = process.env.TOKEN;
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 client.once(Events.ClientReady, async c => {
-    console.log(`Logged in as ${c.user.username}`)
+  console.log(`Logged in as ${c.user.username}`)
 
-    const rest = new REST({ version: '10' }).setToken(token);
+  console.log(`[READY] ${c.user.tag} on ${os.hostname()} (pid ${process.pid})`);
+  c.user.setPresence({ activities: [{ name: 'DEV' }], status: 'online' });
 
-    try {
-        console.log(`Registering ${commandsArray.length} application commands...`);
-        await rest.put(
-            Routes.applicationCommands(c.user.id), // Global commands
-            { body: commandsArray }
-        );
-        console.log('Successfully registered application commands.');
-    } catch (error) {
-        console.error('Error registering commands:', error);
-    }
+  const rest = new REST({ version: '10' }).setToken(token);
+
+  try {
+    console.log(`Registering ${commandsArray.length} application commands...`);
+    await rest.put(
+        Routes.applicationCommands(c.user.id), // Global commands
+        { body: commandsArray }
+    );
+    console.log('Successfully registered application commands.');
+  } catch (error) {
+    console.error('Error registering commands:', error);
+  }
 });
 
 client.on(Events.InteractionCreate, async interaction => {
-    console.log(interaction);
+  console.log('Interaction:', {
+    id: interaction.id,
+    type: interaction.type,
+    commandName: interaction.commandName,
+    customId: interaction.customId,
+  });
 
-    if (!interaction.isChatInputCommand()) return;
-
+  // Slash commands
+  if (interaction.isChatInputCommand()) {
     const command = client.commands.get(interaction.commandName);
-    if (!command) {
-        console.warn(`Unknown command: ${interaction.commandName}`);
-        return;
-    }
-
+    if (!command) return;
     try {
-        await command.execute(interaction);
+      await command.execute(interaction);
     } catch (error) {
-        console.error(error);
-        await interaction.reply({ content: 'There was an error executing this command!', ephemeral: true });
+      console.error(error);
+      const payload = { content: 'There was an error executing this command!', flags: 64 }; // 64 = Ephemeral
+
+      try {
+        if (interaction.deferred) {
+          await interaction.editReply(payload);
+        } else if (!interaction.replied) {
+          await interaction.reply(payload);
+        } else {
+          await interaction.followUp(payload);
+        }
+      } catch (e) {
+        console.error('Failed to send error notice:', e);
+      }
     }
+    return;
+  }
+
+  // String/role/user select menus & buttons
+  if (interaction.isStringSelectMenu() || interaction.isButton()) {
+    try {
+      // Route to your component handler or the command module that created them
+      // e.g., playersBook handles its own customIds:
+      const customId = interaction.customId;
+      // dispatch based on customId
+    } catch (error) {
+      console.error(error);
+      const payload = { content: 'There was an error handling that action.', flags: 64 };
+      try {
+        if (interaction.deferred) await interaction.editReply(payload);
+        else if (!interaction.replied) await interaction.reply(payload);
+        else await interaction.followUp(payload);
+      } catch {}
+    }
+  }
 });
 
 client.login(token);

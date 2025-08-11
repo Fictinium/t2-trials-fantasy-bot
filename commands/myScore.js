@@ -28,7 +28,7 @@ export default {
     if (!registered) {
       return interaction.reply({
         content: '⚠️ You must register using `/joinleague` before using this command.',
-        ephemeral: true
+        flags: 64
       });
     }
 
@@ -41,7 +41,7 @@ export default {
     if (!user) {
       return interaction.reply({
         content: '❗ Could not find your fantasy profile. Try `/joinleague` again.',
-        ephemeral: true
+        flags: 64
       });
     }
 
@@ -59,7 +59,7 @@ export default {
         .setDescription(`**Week ${week} points:** ${points}`)
         .setFooter({ text: `Total points: ${storedTotal}` });
 
-      return interaction.reply({ embeds: [embed], ephemeral });
+      return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
     }
 
     // Option B: overall breakdown
@@ -69,7 +69,7 @@ export default {
         .setDescription('No weekly scores yet. An admin needs to run `/calculatescores` after matches are recorded.')
         .setFooter({ text: `Total points: ${storedTotal}` });
 
-      return interaction.reply({ embeds: [embed], ephemeral });
+      return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
     }
 
     // Build lines like: "Week 1 — 10 pts"
@@ -79,6 +79,6 @@ export default {
       .setDescription(lines.join('\n'))
       .setFooter({ text: `Total points: ${storedTotal}` });
 
-    return interaction.reply({ embeds: [embed], ephemeral });
+    return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
   }
 };

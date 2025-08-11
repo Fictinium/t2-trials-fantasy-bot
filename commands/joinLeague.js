@@ -12,7 +12,7 @@ export default {
     if (existing) {
       return interaction.reply({
         content: '❌ You are already registered in the fantasy league!',
-        ephemeral: true
+        flags: 64
       });
     }
 
@@ -28,7 +28,7 @@ export default {
 
     return interaction.reply({
       content: '✅ You have been successfully registered to the fantasy league!',
-      ephemeral: true
+      flags: 64
     });
   }
 };
