@@ -1,8 +1,10 @@
 import './keepalive.js';
+import './models/modelsIndex.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { Client, Collection, Events, REST, Routes } from 'discord.js';
+import { startWeeklyJob } from './jobs/weeklyImport.js';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
@@ -51,7 +53,8 @@ mongoose.connect(mongoUri, {
   useUnifiedTopology: true
 }).then(() => console.log('Connected to MongoDB')).catch((error) => {console.error('MongoDB connection error:', error)});
 
-await import('./models/modelsIndex.js');
+startWeeklyJob();
+console.log('📅 Weekly import job scheduled');
 
 const token = process.env.TOKEN;
 
