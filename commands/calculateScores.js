@@ -1,11 +1,12 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 
-const WIN_POINTS = 10;
-const BONUS_ROUND_3_WINS = 15; // +15 if a round is exactly 3-0
-const BONUS_WEEK_ALL_ROUNDS_POSITIVE = 5;
-const BONUS_STREAK_3W_ALL_ROUNDS_POSITIVE = 40;
-const BONUS_STREAK_3W_PERFECT_SWEEP = 100;
+const WIN_POINTS = 10; // +10 per win
+const BONUS_ROUND_3_WINS = 15; // +15 if round is exactly 3-0 (per round)
+const BONUS_WEEK_ALL_ROUNDS_POSITIVE = 5; // +5 if positive winrate in all rounds this week (must have at least one round)
+const BONUS_STREAK_3W_ALL_ROUNDS_POSITIVE = 40; // +40 if positive winrate in all rounds for 3 consecutive weeks
+const BONUS_STREAK_3W_PERFECT_SWEEP = 100; // +100 if perfect 3-0 in all rounds for 3 consecutive weeks
 
 export default {
   data: new SlashCommandBuilder()
@@ -21,11 +22,15 @@ export default {
       return interaction.reply({ content: '❌ Admins only.', flags: 64 });
     }
 
+    const season = await getActiveSeason();
+    if (!season) {
+      return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+    }
     const week = interaction.options.getInteger('week', true);
 
     // Load EVERY fantasy player with their roster (players include `performance`)
-    const fantasyPlayers = await FantasyPlayer.find()
-      .populate({ path: 'team', select: 'name performance' })
+    const fantasyPlayers = await FantasyPlayer.find({ season: season._id })
+      .populate({ path: 'team', match: { season: season._id }, select: 'name performance' })
       .lean(); // lean is fine here since we only write back via updateOne below (optional)
 
     if (!fantasyPlayers.length) {

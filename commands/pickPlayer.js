@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { canModifyTeam } from '../utils/transferGuard.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import isRegistered from '../utils/checkRegistration.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
@@ -25,6 +26,10 @@ export default {
 
   async execute(interaction) {
     try {
+      const season = await getActiveSeason();
+      if (!season) {
+        return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+      }
       const discordId = interaction.user.id;
       const playerName = interaction.options.getString('player', true);
       const teamName = interaction.options.getString('team') || null;
@@ -37,7 +42,7 @@ export default {
       // 2) Resolve (optional) team for disambiguation
       let teamDoc = null;
       if (teamName) {
-        teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamName)}$`, $options: 'i' } }).lean();
+        teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamName)}$`, $options: 'i' }, season: season._id }).lean();
         if (!teamDoc) {
           return interaction.reply({ content: `❌ Team "${teamName}" not found.`, flags: 64 });
         }
@@ -49,6 +54,7 @@ export default {
         leaguePlayer = await T2TrialsPlayer.findOne({
           name: { $regex: `^${escapeRegex(playerName)}$`, $options: 'i' },
           team: teamDoc._id,
+          season: season._id
         }).lean();
 
         if (!leaguePlayer) {
@@ -59,7 +65,8 @@ export default {
         }
       } else {
         const matches = await T2TrialsPlayer.find({
-          name: { $regex: `^${escapeRegex(playerName)}$`, $options: 'i' }
+          name: { $regex: `^${escapeRegex(playerName)}$`, $options: 'i' },
+          season: season._id
         }).populate('team', 'name').lean();
 
         if (matches.length === 0) {
@@ -86,7 +93,7 @@ export default {
 
       // 5) Load current team & wallet (and updatedAt for optimistic concurrency)
       const fp = await FantasyPlayer.findOne(
-        { discordId },
+        { discordId, season: season._id },
         { team: 1, wallet: 1, updatedAt: 1 }
       ).lean();
 
@@ -111,6 +118,7 @@ export default {
       const updated = await FantasyPlayer.findOneAndUpdate(
         {
           discordId,
+          season: season._id,
           team: { $ne: leaguePlayer._id },
           wallet: { $gte: cost },
           $expr: { $lt: [{ $size: '$team' }, MAX_TEAM_SIZE] },
@@ -125,7 +133,7 @@ export default {
 
       if (!updated) {
         // Re-check to give a helpful reason
-        const latest = await FantasyPlayer.findOne({ discordId }, { team: 1, wallet: 1 }).lean();
+        const latest = await FantasyPlayer.findOne({ discordId, season: season._id }, { team: 1, wallet: 1 }).lean();
 
         if (latest?.team?.some(id => id.toString() === leaguePlayer._id.toString())) {
           return interaction.reply({ content: `❌ You already have **${leaguePlayer.name}** on your team.`, flags: 64 });

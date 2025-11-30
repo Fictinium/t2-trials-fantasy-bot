@@ -1,5 +1,5 @@
-// commands/setWallet.js
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 
 export default {
@@ -25,6 +25,11 @@ export default {
         return interaction.reply({ content: '❌ Admins only.', flags: 64 });
       }
 
+      const season = await getActiveSeason();
+      if (!season) {
+        return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+      }
+
       const sub = interaction.options.getSubcommand();
 
       if (sub === 'user') {
@@ -32,7 +37,7 @@ export default {
         const amount = interaction.options.getInteger('amount', true);
 
         const doc = await FantasyPlayer.findOneAndUpdate(
-          { discordId: user.id },
+          { discordId: user.id, season: season._id },
           { $set: { wallet: amount } },
           { new: true }
         );
@@ -49,7 +54,7 @@ export default {
 
       if (sub === 'all') {
         const amount = interaction.options.getInteger('amount', true);
-        const res = await FantasyPlayer.updateMany({}, { $set: { wallet: amount } });
+        const res = await FantasyPlayer.updateMany({season: season._id}, { $set: { wallet: amount } });
 
         // res.modifiedCount is usually available; fall back to acknowledged count
         const modified = typeof res.modifiedCount === 'number' ? res.modifiedCount : undefined;

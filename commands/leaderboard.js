@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 
 const DEFAULT_LIMIT = 10;
@@ -28,12 +29,16 @@ export default {
     ),
 
   async execute(interaction) {
+    const season = await getActiveSeason();
+    if (!season) {
+      return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+    }
     const week = interaction.options.getInteger('week') ?? null;
     const limit = interaction.options.getInteger('limit') ?? DEFAULT_LIMIT;
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
 
     // Pull all fantasy players; we only need username + points arrays
-    const fantasyPlayers = await FantasyPlayer.find({}, { username: 1, discordId: 1, weeklyPoints: 1, totalPoints: 1 }).lean();
+    const fantasyPlayers = await FantasyPlayer.find({season: season._id}, { username: 1, discordId: 1, weeklyPoints: 1, totalPoints: 1 }).lean();
 
     if (!fantasyPlayers.length) {
       return interaction.reply({ content: 'ℹ️ No fantasy players yet.', flags: 64 });

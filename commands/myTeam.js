@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import isRegistered from '../utils/checkRegistration.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 
@@ -11,6 +12,10 @@ export default {
 
   async execute(interaction) {
     try {
+      const season = await getActiveSeason();
+      if (!season) {
+        return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+      }
       const discordId = interaction.user.id;
 
       // 1) Must be registered
@@ -23,7 +28,7 @@ export default {
       }
 
       // 2) Load fantasy player with populated players and each player's real team
-      const fantasyPlayer = await FantasyPlayer.findOne({ discordId })
+      const fantasyPlayer = await FantasyPlayer.findOne({ discordId, season: season._id })
         .populate({ path: 'team', populate: { path: 'team', model: 'Team' } }) // nested populate
         .lean();
 

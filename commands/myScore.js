@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import isRegistered from '../utils/checkRegistration.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 
@@ -19,6 +20,10 @@ export default {
     ),
 
   async execute(interaction) {
+    const season = await getActiveSeason();
+    if (!season) {
+      return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+    }
     const discordId = interaction.user.id;
     const week = interaction.options.getInteger('week') ?? null;
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
@@ -34,7 +39,7 @@ export default {
 
     // Load player doc
     const user = await FantasyPlayer.findOne(
-      { discordId },
+      { discordId, season: season._id },
       { username: 1, weeklyPoints: 1, totalPoints: 1 }
     ).lean();
 

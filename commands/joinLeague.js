@@ -1,4 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 
 export default {
@@ -7,7 +8,12 @@ export default {
     .setDescription('Join the T2 Trials Fantasy League'),
     
   async execute(interaction) {
-    const existing = await FantasyPlayer.findOne({ discordId: interaction.user.id });
+    const season = await getActiveSeason();
+    if (!season) {
+      return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+    }
+
+    const existing = await FantasyPlayer.findOne({ discordId: interaction.user.id, season: season._id });
 
     if (existing) {
       return interaction.reply({
@@ -21,7 +27,8 @@ export default {
       username: interaction.user.username,
       weeklyPoints: [],
       totalPoints: 0,
-      wallet: 85
+      wallet: 85,
+      season: season._id
     });
 
     await newFantasyPlayer.save();

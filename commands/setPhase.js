@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import FantasyConfig from '../models/FantasyConfig.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 
@@ -25,9 +26,13 @@ export default {
       return interaction.reply({ content: '❌ Admins only.', flags: 64 });
     }
 
+    const season = await getActiveSeason();
+    if (!season) {
+      return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+    }
     const phase = interaction.options.getString('phase', true);
 
-    let cfg = await FantasyConfig.findOne();
+    let cfg = await FantasyConfig.findOne({season: season._id});
     if (!cfg) cfg = await FantasyConfig.create({});
     const prev = cfg.phase;
 
@@ -38,12 +43,12 @@ export default {
     // Snapshots on transitions
     if (phase === 'SWISS') {
       // snapshot every user's current team -> swissLockSnapshot
-      await FantasyPlayer.updateMany({}, [
+      await FantasyPlayer.updateMany({season: season._id}, [
         { $set: { swissLockSnapshot: '$team' } } // uses aggregation pipeline update (MongoDB 4.2+)
       ]);
     } else if (phase === 'PLAYOFFS_OPEN') {
       // snapshot every user's current team -> playoffSnapshot
-      await FantasyPlayer.updateMany({}, [
+      await FantasyPlayer.updateMany({season: season._id}, [
         { $set: { playoffSnapshot: '$team' } }
       ]);
     }

@@ -4,9 +4,9 @@ import {
   ActionRowBuilder,
   StringSelectMenuBuilder,
   ButtonBuilder,
-  ButtonStyle,
-  ComponentType
+  ButtonStyle
 } from 'discord.js';
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import Team from '../models/Team.js';
 
 const PAGE_SIZE = 25;
@@ -22,10 +22,14 @@ export default {
     ),
 
   async execute(interaction) {
+    const season = await getActiveSeason();
+    if (!season) {
+      return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+    }
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
 
     // Load teams + players (name + cost only)
-    const teams = await Team.find()
+    const teams = await Team.find({season: season._id})
       .sort({ name: 1 })
       .populate({ path: 'players', select: 'name cost', options: { sort: { cost: -1, name: 1 } } })
       .lean();

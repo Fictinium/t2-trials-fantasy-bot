@@ -1,9 +1,15 @@
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import FantasyConfig from '../models/FantasyConfig.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 
 export async function canModifyTeam(discordId, proposedTeamIds /* array of ObjectId|string */) {
-  const cfg = await FantasyConfig.findOne().lean();
-  const user = await FantasyPlayer.findOne({ discordId }, { playoffSnapshot: 1 }).lean();
+  const season = await getActiveSeason();
+  if (!season) {
+    return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+  }
+
+  const cfg = await FantasyConfig.findOne({season: season._id}).lean();
+  const user = await FantasyPlayer.findOne({ discordId, season: season._id }, { playoffSnapshot: 1 }).lean();
 
   const phase = cfg?.phase ?? 'PRESEASON';
   if (phase === 'PRESEASON') return { allowed: true, reason: 'PRESEASON' };

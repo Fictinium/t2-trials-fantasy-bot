@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
 import Team from '../models/Team.js';
 
@@ -30,16 +31,20 @@ export default {
     ),
 
   async execute(interaction) {
+    const season = await getActiveSeason();
+    if (!season) {
+      return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+    }
     const name = interaction.options.getString('player', true);
     const teamName = interaction.options.getString('team') || null;
     const week = interaction.options.getInteger('week') || null;
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
 
     // Find by name (+ optional team filter)
-    const nameFilter = { name: { $regex: `^${escapeRegex(name)}$`, $options: 'i' } };
+    const nameFilter = { name: { $regex: `^${escapeRegex(name)}$`, $options: 'i' }, season: season._id };
     let teamFilter = {};
     if (teamName) {
-      const teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamName)}$`, $options: 'i' } });
+      const teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamName)}$`, $options: 'i' }, season: season._id });
       if (!teamDoc) {
         return interaction.reply({ content: `❌ Team "${teamName}" not found.`, flags: 64 });
       }

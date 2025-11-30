@@ -19,6 +19,7 @@ const t2TrialsPlayerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true },
   cost: { type: Number, required: true, min: 0 },
+  season: { type: mongoose.Schema.Types.ObjectId, ref: 'Season', required: true, index: true },
   performance: { type: [performanceSchema], default: [] }
 }, { timestamps: true, strict: true });
 

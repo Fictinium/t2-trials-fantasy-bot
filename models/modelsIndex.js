@@ -3,5 +3,6 @@ import './T2TrialsPlayer.js';
 import './Team.js';
 import './Match.js';
 import './FantasyConfig.js';
+import './Season.js';
 
 export {};

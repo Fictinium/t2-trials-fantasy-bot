@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import Team from '../models/Team.js';
 
 export default {
@@ -22,11 +23,15 @@ export default {
     ),
 
   async execute(interaction) {
+    const season = await getActiveSeason();
+    if (!season) {
+      return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+    }
     const teamName = interaction.options.getString('team', true);
     const week = interaction.options.getInteger('week') || null;
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
 
-    const team = await Team.findOne({ name: { $regex: `^${escapeRegex(teamName)}$`, $options: 'i' } })
+    const team = await Team.findOne({ name: { $regex: `^${escapeRegex(teamName)}$`, $options: 'i' }, season: season._id })
       .populate({ path: 'players', select: 'name performance', options: { sort: { name: 1 } } })
       .lean();
 

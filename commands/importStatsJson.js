@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import Team from '../models/Team.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
 
@@ -17,6 +18,11 @@ export default {
   async execute(interaction) {
     if (!interaction.inGuild() || !interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
       return interaction.reply({ content: '❌ Admins only.', flags: 64 });
+    }
+
+    const season = await getActiveSeason();
+    if (!season) {
+      return interaction.reply({ content: '❌ No active season set.', flags: 64 });
     }
 
     const file = interaction.options.getAttachment('file', true);
@@ -47,14 +53,14 @@ export default {
       if (!teamNameRaw)   { notFoundNoTeam++; continue; }
 
       // 1) Ensure Team exists (case-insensitive exact match)
-      let teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamNameRaw)}$`, $options: 'i' } });
+      let teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamNameRaw)}$`, $options: 'i' }, season: season._id });
       if (!teamDoc) {
         try {
-          teamDoc = await Team.create({ name: teamNameRaw, players: [] });
+          teamDoc = await Team.create({ name: teamNameRaw, players: [], season: season._id });
           teamCreated++;
         } catch {
           // another import thread might have just created it — re-read
-          teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamNameRaw)}$`, $options: 'i' } });
+          teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamNameRaw)}$`, $options: 'i' }, season: season._id });
           if (!teamDoc) { skipped++; continue; }
         }
       }
@@ -62,12 +68,13 @@ export default {
       // 2) Find existing player (prefer externalId, else name+team)
       let dbPlayer = null;
       if (Number.isFinite(playerIdNum)) {
-        dbPlayer = await T2TrialsPlayer.findOne({ externalId: playerIdNum });
+        dbPlayer = await T2TrialsPlayer.findOne({ externalId: playerIdNum, season: season._id });
       }
       if (!dbPlayer) {
         dbPlayer = await T2TrialsPlayer.findOne({
           name: { $regex: `^${escapeRegex(playerNameRaw)}$`, $options: 'i' },
-          team: teamDoc._id
+          team: teamDoc._id,
+          season: season._id
         });
       }
 
@@ -120,7 +127,8 @@ export default {
           name: playerNameRaw,
           team: teamDoc._id,
           cost: fantasyCost,
-          performance: [...perfByWeek.values()].sort((a, b) => a.week - b.week)
+          performance: [...perfByWeek.values()].sort((a, b) => a.week - b.week),
+          season: season._id
         });
 
         // Link into Team

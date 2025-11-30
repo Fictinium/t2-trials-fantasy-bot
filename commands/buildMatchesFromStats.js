@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ButtonStyle } from 'discord.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import Team from '../models/Team.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
 import Match from '../models/Match.js';
@@ -19,6 +20,10 @@ export default {
       return interaction.reply({ content: '❌ Admins only.', flags: 64 });
     }
 
+    const season = await getActiveSeason();
+    if (!season) {
+      return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+    }
     const week = interaction.options.getInteger('week', true);
     const teamAName = interaction.options.getString('team_a', true);
     const teamBName = interaction.options.getString('team_b', true);
@@ -33,8 +38,8 @@ export default {
 
     // resolve teams (case-insensitive exact)
     const [teamA, teamB] = await Promise.all([
-      Team.findOne({ name: { $regex: `^${escapeRegex(teamAName)}$`, $options: 'i' } }),
-      Team.findOne({ name: { $regex: `^${escapeRegex(teamBName)}$`, $options: 'i' } })
+      Team.findOne({ name: { $regex: `^${escapeRegex(teamAName)}$`, $options: 'i' }, season: season._id }),
+      Team.findOne({ name: { $regex: `^${escapeRegex(teamBName)}$`, $options: 'i' }, season: season._id })
     ]);
     if (!teamA) return interaction.editReply(`❌ Team not found: ${teamAName}`);
     if (!teamB) return interaction.editReply(`❌ Team not found: ${teamBName}`);
@@ -43,7 +48,7 @@ export default {
     const [tLow, tHigh] = String(teamA._id) < String(teamB._id) ? [teamA, teamB] : [teamB, teamA];
 
     // prevent duplicates (check both orders)
-    const dupe = await Match.findOne({ week, teamA: tLow._id, teamB: tHigh._id });
+    const dupe = await Match.findOne({ week, teamA: tLow._id, teamB: tHigh._id, season: season._id });
     if (dupe) {
       return interaction.editReply(`❌ Match already exists for Week ${week}: ${tLow.name} vs ${tHigh.name}`);
     }
@@ -52,7 +57,7 @@ export default {
     const byExtId = new Map();
     const teamMap = new Map(); // extId -> 'A' | 'B'
     for (const p of await T2TrialsPlayer.find(
-      { team: { $in: [teamA._id, teamB._id] } },
+      { team: { $in: [teamA._id, teamB._id] }, season: season._id },
       { externalId: 1, team: 1, name: 1 }
     ).lean()) {
       if (Number.isFinite(p.externalId)) {

@@ -1,3 +1,4 @@
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import fs from 'fs/promises';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
@@ -25,9 +26,14 @@ async function main() {
     throw new Error('❌ Expected JSON root to be an array of players.');
   }
 
+  const season = await getActiveSeason();
+  if (!season) {
+    return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+  }
+
   // Clear old data
-  await Team.deleteMany({});
-  await T2TrialsPlayer.deleteMany({});
+  await Team.deleteMany({season: season._id});
+  await T2TrialsPlayer.deleteMany({season: season._id});
 
   // 1) Collect unique teams
   const teamMap = new Map();
@@ -54,6 +60,7 @@ async function main() {
     }
     const playerDoc = await T2TrialsPlayer.create({
       name: p.name,
+      season: season._id,
       team: teamDoc._id,
       cost: Number(p.fantasy_points) || 0,
       performance: [],

@@ -21,6 +21,7 @@ const matchSchema = new mongoose.Schema({
   rounds: { type: [roundSchema], default: [] },
   winner: { type: String, enum: ['A', 'B', 'None'], default: 'None' }, // overall match winner
   playersResults: { type: [playerResultSchema], default: [] },
+  season: { type: mongoose.Schema.Types.ObjectId, ref: 'Season', required: true, index: true }
 }, { timestamps: true, strict: true });
 
 // Example: one match per week per pair of teams

@@ -1,3 +1,4 @@
+import { getActiveSeason } from '../utils/getActiveSeason.js';
 import Team from '../models/Team.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
 
@@ -5,6 +6,11 @@ function escapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
 export async function importStatsArray(playersArray) {
   if (!Array.isArray(playersArray)) throw new Error('Expected array root');
+
+  const season = await getActiveSeason();
+  if (!season) {
+    return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+  }
 
   let createdPlayers = 0;
   let updatedPlayers = 0;
@@ -23,7 +29,7 @@ export async function importStatsArray(playersArray) {
     if (!teamNameRaw) { notFound++; continue; }
 
     // Case-insensitive exact team match (create if missing)
-    let teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamNameRaw)}$`, $options: 'i' } });
+    let teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamNameRaw)}$`, $options: 'i' }, season: season._id });
     if (!teamDoc) {
       teamDoc = await Team.create({ name: teamNameRaw, players: [] });
       teamsCreated++;
@@ -35,6 +41,7 @@ export async function importStatsArray(playersArray) {
     if (!dbPlayer) {
       dbPlayer = await T2TrialsPlayer.findOne({
         name: { $regex: `^${escapeRegex(playerName)}$`, $options: 'i' },
+        season: season._id,
         team: teamDoc._id
       });
     }
@@ -72,6 +79,7 @@ export async function importStatsArray(playersArray) {
       dbPlayer = await T2TrialsPlayer.create({
         externalId: Number.isFinite(playerIdNum) ? playerIdNum : undefined,
         name: playerName,
+        season: season._id,
         team: teamDoc._id,
         cost: fantasyCost,
         performance: [...perfByWeek.values()].sort((a,b) => a.week - b.week)
