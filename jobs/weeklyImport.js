@@ -59,3 +59,23 @@ export function startWeeklyJob() {
     }
   }, { timezone: tz });
 }
+
+export async function runWeeklyImportOnce() {
+  const url = process.env.STATS_URL;
+  if (!url) return { error: 'STATS_URL not set' };
+
+  let cfg = await FantasyConfig.findOne();
+  if (!cfg) cfg = await FantasyConfig.create({});
+
+  const week = cfg.currentWeek;
+
+  console.log(`[manualImport] week=${week}`);
+
+  const importRes = await importStatsFromUrl(url);
+  const updated = await calculateScoresForWeek(week);
+
+  cfg.currentWeek = week + 1;
+  await cfg.save();
+
+  return { importRes, updated };
+}
