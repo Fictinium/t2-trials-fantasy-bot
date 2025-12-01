@@ -9,12 +9,10 @@ const BONUS_STREAK_3W_PERFECT_SWEEP = 100;
 
 export async function calculateScoresForWeek(week) {
   const season = await getActiveSeason();
-  if (!season) {
-    return interaction.reply({ content: '❌ No active season set.', flags: 64 });
-  }
+  if (!season) throw new Error('No active season');
 
   const fps = await FantasyPlayer.find({season: season._id})
-    .populate({ path: 'team', select: 'performance' })
+    .populate({ path: 'team', match: { season: season._id }, select: 'performance' })
     .exec();
 
   let updated = 0;

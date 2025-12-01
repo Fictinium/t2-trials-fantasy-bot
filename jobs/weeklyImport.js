@@ -2,35 +2,51 @@ import cron from 'node-cron';
 import FantasyConfig from '../models/FantasyConfig.js';
 import { importStatsFromUrl } from '../services/importer.js';
 import { calculateScoresForWeek } from '../services/scoring.js';
+import getActiveSeason from '../utils/getActiveSeason.js';
 
 export function startWeeklyJob() {
-  // Only run if explicitly enabled (avoid double-runs in dev/prod)
   if (process.env.JOBS_ENABLED !== '1') {
     console.log('[weeklyImport] skipped (JOBS_ENABLED != 1)');
     return;
   }
 
-  // default: Monday 16:00 local Lisbon time. Adjust to taste.
   const expr = process.env.CRON_EXPR || '0 16 * * 1';
   const tz = process.env.CRON_TZ || 'Europe/Lisbon';
 
   cron.schedule(expr, async () => {
     try {
-      const url = process.env.STATS_URL;
-      if (!url) return console.warn('[weeklyImport] STATS_URL not set');
+      const season = await getActiveSeason();
+      if (!season) {
+        console.warn('[weeklyImport] No active season. Skipping.');
+        return;
+      }
 
-      let cfg = await FantasyConfig.findOne();
-      if (!cfg) cfg = await FantasyConfig.create({});
+      const url = process.env.STATS_URL;
+      if (!url) {
+        console.warn('[weeklyImport] STATS_URL not set');
+        return;
+      }
+
+      // Load or create season config
+      let cfg = await FantasyConfig.findOne({ season: season._id });
+      if (!cfg) {
+        cfg = await FantasyConfig.create({
+          season: season._id,
+          seasonName: season.name,
+          currentWeek: 1
+        });
+      }
+
       const week = cfg.currentWeek;
 
-      console.log(`[weeklyImport] start week=${week} at ${new Date().toISOString()}`);
+      console.log(`[weeklyImport] start season=${season.name} week=${week}`);
 
-      // 1) import stats
-      const importRes = await importStatsFromUrl(url);
+      // 1) import stats FOR THIS SEASON
+      const importRes = await importStatsFromUrl(url, season._id);
       console.log('[weeklyImport] import result:', importRes);
 
-      // 2) calculate this week's scores (fantasy users)
-      const updated = await calculateScoresForWeek(week);
+      // 2) calculate scores FOR THIS SEASON AND WEEK
+      const updated = await calculateScoresForWeek(season._id, week);
       console.log(`[weeklyImport] calculated week ${week} for ${updated} fantasy players`);
 
       // 3) advance pointer
