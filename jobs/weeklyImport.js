@@ -1,5 +1,7 @@
 import cron from 'node-cron';
 import FantasyConfig from '../models/FantasyConfig.js';
+import Team from '../models/Team.js';
+import FantasyPlayer from '../models/FantasyPlayer.js';
 import { importStatsFromUrl } from '../services/importer.js';
 import { calculateScoresForWeek } from '../services/scoring.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
@@ -15,52 +17,15 @@ export function startWeeklyJob() {
 
   cron.schedule(expr, async () => {
     try {
-      const season = await getActiveSeason();
-      if (!season) {
-        console.warn('[weeklyImport] No active season. Skipping.');
-        return;
-      }
-
-      const url = process.env.STATS_URL;
-      if (!url) {
-        console.warn('[weeklyImport] STATS_URL not set');
-        return;
-      }
-
-      // Load or create season config
-      let cfg = await FantasyConfig.findOne({ season: season._id });
-      if (!cfg) {
-        cfg = await FantasyConfig.create({
-          season: season._id,
-          seasonName: season.name,
-          currentWeek: 1
-        });
-      }
-
-      const week = cfg.currentWeek;
-
-      console.log(`[weeklyImport] start season=${season.name} week=${week}`);
-
-      // 1) import stats FOR THIS SEASON
-      const importRes = await importStatsFromUrl(url, season._id);
-      console.log('[weeklyImport] import result:', importRes);
-
-      // 2) calculate scores FOR THIS SEASON AND WEEK
-      const updated = await calculateScoresForWeek(season._id, week);
-      console.log(`[weeklyImport] calculated week ${week} for ${updated} fantasy players`);
-
-      // 3) advance pointer
-      cfg.currentWeek = week + 1;
-      await cfg.save();
-
-      console.log('[weeklyImport] done');
+      // run weekly job and advance pointer for scheduled runs
+      await runWeeklyImportOnce({ fullRecalc: false, advancePointer: true });
     } catch (err) {
       console.error('[weeklyImport] error:', err);
     }
   }, { timezone: tz });
 }
 
-export async function runWeeklyImportOnce() {
+export async function runWeeklyImportOnce({ fullRecalc = false, advancePointer = false } = {}) {
   const url = process.env.STATS_URL;
   if (!url) return { error: 'STATS_URL not set' };
 
@@ -78,13 +43,42 @@ export async function runWeeklyImportOnce() {
   }
 
   const week = cfg.currentWeek;
-  console.log(`[manualImport] season=${season.name} week=${week}`);
+  console.log(`[manualImport] season=${season.name} fullRecalc=${fullRecalc} advancePointer=${advancePointer}`);
 
+  // 1) import stats FOR THIS SEASON
   const importRes = await importStatsFromUrl(url, season._id);
-  const updated = await calculateScoresForWeek(season._id, week);
 
-  cfg.currentWeek = week + 1;
-  await cfg.save();
+  // 2) calculate scores
+  if (fullRecalc) {
+    // compute maximum week that actually has data (teams' performance arrays or fantasyPlayers' weeklyPoints)
+    const teamAgg = await Team.aggregate([
+      { $match: { season: season._id } },
+      { $project: { perfSize: { $size: { $ifNull: ['$performance', []] } } } },
+      { $group: { _id: null, maxPerfSize: { $max: '$perfSize' } } }
+    ]);
+    const maxFromTeams = teamAgg?.[0]?.maxPerfSize || 0;
 
-  return { importRes, updated, season: season._id, week };
+    const fpAgg = await FantasyPlayer.aggregate([
+      { $match: { season: season._id } },
+      { $project: { wpSize: { $size: { $ifNull: ['$weeklyPoints', []] } } } },
+      { $group: { _id: null, maxWpSize: { $max: '$wpSize' } } }
+    ]);
+    const maxFromFP = fpAgg?.[0]?.maxWpSize || 0;
+
+    const toWeek = Math.max(1, maxFromTeams, maxFromFP);
+    console.log(`[manualImport] fullRecalc determined toWeek=${toWeek} (teamMax=${maxFromTeams} fpMax=${maxFromFP} pointerWeek=${week})`);
+
+    let totalUpdated = 0;
+    for (let w = 1; w <= toWeek; w++) {
+      const updated = await calculateScoresForWeek(season._id, w);
+      console.log(`[manualImport] recalculated week ${w} updated ${updated}`);
+      if (typeof updated === 'number') totalUpdated += updated;
+    }
+
+    if (advancePointer) {
+      cfg.currentWeek = week + 1;
+      await cfg.save();
+    }
+    return { importRes, recalculatedWeeks: toWeek, totalUpdated, season: season._id };
+  }
 }

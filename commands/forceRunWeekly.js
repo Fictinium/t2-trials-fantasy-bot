@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { runWeeklyImportOnce } from '../jobs/weeklyImport.js';
 
 export default {
@@ -6,11 +6,11 @@ export default {
     .setName('forcerunweekly')
     .setDescription('Run the weekly import + scoring immediately (DEV ONLY)'),
   async execute(interaction) {
-    await interaction.reply({ content: 'Running weekly job…', ephemeral: true });
-    const res = await runWeeklyImportOnce();
+    await interaction.reply({ content: 'Running weekly job (full recalculation)…', flags: 64 });
+    const res = await runWeeklyImportOnce({ fullRecalc: true, advancePointer: false });
     return interaction.followUp({
       content: `Done:\n${JSON.stringify(res, null, 2)}`,
-      ephemeral: true
+      flags: 64
     });
   }
 }
