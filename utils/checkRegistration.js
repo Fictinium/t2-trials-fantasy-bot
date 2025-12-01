@@ -1,4 +1,4 @@
-import { getActiveSeason } from '../utils/getActiveSeason.js';
+import getActiveSeason from '../utils/getActiveSeason.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 
 export default async function isRegistered(discordId) {

@@ -1,4 +1,4 @@
-import { getActiveSeason } from '../utils/getActiveSeason.js';
+import getActiveSeason from '../utils/getActiveSeason.js';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import Team from '../models/Team.js';

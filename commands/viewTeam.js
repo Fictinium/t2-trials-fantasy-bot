@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { getActiveSeason } from '../utils/getActiveSeason.js';
+import getActiveSeason from '../utils/getActiveSeason.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 import isRegistered from '../utils/checkRegistration.js';
 

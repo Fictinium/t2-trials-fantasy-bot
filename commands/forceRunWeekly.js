@@ -1,9 +1,10 @@
-// commands/dev/forcerunweekly.js
-import { runWeeklyImportOnce } from '../../jobs/weekly.js';
+import { SlashCommandBuilder } from 'discord.js';
+import { runWeeklyImportOnce } from '../jobs/weeklyImport.js';
 
 export default {
-  name: 'forcerunweekly',
-  description: 'Run the weekly import + scoring immediately (DEV ONLY)',
+  data: new SlashCommandBuilder()
+    .setName('forcerunweekly')
+    .setDescription('Run the weekly import + scoring immediately (DEV ONLY)'),
   async execute(interaction) {
     await interaction.reply({ content: 'Running weekly job…', ephemeral: true });
     const res = await runWeeklyImportOnce();

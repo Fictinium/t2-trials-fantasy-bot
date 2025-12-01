@@ -15,7 +15,7 @@ const performanceSchema = new mongoose.Schema({
 }, { _id: false });
 
 const t2TrialsPlayerSchema = new mongoose.Schema({
-  externalId: { type: Number, index: true, unique: true, sparse: true }, // website ID
+  externalId: { type: Number, index: true, sparse: true }, // website ID
   name: { type: String, required: true },
   team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true },
   cost: { type: Number, required: true, min: 0 },
@@ -25,5 +25,8 @@ const t2TrialsPlayerSchema = new mongoose.Schema({
 
 // Compound uniqueness constraint for repeated names across teams:
 t2TrialsPlayerSchema.index({ name: 1, team: 1 }, { unique: true });
+
+// Compound uniqueness constraint for externalId within a season:
+t2TrialsPlayerSchema.index({ externalId: 1, season: 1 }, { unique: true });
 
 export default mongoose.model('T2TrialsPlayer', t2TrialsPlayerSchema);

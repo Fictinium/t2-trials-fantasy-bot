@@ -64,18 +64,27 @@ export async function runWeeklyImportOnce() {
   const url = process.env.STATS_URL;
   if (!url) return { error: 'STATS_URL not set' };
 
-  let cfg = await FantasyConfig.findOne();
-  if (!cfg) cfg = await FantasyConfig.create({});
+  const season = await getActiveSeason();
+  if (!season) return { error: 'No active season' };
+
+  // find or create config for the active season
+  let cfg = await FantasyConfig.findOne({ season: season._id });
+  if (!cfg) {
+    cfg = await FantasyConfig.create({
+      season: season._id,
+      seasonName: season.name,
+      currentWeek: 1
+    });
+  }
 
   const week = cfg.currentWeek;
+  console.log(`[manualImport] season=${season.name} week=${week}`);
 
-  console.log(`[manualImport] week=${week}`);
-
-  const importRes = await importStatsFromUrl(url);
-  const updated = await calculateScoresForWeek(week);
+  const importRes = await importStatsFromUrl(url, season._id);
+  const updated = await calculateScoresForWeek(season._id, week);
 
   cfg.currentWeek = week + 1;
   await cfg.save();
 
-  return { importRes, updated };
+  return { importRes, updated, season: season._id, week };
 }

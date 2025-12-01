@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { canModifyTeam } from '../utils/transferGuard.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
-import { getActiveSeason } from '../utils/getActiveSeason.js';
+import getActiveSeason from '../utils/getActiveSeason.js';
 import isRegistered from '../utils/checkRegistration.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';

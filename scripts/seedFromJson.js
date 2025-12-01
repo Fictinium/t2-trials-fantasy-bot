@@ -1,4 +1,4 @@
-import { getActiveSeason } from '../utils/getActiveSeason.js';
+import getActiveSeason from '../utils/getActiveSeason.js';
 import fs from 'fs/promises';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';

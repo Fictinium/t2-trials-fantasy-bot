@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const fantasyPlayerSchema = new mongoose.Schema({
-  discordId: { type: String, required: true, unique: true, index: true },
+  discordId: { type: String, required: true, index: true },
   username: { type: String, default: null },
   team: [{ type: mongoose.Schema.Types.ObjectId, ref: 'T2TrialsPlayer', default: [] }],
   weeklyPoints: { type: [Number], default: [] },
@@ -13,4 +13,5 @@ const fantasyPlayerSchema = new mongoose.Schema({
   playoffSnapshot: [{ type: mongoose.Schema.Types.ObjectId, ref: 'T2TrialsPlayer', default: [] }]
 }, { timestamps: true, strict: true });
 
+fantasyPlayerSchema.index({ discordId: 1, season: 1 }, { unique: true });
 export default mongoose.model('FantasyPlayer', fantasyPlayerSchema);

@@ -6,7 +6,7 @@ import {
   ButtonBuilder,
   ButtonStyle
 } from 'discord.js';
-import { getActiveSeason } from '../utils/getActiveSeason.js';
+import getActiveSeason from '../utils/getActiveSeason.js';
 import Team from '../models/Team.js';
 
 const PAGE_SIZE = 25;

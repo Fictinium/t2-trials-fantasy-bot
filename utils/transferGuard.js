@@ -1,4 +1,4 @@
-import { getActiveSeason } from '../utils/getActiveSeason.js';
+import getActiveSeason from '../utils/getActiveSeason.js';
 import FantasyConfig from '../models/FantasyConfig.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 

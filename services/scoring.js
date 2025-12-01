@@ -1,4 +1,4 @@
-import { getActiveSeason } from '../utils/getActiveSeason.js';
+import getActiveSeason from '../utils/getActiveSeason.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 
 const WIN_POINTS = 10;
@@ -7,12 +7,12 @@ const BONUS_WEEK_ALL_ROUNDS_POSITIVE = 5;
 const BONUS_STREAK_3W_ALL_ROUNDS_POSITIVE = 40;
 const BONUS_STREAK_3W_PERFECT_SWEEP = 100;
 
-export async function calculateScoresForWeek(week) {
-  const season = await getActiveSeason();
-  if (!season) throw new Error('No active season');
+export async function calculateScoresForWeek(seasonId, week) {
+  if (!seasonId) throw new Error('seasonId required');
+  if (!week || typeof week !== 'number') throw new Error('week (number) required');
 
-  const fps = await FantasyPlayer.find({season: season._id})
-    .populate({ path: 'team', match: { season: season._id }, select: 'performance' })
+  const fps = await FantasyPlayer.find({ season: seasonId })
+    .populate({ path: 'team', match: { season: seasonId }, select: 'performance' })
     .exec();
 
   let updated = 0;
