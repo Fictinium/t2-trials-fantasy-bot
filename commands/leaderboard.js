@@ -86,7 +86,8 @@ export default {
       return `${medal} **${r.name}** — ${right}`;
     });
 
-    const title = week ? `Week ${week} Leaderboard` : 'Overall Leaderboard';
+    const seasonName = season?.name || String(season?._id || '');
+    const title = week ? `${seasonName} Week ${week} Leaderboard` : `Overall ${seasonName} Leaderboard`;
     const embed = new EmbedBuilder()
       .setTitle(title)
       .setDescription(lines.join('\n') || 'No results.')

@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
+import { computePointsForPerfSimple } from '../services/scoring.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
 import Team from '../models/Team.js';
@@ -70,7 +71,8 @@ export default {
       const entry = perf.find(e => e.week === week);
       wins = entry?.wins || 0;
       losses = entry?.losses || 0;
-      desc = `**Week ${week}** — Wins: **${wins}**, Losses: **${losses}**`;
+      const points = computePointsForPerfSimple(entry);
+      desc = `**Week ${week}** — Wins: **${wins}**, Losses: **${losses}** — Points: **${points}**`;
     } else {
       wins = perf.reduce((a, e) => a + (e.wins || 0), 0);
       losses = perf.reduce((a, e) => a + (e.losses || 0), 0);
@@ -86,7 +88,10 @@ export default {
           value: perf.length
             ? perf
                 .sort((a, b) => a.week - b.week)
-                .map(e => `Week ${e.week}: ${e.wins}-${e.losses}`).join('\n')
+                .map(e => {
+                  const pts = computePointsForPerfSimple(e);
+                  return `Week ${e.week}: ${e.wins}-${e.losses} (${pts} pts)`;
+                }).join('\n')
             : 'No matches recorded yet.'
         }])
       );

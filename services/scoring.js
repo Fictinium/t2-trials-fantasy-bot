@@ -146,3 +146,47 @@ function isPerfectSweep(w) {
   const rounds = Array.isArray(w?.rounds) ? w.rounds : [];
   return rounds.length > 0 && rounds.every(r => (r?.duels || 0) > 0 && (r?.wins || 0) === (r?.duels || 0));
 }
+
+
+
+
+export function computePointsForPerfSimple(perfW) {
+  if (!perfW) return 0;
+  let pts = 0;
+  const rounds = Array.isArray(perfW.rounds) ? perfW.rounds : [];
+  pts += (perfW.wins || 0) * WIN_POINTS;
+  for (const r of rounds) {
+    if ((r?.wins || 0) === 3) pts += BONUS_ROUND_3_WINS;
+  }
+  if (rounds.length > 0 && rounds.every(r => (r?.wins || 0) > (r?.losses || 0))) {
+    pts += BONUS_WEEK_ALL_ROUNDS_POSITIVE;
+  }
+  return pts;
+}
+
+/**
+ * Compute total points for a single T2TrialsPlayer-like doc (sums per-week + per-player 3-week streak bonuses).
+ * This is intended for showing how many points an individual real player has contributed so far.
+ */
+export function totalPointsForPlayer(playerDoc) {
+  const perf = Array.isArray(playerDoc?.performance) ? playerDoc.performance.slice().sort((a,b)=>a.week - b.week) : [];
+  if (!perf.length) return 0;
+  let total = 0;
+  // per-week base + bonuses (no cross-fantasy aggregation)
+  for (const w of perf) total += computePointsForPerfSimple(w);
+  // per-player 3-week streak bonuses
+  for (let i = 2; i < perf.length; i++) {
+    const w1 = perf[i];
+    const w2 = perf[i - 1];
+    const w3 = perf[i - 2];
+    if (w1 && w2 && w3) {
+      if (hasAllRoundsPositive(w1) && hasAllRoundsPositive(w2) && hasAllRoundsPositive(w3)) {
+        total += BONUS_STREAK_3W_ALL_ROUNDS_POSITIVE;
+      }
+      if (isPerfectSweep(w1) && isPerfectSweep(w2) && isPerfectSweep(w3)) {
+        total += BONUS_STREAK_3W_PERFECT_SWEEP;
+      }
+    }
+  }
+  return total;
+}

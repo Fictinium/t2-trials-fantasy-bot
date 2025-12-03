@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { totalPointsForPlayer } from '../services/scoring.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 import isRegistered from '../utils/checkRegistration.js';
@@ -52,7 +53,8 @@ export default {
     // Build roster lines
     const lines = roster.map((p, i) => {
       const teamName = p.team?.name ? ` — *${p.team.name}*` : '';
-      return `**${i + 1}.** ${p.name}${teamName}`;
+      const playerPts = totalPointsForPlayer(p);
+      return `**${i + 1}.** ${p.name}${teamName} — ${playerPts} pts`;
     });
 
     const embed = new EmbedBuilder()

@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
+import { computePointsForPerfSimple, totalPointsForPlayer } from '../services/scoring.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import Team from '../models/Team.js';
 
@@ -41,29 +42,35 @@ export default {
 
     const players = Array.isArray(team.players) ? team.players : [];
 
-    // Aggregate wins/losses
+    // Aggregate wins/losses and points per player
     let totalWins = 0, totalLosses = 0;
+    let totalPoints = 0;
     const rows = players.map(p => {
       const perf = Array.isArray(p.performance) ? p.performance : [];
       if (week) {
         const entry = perf.find(e => e.week === week);
         const w = entry?.wins || 0;
         const l = entry?.losses || 0;
+        const pts = computePointsForPerfSimple(entry);
         totalWins += w; totalLosses += l;
-        return `• ${p.name}: ${w}-${l}`;
+        totalPoints += pts;
+        return `• ${p.name}: ${w}-${l} (${pts} pts)`;
       } else {
         const w = perf.reduce((a, e) => a + (e.wins || 0), 0);
         const l = perf.reduce((a, e) => a + (e.losses || 0), 0);
+        const pts = totalPointsForPlayer(p);
         totalWins += w; totalLosses += l;
-        return `• ${p.name}: ${w}-${l}`;
+        totalPoints += pts;
+        return `• ${p.name}: ${w}-${l} (${pts} pts)`;
       }
     });
 
-    const title = week ? `${team.name} — Week ${week}` : `${team.name} — Overall`;
+    const seasonName = season?.name || String(season?._id || '');
+    const title = week ? `${team.name} — ${seasonName} Week ${week}` : `${team.name} — ${seasonName} Overall`;
     const embed = new EmbedBuilder()
       .setTitle(title)
       .setDescription(rows.length ? rows.join('\n') : 'No players recorded.')
-      .setFooter({ text: `Team total: ${totalWins}-${totalLosses}` });
+      .setFooter({ text: `Team total: ${totalWins}-${totalLosses} • Points: ${totalPoints}` });
 
     return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
   }
