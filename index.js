@@ -3,7 +3,7 @@ import './models/modelsIndex.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { Client, Collection, Events, REST, Routes, GatewayIntentBits } from 'discord.js';
+import { Client, Collection, Events, REST, Routes, GatewayIntentBits, Partials } from 'discord.js';
 import { startWeeklyJob } from './jobs/weeklyImport.js';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
@@ -14,7 +14,15 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ],
+  partials: [Partials.GuildMember, Partials.Channel]
+});
 client.commands = new Collection();
 
 // Load commands dynamically
@@ -133,4 +141,4 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 });
 
-client.login(token);
+await client.login(token);

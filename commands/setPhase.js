@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+import { isAuthorizedForCommand } from '../utils/commandAuth.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import FantasyConfig from '../models/FantasyConfig.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
@@ -22,8 +23,10 @@ export default {
     ),
 
   async execute(interaction) {
-    if (!interaction.memberPermissions?.has(PermissionFlagsBits.ManageGuild)) {
-      return interaction.reply({ content: '❌ Admins only.', flags: 64 });
+    // allow Guild admins, OWNER_IDS, or roles listed in AUTHORIZATION_ROLE_IDS
+    const allowed = await isAuthorizedForCommand(interaction, { allowedRoleEnvVar: 'AUTHORIZATION_ROLE_IDS', allowGuildAdmins: true });
+    if (!allowed) {
+      return interaction.reply({ content: '❌ You do not have permission to run this command.', flags: 64 });
     }
 
     const season = await getActiveSeason();
