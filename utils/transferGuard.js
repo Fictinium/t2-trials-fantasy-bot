@@ -19,7 +19,7 @@ export async function canModifyTeam(discordId, proposedTeamIds /* array of Objec
   }
 
   // PLAYOFFS_OPEN:
-  const limit = cfg?.playoffSwapLimit ?? 2;
+  const limit = cfg?.playoffSwapLimit ?? 3;
   const snap = (user?.playoffSnapshot || []).map(String);
   const proposed = (proposedTeamIds || []).map(String);
 
@@ -30,7 +30,7 @@ export async function canModifyTeam(discordId, proposedTeamIds /* array of Objec
   }
 
   // NOTE: with fixed team size, "swaps" equals the number of replacements.
-  // e.g., replace 2 players -> 2 snapshot players missing -> swaps = 2.
+  // e.g., replace 3 players -> 3 snapshot players missing -> swaps = 3.
 
   if (swaps <= limit) {
     return { allowed: true, reason: 'PLAYOFFS_OK', swapsUsed: swaps, limit };

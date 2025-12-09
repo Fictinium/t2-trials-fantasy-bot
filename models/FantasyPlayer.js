@@ -6,7 +6,7 @@ const fantasyPlayerSchema = new mongoose.Schema({
   team: [{ type: mongoose.Schema.Types.ObjectId, ref: 'T2TrialsPlayer', default: [] }],
   weeklyPoints: { type: [Number], default: [] },
   totalPoints: { type: Number, default: 0, min: 0 },
-  wallet: { type: Number, default: 85, min: 0 },
+  wallet: { type: Number, default: 110, min: 0 },
   season: { type: mongoose.Schema.Types.ObjectId, ref: 'Season', required: true, index: true },
   // snapshots for phase boundaries
   swissLockSnapshot: [{ type: mongoose.Schema.Types.ObjectId, ref: 'T2TrialsPlayer', default: [] }],

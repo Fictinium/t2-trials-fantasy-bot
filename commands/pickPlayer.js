@@ -7,8 +7,6 @@ import FantasyPlayer from '../models/FantasyPlayer.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
 import Team from '../models/Team.js';
 
-const MAX_TEAM_SIZE = 5; // keep in sync with /myteam etc.
-
 export default {
   data: new SlashCommandBuilder()
     .setName('pickplayer')
@@ -30,6 +28,7 @@ export default {
       if (!season) {
         return interaction.reply({ content: '❌ No active season set.', flags: 64 });
       }
+      const MAX_TEAM_SIZE = season?.maxTeamSize ?? 7; // keep in sync with pickPlayer
       const discordId = interaction.user.id;
       const playerName = interaction.options.getString('player', true);
       const teamName = interaction.options.getString('team') || null;

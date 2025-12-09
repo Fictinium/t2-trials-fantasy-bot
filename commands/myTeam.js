@@ -4,8 +4,6 @@ import getActiveSeason from '../utils/getActiveSeason.js';
 import isRegistered from '../utils/checkRegistration.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 
-const MAX_TEAM_SIZE = 5; // keep in sync with pickPlayer
-
 export default {
   data: new SlashCommandBuilder()
     .setName('myteam')
@@ -17,6 +15,7 @@ export default {
       if (!season) {
         return interaction.reply({ content: '❌ No active season set.', flags: 64 });
       }
+      const MAX_TEAM_SIZE = season?.maxTeamSize ?? 7; // keep in sync with pickPlayer
       const discordId = interaction.user.id;
 
       // 1) Must be registered

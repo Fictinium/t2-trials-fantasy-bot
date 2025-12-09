@@ -4,8 +4,6 @@ import getActiveSeason from '../utils/getActiveSeason.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 import isRegistered from '../utils/checkRegistration.js';
 
-const MAX_TEAM_SIZE = 5; // keep in sync with the pick command
-
 export default {
   data: new SlashCommandBuilder()
     .setName('viewteam')
@@ -25,6 +23,7 @@ export default {
     if (!season) {
       return interaction.reply({ content: '❌ No active season set.', flags: 64 });
     }
+    const MAX_TEAM_SIZE = season?.maxTeamSize ?? 7; // keep in sync with pickPlayer
     const targetUser = interaction.options.getUser('user', true);
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
 

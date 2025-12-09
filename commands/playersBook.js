@@ -29,7 +29,7 @@ export default {
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
 
     // Load teams + players (name + cost only)
-    const teams = await Team.find({season: season._id})
+    const teams = await Team.find({ season: season._id })
       .sort({ name: 1 })
       .populate({ path: 'players', select: 'name cost', options: { sort: { cost: -1, name: 1 } } })
       .lean();
@@ -38,13 +38,8 @@ export default {
       return interaction.reply({ content: 'No teams found.', flags: 64 });
     }
 
-    // Build quick lookup for select menu
-    const options = teams.slice(0, 25).map((t, i) => ({
-      label: t.name,
-      value: String(i) // store index as value
-    }));
-
     let index = 0;
+    let dropdownPage = 0;
 
     const buildEmbed = (i) => {
       const t = teams[i];
@@ -55,34 +50,36 @@ export default {
         .setFooter({ text: `Team ${i + 1} of ${teams.length}` });
     };
 
-    const buildRows = (i) => {
-      const totalPages = Math.ceil(teams.length / PAGE_SIZE);
-      const page = Math.floor(i / PAGE_SIZE);
-      const start = page * PAGE_SIZE;
+    const buildRows = (i, dropdownPage) => {
+      const totalDropdownPages = Math.ceil(teams.length / PAGE_SIZE);
+      const start = dropdownPage * PAGE_SIZE;
       const end = Math.min(start + PAGE_SIZE, teams.length);
 
-      // Only show options for the current page; values store the ABSOLUTE team index
-      const menuOptions = teams.slice(start, end).map((t, absIdx) => {
-        const globalIdx = start + absIdx;
-        return {
-          label: t.name,
-          value: String(globalIdx),
-          default: globalIdx === i,
-        };
-      });
+      // Dropdown options for the current dropdown page
+      const menuOptions = teams.slice(start, end).map((t, absIdx) => ({
+        label: t.name,
+        value: String(start + absIdx),
+        default: start + absIdx === i,
+      }));
 
       const select = new StringSelectMenuBuilder()
         .setCustomId(`pb_sel_${interaction.id}`)
-        .setPlaceholder(`Select a team — Page ${page + 1}/${totalPages}`)
+        .setPlaceholder(`Select a team — Dropdown Page ${dropdownPage + 1}/${totalDropdownPages}`)
         .setMinValues(1)
         .setMaxValues(1)
         .addOptions(menuOptions);
 
-      const prevPage = new ButtonBuilder()
-        .setCustomId(`pb_page_prev_${interaction.id}`)
-        .setLabel('« Page')
+      const prevDropdownPage = new ButtonBuilder()
+        .setCustomId(`pb_dropdown_prev_${interaction.id}`)
+        .setLabel('« Dropdown Page')
         .setStyle(ButtonStyle.Secondary)
-        .setDisabled(page === 0);
+        .setDisabled(dropdownPage === 0);
+
+      const nextDropdownPage = new ButtonBuilder()
+        .setCustomId(`pb_dropdown_next_${interaction.id}`)
+        .setLabel('Dropdown Page »')
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(dropdownPage >= totalDropdownPages - 1);
 
       const prev = new ButtonBuilder()
         .setCustomId(`pb_prev_${interaction.id}`)
@@ -96,21 +93,15 @@ export default {
         .setStyle(ButtonStyle.Secondary)
         .setDisabled(i === teams.length - 1);
 
-      const nextPage = new ButtonBuilder()
-        .setCustomId(`pb_page_next_${interaction.id}`)
-        .setLabel('Page »')
-        .setStyle(ButtonStyle.Secondary)
-        .setDisabled(page >= totalPages - 1);
-
       return [
         new ActionRowBuilder().addComponents(select),
-        new ActionRowBuilder().addComponents(prevPage, prev, next, nextPage)
+        new ActionRowBuilder().addComponents(prevDropdownPage, nextDropdownPage, prev, next)
       ];
     };
 
     const message = await interaction.reply({
       embeds: [buildEmbed(index)],
-      components: buildRows(index),
+      components: buildRows(index, dropdownPage),
       flags: ephemeral ? 64 : undefined,
       fetchReply: true
     });
@@ -121,8 +112,8 @@ export default {
         i.customId === `pb_sel_${interaction.id}` ||
         i.customId === `pb_prev_${interaction.id}` ||
         i.customId === `pb_next_${interaction.id}` ||
-        i.customId === `pb_page_prev_${interaction.id}` ||
-        i.customId === `pb_page_next_${interaction.id}`
+        i.customId === `pb_dropdown_prev_${interaction.id}` ||
+        i.customId === `pb_dropdown_next_${interaction.id}`
       );
 
     // Collect only from the user who invoked, for 5 minutes
@@ -138,20 +129,13 @@ export default {
         } else if (i.isButton()) {
           if (i.customId === `pb_prev_${interaction.id}` && index > 0) index--;
           if (i.customId === `pb_next_${interaction.id}` && index < teams.length - 1) index++;
-          if (i.customId === `pb_page_prev_${interaction.id}`) {
-            const page = Math.floor(index / PAGE_SIZE);
-            if (page > 0) index = (page - 1) * PAGE_SIZE; // first item of previous page
-          }
-          if (i.customId === `pb_page_next_${interaction.id}`) {
-            const page = Math.floor(index / PAGE_SIZE);
-            const nextStart = (page + 1) * PAGE_SIZE;
-            if (nextStart < teams.length) index = nextStart; // first item of next page
-          }
+          if (i.customId === `pb_dropdown_prev_${interaction.id}` && dropdownPage > 0) dropdownPage--;
+          if (i.customId === `pb_dropdown_next_${interaction.id}` && dropdownPage < Math.ceil(teams.length / PAGE_SIZE) - 1) dropdownPage++;
         }
 
         await i.update({
           embeds: [buildEmbed(index)],
-          components: buildRows(index)
+          components: buildRows(index, dropdownPage)
         });
       } catch (err) {
         console.error(err);
