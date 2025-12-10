@@ -14,6 +14,7 @@ export default {
     .addStringOption(opt =>
       opt.setName('player')
         .setDescription('Player name of who you want to pick')
+        .setAutocomplete(true)
         .setRequired(true)
     )
     .addStringOption(opt =>
@@ -130,6 +131,14 @@ export default {
         { new: true }
       );
 
+      if (updated) {
+        // Update the fantasyTeams field in T2TrialsPlayer
+        await T2TrialsPlayer.findByIdAndUpdate(
+          leaguePlayer._id,
+          { $addToSet: { fantasyTeams: fp._id } } // Add the fantasy player to the fantasyTeams array
+        );
+      }
+
       if (!updated) {
         // Re-check to give a helpful reason
         const latest = await FantasyPlayer.findOne({ discordId, season: season._id }, { team: 1, wallet: 1 }).lean();
@@ -162,5 +171,23 @@ export default {
         else                            await interaction.followUp(payload);
       } catch {}
     }
+  },
+  
+  async autocomplete(interaction) {
+    const focusedValue = interaction.options.getFocused(); // Get the current input
+    const season = await getActiveSeason();
+    if (!season) return interaction.respond([]);
+
+    // Fetch players whose names match the input
+    const players = await T2TrialsPlayer.find({ season: season._id, name: { $regex: new RegExp(focusedValue, 'i') } })
+      .limit(25) // Discord allows up to 25 suggestions
+      .lean();
+
+    const suggestions = players.map(player => ({
+      name: `${player.name} (${player.team?.name || 'Unknown Team'})`,
+      value: player.name
+    }));
+
+    return interaction.respond(suggestions);
   }
 };

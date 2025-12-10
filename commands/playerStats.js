@@ -12,6 +12,7 @@ export default {
     .addStringOption(opt =>
       opt.setName('player')
         .setDescription('Player name')
+        .setAutocomplete(true)
         .setRequired(true)
     )
     .addStringOption(opt =>
@@ -97,5 +98,23 @@ export default {
       );
 
     return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
+  },
+  
+  async autocomplete(interaction) {
+    const focusedValue = interaction.options.getFocused(); // Get the current input
+    const season = await getActiveSeason();
+    if (!season) return interaction.respond([]);
+
+    // Fetch players whose names match the input
+    const players = await T2TrialsPlayer.find({ season: season._id, name: { $regex: new RegExp(focusedValue, 'i') } })
+      .limit(25) // Discord allows up to 25 suggestions
+      .lean();
+
+    const suggestions = players.map(player => ({
+      name: `${player.name} (${player.team?.name || 'Unknown Team'})`,
+      value: player.name
+    }));
+
+    return interaction.respond(suggestions);
   }
 };

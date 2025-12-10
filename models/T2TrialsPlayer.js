@@ -20,7 +20,8 @@ const t2TrialsPlayerSchema = new mongoose.Schema({
   team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true },
   cost: { type: Number, required: true, min: 0 },
   season: { type: mongoose.Schema.Types.ObjectId, ref: 'Season', required: true, index: true },
-  performance: { type: [performanceSchema], default: [] }
+  performance: { type: [performanceSchema], default: [] },
+  fantasyTeams: [{ type: mongoose.Schema.Types.ObjectId, ref: 'FantasyPlayer', default: [] }]
 }, { timestamps: true, strict: true });
 
 // Compound uniqueness constraint for repeated names across teams:
