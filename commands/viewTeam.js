@@ -11,7 +11,6 @@ export default {
     .addUserOption(opt =>
       opt.setName('user')
         .setDescription('The fantasy player to view')
-        .setAutocomplete(true)
         .setRequired(true)
     )
     .addBooleanOption(opt =>
@@ -65,23 +64,5 @@ export default {
       });
 
     return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
-  },
-
-  async autocomplete(interaction) {
-    const focusedValue = interaction.options.getFocused(); // Get the current input
-    const season = await getActiveSeason();
-    if (!season) return interaction.respond([]);
-
-    // Fetch fantasy players whose usernames match the input
-    const fantasyPlayers = await FantasyPlayer.find({ season: season._id, username: { $regex: new RegExp(focusedValue, 'i') } })
-      .limit(25) // Discord allows up to 25 suggestions
-      .lean();
-
-    const suggestions = fantasyPlayers.map(fp => ({
-      name: fp.username || fp.discordId, // Use username or discordId as fallback
-      value: fp.username || fp.discordId
-    }));
-
-    return interaction.respond(suggestions);
   }
 };

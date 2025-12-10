@@ -9,7 +9,6 @@ export default {
     .addStringOption(opt =>
       opt.setName('name')
         .setDescription('Name of the player to check')
-        .setAutocomplete(true)
         .setRequired(true)
     )
     .addStringOption(opt =>
@@ -55,23 +54,38 @@ export default {
       .setFooter({ text: `Season: ${season.name}` });
 
     return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
-  },
-
+  }/*,
+  
   async autocomplete(interaction) {
-    const focusedValue = interaction.options.getFocused(); // Get the current input
-    const season = await getActiveSeason();
-    if (!season) return interaction.respond([]);
+    try {
+      const focusedValue = interaction.options.getFocused(); // Get the current input
+      console.log('Focused value:', focusedValue); // Debugging
 
-    // Fetch players whose names match the input
-    const players = await T2TrialsPlayer.find({ season: season._id, name: { $regex: new RegExp(focusedValue, 'i') } })
-      .limit(25) // Discord allows up to 25 suggestions
-      .lean();
+      const season = await getActiveSeason();
+      if (!season) {
+        console.error('No active season found.');
+        return interaction.respond([]); // Return empty response if no season is active
+      }
 
-    const suggestions = players.map(player => ({
-      name: `${player.name} (${player.team?.name || 'Unknown Team'})`,
-      value: player.name
-    }));
+      // Fetch players whose names match the input
+      const players = await T2TrialsPlayer.find({ season: season._id, name: { $regex: new RegExp(focusedValue, 'i') } })
+        .limit(25) // Discord allows up to 25 suggestions
+        .lean();
 
-    return interaction.respond(suggestions);
-  }
+      console.log('Players found:', players); // Debugging
+
+      // Format suggestions
+      const suggestions = players.map(player => ({
+        name: `${player.name} (${player.team?.name || 'Unknown Team'})`,
+        value: player.name
+      }));
+
+      console.log('Suggestions:', suggestions); // Debugging
+
+      return interaction.respond(suggestions);
+    } catch (err) {
+      console.error('Error in autocomplete:', err); // Log errors
+      return interaction.respond([]); // Return empty response on error
+    }
+  }*/
 };

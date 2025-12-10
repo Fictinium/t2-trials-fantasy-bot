@@ -63,5 +63,38 @@ export default {
       console.error(err);
       return interaction.reply({ content: `❌ An error occurred while deleting the player: ${err.message}`, ephemeral: true });
     }
-  }
+  }/*,
+  
+  async autocomplete(interaction) {
+    try {
+      const focusedValue = interaction.options.getFocused(); // Get the current input
+      console.log('Focused value:', focusedValue); // Debugging
+
+      const season = await getActiveSeason();
+      if (!season) {
+        console.error('No active season found.');
+        return interaction.respond([]); // Return empty response if no season is active
+      }
+
+      // Fetch players whose names match the input
+      const players = await T2TrialsPlayer.find({ season: season._id, name: { $regex: new RegExp(focusedValue, 'i') } })
+        .limit(25) // Discord allows up to 25 suggestions
+        .lean();
+
+      console.log('Players found:', players); // Debugging
+
+      // Format suggestions
+      const suggestions = players.map(player => ({
+        name: `${player.name} (${player.team?.name || 'Unknown Team'})`,
+        value: player.name
+      }));
+
+      console.log('Suggestions:', suggestions); // Debugging
+
+      return interaction.respond(suggestions);
+    } catch (err) {
+      console.error('Error in autocomplete:', err); // Log errors
+      return interaction.respond([]); // Return empty response on error
+    }
+  }*/
 };
