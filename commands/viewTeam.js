@@ -60,7 +60,7 @@ export default {
       .setTitle(`${fantasyPlayer.username || targetUser.username}’s Fantasy Team`)
       .setDescription(lines.join('\n'))
       .setFooter({
-        text: `Players: ${roster.length}/${MAX_TEAM_SIZE} • Total points: ${fantasyPlayer.totalPoints ?? 0}`
+        text: `Players: ${roster.length}/${MAX_TEAM_SIZE} • Total points: ${fantasyPlayer.totalPoints ?? 0} • Wallet: ${fantasyPlayer.wallet ?? 0}`
       });
 
     return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });

@@ -27,7 +27,6 @@ export default {
       username: interaction.user.username,
       weeklyPoints: [],
       totalPoints: 0,
-      wallet: 85,
       season: season._id
     });
 
