@@ -33,14 +33,23 @@ export default {
 
     // Find the player
     const query = { name, season: season._id };
+    let players = await T2TrialsPlayer.find(query).populate('team', 'name').lean();
+
     if (teamName) {
-      query.team = await Team.findOne({ name: teamName, season: season._id }).lean()?._id;
-      if (!query.team) {
-        return interaction.reply({ content: `❌ Team **${teamName}** not found in season **${season.name}**.`, flags: 64 });
-      }
+      players = players.filter(p => p.team && p.team.name.toLowerCase() === teamName.toLowerCase());
     }
 
-    const player = await T2TrialsPlayer.findOne(query).populate('team', 'name').lean();
+    if (players.length === 0) {
+      return interaction.reply({ content: `❌ Player **${name}**${teamName ? ` in team **${teamName}**` : ''} not found in season **${season.name}**.`, flags: 64 });
+    }
+
+    if (players.length > 1) {
+      // Ambiguous, ask user to specify team
+      const teams = players.map(p => p.team?.name || 'Unknown Team').join(', ');
+      return interaction.reply({ content: `⚠️ Multiple players named **${name}** found in these teams: ${teams}. Please specify the team.`, flags: 64 });
+    }
+
+    const player = players[0];
     if (!player) {
       return interaction.reply({ content: `❌ Player **${name}** not found in season **${season.name}**.`, flags: 64 });
     }
