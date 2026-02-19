@@ -62,8 +62,8 @@ mongoose.connect(mongoUri, {
   useUnifiedTopology: true
 }).then(() => console.log('Connected to MongoDB')).catch((error) => {console.error('MongoDB connection error:', error)});
 
-startWeeklyJob();
-console.log('📅 Weekly import job scheduled');
+//startWeeklyJob();
+//console.log('📅 Weekly import job scheduled');
 
 const token = process.env.TOKEN;
 

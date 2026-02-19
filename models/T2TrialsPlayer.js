@@ -24,8 +24,8 @@ const t2TrialsPlayerSchema = new mongoose.Schema({
   fantasyTeams: [{ type: mongoose.Schema.Types.ObjectId, ref: 'FantasyPlayer', default: [] }]
 }, { timestamps: true, strict: true });
 
-// Compound uniqueness constraint for repeated names across teams:
-t2TrialsPlayerSchema.index({ name: 1, team: 1 }, { unique: true });
+// Compound uniqueness constraint for repeated names across teams and seasons:
+t2TrialsPlayerSchema.index({ name: 1, team: 1, season: 1 }, { unique: true });
 
 // Compound uniqueness constraint for externalId within a season:
 t2TrialsPlayerSchema.index({ externalId: 1, season: 1 }, { unique: true });

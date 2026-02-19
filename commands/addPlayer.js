@@ -11,7 +11,7 @@ export default {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .addStringOption(opt =>
       opt.setName('name')
-        .setDescription('Player name')
+        .setDescription('Player name (for add or substitution)')
         .setRequired(true)
     )
     .addStringOption(opt =>
@@ -25,10 +25,16 @@ export default {
         .setMinValue(0)
         .setRequired(true)
     )
+    // externalId will be assigned automatically
     .addBooleanOption(opt =>
       opt.setName('substitution')
         .setDescription('Substitute an existing player (true/false)')
         .setRequired(true)
+    )
+    .addStringOption(opt =>
+      opt.setName('newname')
+        .setDescription('New name for substitution (required only if changing name)')
+        .setRequired(false)
     ),
 
   async execute(interaction) {
@@ -47,6 +53,7 @@ export default {
     const teamName = interaction.options.getString('team', true).trim();
     const cost = interaction.options.getInteger('cost', true);
     const substitution = interaction.options.getBoolean('substitution', true);
+    const newName = interaction.options.getString('newname', false)?.trim();
 
     // Find the team
     const team = await Team.findOne({ name: teamName, season: season._id });
@@ -55,43 +62,74 @@ export default {
     }
 
     if (substitution) {
-      // Substitution logic
-      const existingPlayers = await T2TrialsPlayer.find({ name, season: season._id });
+      // Substitution logic: allow changing any one of name, team, or cost, as long as the other two match
+      // Try all three possible substitutions
+      const candidates = await T2TrialsPlayer.find({ season: season._id });
+      let playerToUpdate = null;
+      let fieldToChange = null;
 
-      if (!existingPlayers.length) {
-        return interaction.reply({ content: `❌ No existing players found with the name **${name}** in season **${season.name}**.`, flags: 64 });
+      // 1. Change cost (name and team match)
+      playerToUpdate = candidates.find(p => p.name === name && p.team?.toString() === team._id.toString() && p.cost !== cost);
+      if (playerToUpdate) fieldToChange = 'cost';
+
+      // 2. Change team (name and cost match)
+      if (!playerToUpdate) {
+        playerToUpdate = candidates.find(p => p.name === name && p.cost === cost && p.team?.toString() !== team._id.toString());
+        if (playerToUpdate) fieldToChange = 'team';
       }
 
-      // Filter players by matching fields
-      const matchingPlayers = existingPlayers.filter(player => {
-        let matchCount = 0;
-        if (player.team?.toString() === team._id.toString()) matchCount++;
-        if (player.cost === cost) matchCount++;
-        return matchCount === 2; // Exactly 2 fields must match
-      });
-
-      if (matchingPlayers.length === 0) {
-        return interaction.reply({ content: `❌ No players found with exactly 2 matching fields. Ensure the name, team, and cost are correct.`, flags: 64 });
+      // 3. Change name (team and cost match)
+      if (!playerToUpdate) {
+        // If multiple players match team and cost, require newName input to specify which one to update
+        const playersWithTeamAndCost = candidates.filter(p => p.team?.toString() === team._id.toString() && p.cost === cost);
+        if (playersWithTeamAndCost.length > 1) {
+          if (!newName) {
+            return interaction.reply({ content: `❌ Multiple players found with team **${team.name}** and cost **${cost}**. Please specify the new name using the 'newname' option.`, flags: 64 });
+          }
+          playerToUpdate = playersWithTeamAndCost.find(p => p.name === name);
+          if (playerToUpdate) fieldToChange = 'name';
+        } else if (playersWithTeamAndCost.length === 1) {
+          playerToUpdate = playersWithTeamAndCost[0];
+          if (playerToUpdate.name !== name) {
+            return interaction.reply({ content: `❌ The specified name does not match the player found for team **${team.name}** and cost **${cost}**.`, flags: 64 });
+          }
+          if (!newName) {
+            return interaction.reply({ content: `❌ Please specify the new name using the 'newname' option.`, flags: 64 });
+          }
+          fieldToChange = 'name';
+        }
       }
 
-      if (matchingPlayers.length > 1) {
-        return interaction.reply({ content: `⚠️ Multiple players found with 2 matching fields. Please refine your criteria.`, flags: 64 });
+      if (!playerToUpdate) {
+        return interaction.reply({ content: `❌ No player found where exactly one of name, team, or cost differs.`, flags: 64 });
       }
 
-      // Perform substitution
-      const playerToUpdate = matchingPlayers[0];
-      if (playerToUpdate.team?.toString() !== team._id.toString()) {
+      // Perform the substitution
+      if (fieldToChange === 'cost') {
+        playerToUpdate.cost = cost;
+      } else if (fieldToChange === 'team') {
         playerToUpdate.team = team._id;
+      } else if (fieldToChange === 'name') {
+        playerToUpdate.name = newName || name;
       }
-      playerToUpdate.cost = cost;
       await playerToUpdate.save();
 
       return interaction.reply({
-        content: `✅ Substituted player **${playerToUpdate.name}** in team **${team.name}** with updated cost: ${cost}.`,
+        content: `✅ Updated player: changed ${fieldToChange} for **${playerToUpdate.name}** (now team: **${team.name}**, cost: ${playerToUpdate.cost}).`,
         flags: 64
       });
     } else {
       // Add new player logic
+      // Find the highest externalId in this season and increment
+      const maxPlayer = await T2TrialsPlayer.find({ season: season._id })
+        .sort({ externalId: -1 })
+        .limit(1)
+        .lean();
+      let nextExternalId = 1;
+      if (maxPlayer.length && typeof maxPlayer[0].externalId === 'number') {
+        nextExternalId = maxPlayer[0].externalId + 1;
+      }
+
       const existingPlayer = await T2TrialsPlayer.findOne({ name, team: team._id, season: season._id });
       if (existingPlayer) {
         return interaction.reply({ content: `❌ Player **${name}** already exists in team **${team.name}** for season **${season.name}**.`, flags: 64 });
@@ -101,7 +139,8 @@ export default {
         name,
         season: season._id,
         team: team._id,
-        cost: cost
+        cost: cost,
+        externalId: nextExternalId
       });
 
       // Add player to team if not already present
@@ -111,7 +150,7 @@ export default {
       }
 
       return interaction.reply({
-        content: `✅ Player **${newPlayer.name}** added to team **${team.name}** (cost: ${cost}).`,
+        content: `✅ Player **${newPlayer.name}** (externalId: ${nextExternalId}) added to team **${team.name}** (cost: ${cost}).`,
         flags: 64
       });
     }

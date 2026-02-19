@@ -46,40 +46,20 @@ export default {
 
     for (const p of payload) {
       const playerIdNum   = Number(p?.id);
-      const playerNameRaw = String(p?.name ?? '').trim();
-      const teamNameRaw   = p?.team_name ? String(p.team_name).trim() : null;
       const fantasyCost   = Math.max(0, Number(p?.fantasy_points ?? 0));
       const weeks         = Array.isArray(p?.weeks) ? p.weeks : [];
 
-      // Must have a name + team to proceed
-      if (!playerNameRaw) { skipped++; continue; }
-      if (!teamNameRaw)   { notFoundNoTeam++; continue; }
-
-      // 1) Ensure Team exists (case-insensitive exact match)
-      let teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamNameRaw)}$`, $options: 'i' }, season: season._id });
-      if (!teamDoc) {
-        try {
-          teamDoc = await Team.create({ name: teamNameRaw, players: [], season: season._id });
-          teamCreated++;
-        } catch {
-          // another import thread might have just created it — re-read
-          teamDoc = await Team.findOne({ name: { $regex: `^${escapeRegex(teamNameRaw)}$`, $options: 'i' }, season: season._id });
-          if (!teamDoc) { skipped++; continue; }
-        }
-      }
-
-      // 2) Find existing player (prefer externalId, else name+team)
+      // Lookup player by externalId
       let dbPlayer = null;
       if (Number.isFinite(playerIdNum)) {
-        dbPlayer = await T2TrialsPlayer.findOne({ externalId: playerIdNum, season: season._id });
+        dbPlayer = await T2TrialsPlayer.findOne({ externalId: playerIdNum, season: season._id }).populate('team');
       }
-      if (!dbPlayer) {
-        dbPlayer = await T2TrialsPlayer.findOne({
-          name: { $regex: `^${escapeRegex(playerNameRaw)}$`, $options: 'i' },
-          team: teamDoc._id,
-          season: season._id
-        });
-      }
+      if (!dbPlayer) { skipped++; continue; }
+
+      // Use player's name and team from DB
+      const playerNameRaw = dbPlayer.name;
+      const teamDoc = dbPlayer.team;
+      if (!playerNameRaw || !teamDoc) { notFoundNoTeam++; continue; }
 
       // 3) Build performance map (ignore null winners)
       const perfByWeek = new Map();
@@ -88,38 +68,55 @@ export default {
         const games = Array.isArray(w?.games) ? w.games : [];
         if (!weekNum) continue;
 
-        const byRound = new Map(); // roundNumber -> { wins, losses, duels }
+        // Build sets/rounds/games structure
+        const setsMap = new Map(); // setNumber -> Map(roundNumber -> [games])
         for (const g of games) {
-          const roundNumber = Number(g?.round);
-          if (![1, 2, 3].includes(roundNumber)) continue;
-
-          if (!byRound.has(roundNumber)) byRound.set(roundNumber, { wins: 0, losses: 0, duels: 0 });
-
-          const r = byRound.get(roundNumber);
-          const winId = g?.winner_id;
-
-          // Count duel only if it actually concluded for someone
-          if (winId == null) continue;
-
-          r.duels += 1;
-          if (Number(winId) === playerIdNum) r.wins += 1;
-          else r.losses += 1;
+          const setNumber = Number(g?.set) || 1;
+          const roundNumber = Number(g?.round) || 1;
+          if (!setsMap.has(setNumber)) setsMap.set(setNumber, new Map());
+          const roundsMap = setsMap.get(setNumber);
+          if (!roundsMap.has(roundNumber)) roundsMap.set(roundNumber, []);
+          roundsMap.get(roundNumber).push({
+            playerId: playerIdNum,
+            opponentId: Number(g?.opponent_id),
+            winnerId: Number(g?.winner_id),
+            set: setNumber,
+            round: roundNumber
+          });
         }
 
-        // Compose rounds array
-        const rounds = [...byRound.entries()]
-          .sort((a, b) => a[0] - b[0])
-          .map(([roundNumber, r]) => ({
-            roundNumber,
-            wins: r.wins,
-            losses: r.losses,
-            duels: r.duels
-          }));
+        // Compose sets/rounds/games array
+        const sets = [];
+        let totalWins = 0, totalLosses = 0;
+        for (const [setNumber, roundsMap] of setsMap.entries()) {
+          const rounds = [];
+          for (const [roundNumber, gamesArr] of roundsMap.entries()) {
+            const games = gamesArr.map(g => {
+              let winner = 'None';
+              if (g.winnerId === g.playerId) winner = 'A';
+              else if (g.winnerId === g.opponentId) winner = 'B';
+              // Count wins/losses for this player
+              if (winner === 'A') totalWins++;
+              else if (winner === 'B') totalLosses++;
+              return {
+                playerA: g.playerId,
+                playerB: g.opponentId,
+                winner,
+                set: g.set,
+                round: g.round
+              };
+            });
+            rounds.push({ roundNumber, games });
+          }
+          sets.push({ setNumber, rounds });
+        }
 
-        const totalWins = rounds.reduce((a, r) => a + r.wins, 0);
-        const totalLosses = rounds.reduce((a, r) => a + r.losses, 0);
-
-        perfByWeek.set(weekNum, { week: weekNum, wins: totalWins, losses: totalLosses, rounds });
+        perfByWeek.set(weekNum, {
+          week: weekNum,
+          wins: totalWins,
+          losses: totalLosses,
+          sets
+        });
       }
 
       // 4) Create or update

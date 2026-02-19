@@ -56,91 +56,128 @@ export default {
       return interaction.editReply(`❌ Match already exists for Week ${week}: ${tLow.name} vs ${tHigh.name}`);
     }
 
-    // build quick lookup by externalId
+    // build quick lookup by externalId (treat as string for robustness)
     const byExtId = new Map();
     const teamMap = new Map(); // extId -> 'A' | 'B'
     for (const p of await T2TrialsPlayer.find(
       { team: { $in: [teamA._id, teamB._id] }, season: season._id },
       { externalId: 1, team: 1, name: 1 }
     ).lean()) {
-      if (Number.isFinite(p.externalId)) {
-        byExtId.set(Number(p.externalId), p);
-        teamMap.set(Number(p.externalId), String(p.team) === String(teamA._id) ? 'A' : 'B');
+      if (p.externalId !== undefined && p.externalId !== null) {
+        const extIdStr = String(p.externalId);
+        byExtId.set(extIdStr, p);
+        teamMap.set(extIdStr, String(p.team) === String(teamA._id) ? 'A' : 'B');
       }
     }
 
-    // collect games for this week for just these two teams’ players
-    const gamesByPlayerExt = new Map(); // extId -> [{ round, winner_id }]
+
+    // --- New sets/rounds/games structure ---
+    // 1. Collect all games for this week for both teams' players
+    //    Each game must have: set, round, gameNumber, playerA, playerB, winner
+    //    We'll build sets -> rounds -> games from this
+    const allGames = [];
     for (const row of payload) {
-      const ext = Number(row?.id);
-      if (!Number.isFinite(ext) || !byExtId.has(ext)) continue;
-
-      const weekObj = (Array.isArray(row.weeks) ? row.weeks : []).find(w => Number(w.week_number) === week);
+      const ext = String(row?.id);
+      if (!ext || !byExtId.has(ext)) continue;
+      const weekObj = (Array.isArray(row.weeks) ? row.weeks : []).find(w => String(w.week_number) === String(week));
       if (!weekObj) continue;
-
       const games = Array.isArray(weekObj.games) ? weekObj.games : [];
-      const filtered = games
-        .map(g => ({ round: Number(g?.round), winner_id: g?.winner_id }))
-        .filter(g => [1, 2, 3].includes(g.round));
-
-      gamesByPlayerExt.set(ext, filtered);
-    }
-
-    // count per-round team wins (ignore null winners)
-    const countWins = (teamLetter, rn) => {
-      let wins = 0;
-      for (const [extId, games] of gamesByPlayerExt.entries()) {
-        if (teamMap.get(extId) !== teamLetter) continue;
-        for (const g of games) {
-          if (g.round !== rn) continue;
-          if (g.winner_id == null) continue; // ignore unfinished/unknown
-          if (Number(g.winner_id) === extId) wins++;
-        }
-      }
-      return wins;
-    };
-
-    // determine how many rounds appeared
-    const maxRound =
-      Math.max(0, ...[...gamesByPlayerExt.values()].flatMap(gs => gs.map(g => g.round || 0)));
-    const roundsCount = Math.min(Math.max(maxRound, 2), 3); // clamp to 2..3
-
-    const rounds = [];
-    for (let rn = 1; rn <= roundsCount; rn++) {
-      const a = countWins('A', rn);
-      const b = countWins('B', rn);
-      const type = rn < 3 ? 'best-of-9' : 'best-of-3';
-      const threshold = rn < 3 ? 5 : 2;
-      const winner = (a >= threshold && a > b) ? 'A' : (b >= threshold && b > a) ? 'B' : 'None';
-      rounds.push({ roundNumber: rn, type, teamAWins: a, teamBWins: b, winner });
-    }
-
-    const aRounds = rounds.filter(r => r.winner === 'A').length;
-    const bRounds = rounds.filter(r => r.winner === 'B').length;
-    const matchWinner = aRounds > bRounds ? 'A' : aRounds < bRounds ? 'B' : 'None';
-
-    // per-player W/L for this week (ignore null winners)
-    const playersResults = [];
-    for (const [extId, games] of gamesByPlayerExt.entries()) {
-      const dbp = byExtId.get(extId);
-      let wins = 0, losses = 0;
       for (const g of games) {
-        if (g.winner_id == null) continue;
-        if (Number(g.winner_id) === extId) wins++;
-        else losses++;
+        // Expect: set, round, gameNumber, opponent_id, winner_id
+        const setNumber = Number(g?.set) || 1;
+        const roundNumber = Number(g?.round) || 1;
+        const gameNumber = Number(g?.gameNumber) || 1;
+        const playerA = byExtId.get(ext)?._id;
+        const playerB = byExtId.get(String(g?.opponent_id))?._id;
+        if (!playerA || !playerB) continue;
+        const winner = g?.winner_id == null ? 'None' : (String(g.winner_id) === ext ? 'A' : (String(g.winner_id) === String(g.opponent_id) ? 'B' : 'None'));
+        allGames.push({ setNumber, roundNumber, gameNumber, playerA, playerB, winner });
       }
-      playersResults.push({ player: dbp._id, wins, losses });
     }
 
-    await Match.create([{
+    // 2. Group games into sets, rounds, games
+    const setsMap = new Map(); // setNumber -> { rounds: Map }
+    for (const game of allGames) {
+      if (!setsMap.has(game.setNumber)) setsMap.set(game.setNumber, new Map());
+      const roundsMap = setsMap.get(game.setNumber);
+      if (!roundsMap.has(game.roundNumber)) roundsMap.set(game.roundNumber, []);
+      roundsMap.get(game.roundNumber).push({
+        gameNumber: game.gameNumber,
+        playerA: game.playerA,
+        playerB: game.playerB,
+        winner: game.winner
+      });
+    }
+
+    // 3. Build sets array for the Match model
+    const sets = [];
+    for (const [setNumber, roundsMap] of setsMap.entries()) {
+      const rounds = [];
+      for (const [roundNumber, gamesArr] of roundsMap.entries()) {
+        // Determine round winner (majority of games)
+        const aWins = gamesArr.filter(g => g.winner === 'A').length;
+        const bWins = gamesArr.filter(g => g.winner === 'B').length;
+        let roundWinner = 'None';
+        if (aWins > bWins) roundWinner = 'A';
+        else if (bWins > aWins) roundWinner = 'B';
+        rounds.push({ roundNumber, games: gamesArr, winner: roundWinner });
+      }
+      // Determine set winner (majority of rounds)
+      const aRounds = rounds.filter(r => r.winner === 'A').length;
+      const bRounds = rounds.filter(r => r.winner === 'B').length;
+      let setWinner = 'None';
+      if (aRounds > bRounds) setWinner = 'A';
+      else if (bRounds > aRounds) setWinner = 'B';
+      sets.push({ setNumber, rounds, winner: setWinner });
+    }
+
+    // Determine match winner (majority of sets)
+    const aSets = sets.filter(s => s.winner === 'A').length;
+    const bSets = sets.filter(s => s.winner === 'B').length;
+    let matchWinner = 'None';
+    if (aSets > bSets) matchWinner = 'A';
+    else if (bSets > aSets) matchWinner = 'B';
+
+    // Per-player W/L for this week (count all games)
+    const playerWinLoss = new Map(); // playerId -> { wins, losses }
+    for (const game of allGames) {
+      if (!playerWinLoss.has(String(game.playerA))) playerWinLoss.set(String(game.playerA), { wins: 0, losses: 0 });
+      if (!playerWinLoss.has(String(game.playerB))) playerWinLoss.set(String(game.playerB), { wins: 0, losses: 0 });
+      if (game.winner === 'A') {
+        playerWinLoss.get(String(game.playerA)).wins++;
+        playerWinLoss.get(String(game.playerB)).losses++;
+      } else if (game.winner === 'B') {
+        playerWinLoss.get(String(game.playerB)).wins++;
+        playerWinLoss.get(String(game.playerA)).losses++;
+      }
+    }
+    const playersResults = [];
+    for (const [player, wl] of playerWinLoss.entries()) {
+      playersResults.push({ player, wins: wl.wins, losses: wl.losses });
+    }
+
+    const match = await Match.create({
       week,
       teamA: tLow._id,
       teamB: tHigh._id,
-      rounds,
+      sets,
       winner: matchWinner,
-      playersResults
-    }]);
+      playersResults,
+      season: season._id
+    });
 
-    return interaction.editReply(`✅ Built match for Week ${week}: ${tLow.name} vs ${tHigh.name}`);
+    // --- Update all affected real players' points after match entry ---
+    const { totalPointsForPlayer, calculateScoresForWeek } = await import('../services/scoring.js');
+    const playerIds = playersResults.map(pr => pr.player).filter(Boolean);
+    const affectedPlayers = await T2TrialsPlayer.find({ _id: { $in: playerIds }, season: season._id });
+    for (const player of affectedPlayers) {
+      player.totalPoints = totalPointsForPlayer(player);
+      await player.save();
+    }
+
+    // --- Recalculate all fantasy teams' scores for this week ---
+    await calculateScoresForWeek(season._id, week);
+
+    return interaction.editReply(`✅ Built match for Week ${week}: ${tLow.name} vs ${tHigh.name}. All player and fantasy team points recalculated.`);
   }
 };

@@ -98,17 +98,35 @@ export default {
       const wk = i + 1;
       const pts = Number.isFinite(weekly[i]) ? weekly[i] : 0;
 
-      // compute per-member simple contributions for inline summary (lightweight, per-team only)
+      // compute per-member contributions using new sets/rounds/games logic
       const parts = [];
+      function buildBreakdown(entry, member) {
+        if (!entry || !Array.isArray(entry.sets)) return '';
+        return entry.sets.map((set, si) => {
+          const setLabel = `Set ${si + 1}`;
+          const rounds = (set.rounds || []).map((round, ri) => {
+            const games = (round.games || []).map((game, gi) => {
+              let winner;
+              if (game.winner === 'A') winner = String(game.playerA) === String(member._id) ? 'W' : 'L';
+              else if (game.winner === 'B') winner = String(game.playerB) === String(member._id) ? 'W' : 'L';
+              else winner = '-';
+              return `G${gi + 1}:${winner}`;
+            }).join(' ');
+            return `  Round ${ri + 1}: ${games}`;
+          }).join('\n');
+          return `${setLabel}:\n${rounds}`;
+        }).join('\n');
+      }
       for (const member of team) {
         const mPerf = getWeekPerf(member, wk);
-        const mPts = computePointsForPerfSimple(mPerf);
+        const mPts = computePointsFromPerf(mPerf, member, wk);
         if (mPts > 0) {
           const mName = member.name || member.username || String(member._id).slice(0, 8);
-          parts.push(`${mName} → ${mPts}`);
+          const breakdown = buildBreakdown(mPerf, member);
+          parts.push(`${mName} → ${mPts}${breakdown ? `\n${breakdown}` : ''}`);
         }
       }
-      const inline = parts.length ? ` (${parts.join('; ')})` : '';
+      const inline = parts.length ? `\n${parts.join('\n')}` : '';
       lines.push(`Week ${wk} — ${pts} pts${inline}`);
     }
 

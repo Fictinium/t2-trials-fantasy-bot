@@ -29,7 +29,13 @@ export default {
 
       // 2) Load fantasy player with populated players and each player's real team
       const fantasyPlayer = await FantasyPlayer.findOne({ discordId, season: season._id })
-        .populate({ path: 'team', populate: { path: 'team', model: 'Team' } }) // nested populate
+        .populate({
+          path: 'team',
+          populate: [
+            { path: 'team', model: 'Team' },
+          ],
+          select: 'name team performance',
+        })
         .lean();
 
       if (!fantasyPlayer) {
@@ -48,23 +54,33 @@ export default {
         });
       }
 
-      // 3) Build a nice embed
-      const displayName = fantasyPlayer.username || interaction.user.username;
-      const lines = roster.map((p, i) => {
-        const teamName = p.team?.name ? ` — *${p.team.name}*` : '';
-        const playerPts = totalPointsForPlayer(p); // <- reused helper
-        const playerName = p.name || p.username || String(p._id).slice(0, 8);
-        return `**${i + 1}.** ${playerName}${teamName} — ${playerPts} pts`;
-      });
+        // Dynamically recalculate wallet to ensure accuracy
+        let wallet = 110;
+        if (roster.length > 0) {
+          const playerCosts = roster.map(p => p.cost || 0);
+          const totalCost = playerCosts.reduce((sum, c) => sum + c, 0);
+          wallet -= totalCost;
+        }
 
-      const embed = new EmbedBuilder()
-        .setTitle(`${displayName}'s Fantasy Team`)
-        .setDescription(lines.join('\n'))
-        .setFooter({
-          text: `Players: ${roster.length}/${MAX_TEAM_SIZE} • Total points: ${fantasyPlayer.totalPoints ?? 0} • Wallet: ${fantasyPlayer.wallet ?? 0}`
+        // 3) Build a nice embed
+        const displayName = fantasyPlayer.username || interaction.user.username;
+        const lines = roster.map((p, i) => {
+          const teamName = p.team?.name ? ` — *${p.team.name}*` : '';
+          const playerPts = totalPointsForPlayer(p); // <- reused helper
+          const playerName = p.name || p.username || String(p._id).slice(0, 8);
+          return `**${i + 1}.** ${playerName}${teamName} — ${playerPts} pts`;
         });
 
-      return interaction.reply({ embeds: [embed]});
+        // Dynamically sum total points from current roster
+        const totalPoints = roster.reduce((sum, p) => sum + totalPointsForPlayer(p), 0);
+        const embed = new EmbedBuilder()
+          .setTitle(`${displayName}'s Fantasy Team`)
+          .setDescription(lines.join('\n'))
+          .setFooter({
+            text: `Players: ${roster.length}/${MAX_TEAM_SIZE} • Total points: ${totalPoints} • Wallet: ${wallet}`
+          });
+
+        return interaction.reply({ embeds: [embed]});
     } catch (err) {
       console.error(err);
       const payload = { content: '❗ Something went wrong while fetching your team.', flags: 64 };
