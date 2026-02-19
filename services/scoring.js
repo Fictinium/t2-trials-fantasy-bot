@@ -55,7 +55,8 @@ function computePlayerWeekPoints(playerDoc, week) {
     if (!mPerf) continue;
     aggr.wins += (mPerf.wins || 0);
     aggr.losses += (mPerf.losses || 0);
-    const rounds = Array.isArray(mPerf.rounds) ? mPerf.rounds : [];
+    // Defensive: only process rounds if array and not empty
+    const rounds = Array.isArray(mPerf.rounds) && mPerf.rounds.length > 0 ? mPerf.rounds : [];
     for (const r of rounds) {
       const rn = (r.roundNumber || 1) - 1;
       aggr.rounds[rn] = aggr.rounds[rn] || { roundNumber: (rn + 1), wins: 0, losses: 0, duels: 0 };
@@ -73,10 +74,10 @@ function computePlayerWeekPoints(playerDoc, week) {
   const aggW2 = aggregateTeamWeekPerf(playerDoc.team, week - 1);
   const aggW3 = aggregateTeamWeekPerf(playerDoc.team, week - 2);
 
-  return computePointsFromPerf(aggW1, { rounds: aggW1.rounds }, week, aggW2, aggW3);
+  return computePointsFromPerf(aggW1, { rounds: aggr.rounds }, week, aggW2, aggW3);
 }
 
-function getWeekPerf(playerDoc, week) {
+export function getWeekPerf(playerDoc, week) {
   if (!week || week < 1) return null;
   const arr = Array.isArray(playerDoc?.performance) ? playerDoc.performance : [];
   return arr.find(e => e.week === week) || null;
@@ -111,47 +112,54 @@ export function computePointsFromPerf(perfW, docForRounds, week, prevAgg = null,
   let pts = 0;
   const sets = Array.isArray(perfW.sets) ? perfW.sets : [];
 
-  // base win points: sum all games won by the player in all sets/rounds/games
-  let totalWins = 0, totalLosses = 0;
-  for (const set of sets) {
-    for (const round of (set.rounds || [])) {
-      for (const game of (round.games || [])) {
-        if (game.winner === 'A' && String(game.playerA) === String(perfW.playerId)) totalWins++;
-        else if (game.winner === 'B' && String(game.playerB) === String(perfW.playerId)) totalWins++;
-        else if (game.winner === 'A' && String(game.playerB) === String(perfW.playerId)) totalLosses++;
-        else if (game.winner === 'B' && String(game.playerA) === String(perfW.playerId)) totalLosses++;
-      }
-    }
-  }
-  pts += totalWins * WIN_POINTS;
-
-  // +15 per set that was a perfect sweep (player won all rounds in the set, and each round has 3 games, all won by the player)
-  for (const set of sets) {
-    let perfectSweep = true;
-    for (const round of (set.rounds || [])) {
-      if ((round.games || []).length !== 3) { perfectSweep = false; break; }
-      for (const game of round.games) {
-        if (!((game.winner === 'A' && String(game.playerA) === String(perfW.playerId)) || (game.winner === 'B' && String(game.playerB) === String(perfW.playerId)))) {
-          perfectSweep = false; break;
+  // If sets/rounds/games are present, use them for base win points and bonuses
+  if (sets.length > 0) {
+    // base win points: sum all games won by the player in all sets/rounds/games
+    let totalWins = 0, totalLosses = 0;
+    for (const set of sets) {
+      for (const round of (set.rounds || [])) {
+        for (const game of (round.games || [])) {
+          if (game.winner === 'A' && String(game.playerA) === String(perfW.playerId)) totalWins++;
+          else if (game.winner === 'B' && String(game.playerB) === String(perfW.playerId)) totalWins++;
+          else if (game.winner === 'A' && String(game.playerB) === String(perfW.playerId)) totalLosses++;
+          else if (game.winner === 'B' && String(game.playerA) === String(perfW.playerId)) totalLosses++;
         }
       }
-      if (!perfectSweep) break;
     }
-    if (perfectSweep && (set.rounds || []).length > 0) pts += BONUS_SET_PERFECT_SWEEP;
-  }
+    pts += totalWins * WIN_POINTS;
 
-  // +5 if positive winrate in all sets this week (must have at least 1 set)
-  if (sets.length > 0 && sets.every(set => {
-    let wins = 0, losses = 0;
-    for (const round of (set.rounds || [])) {
-      for (const game of (round.games || [])) {
-        if ((game.winner === 'A' && String(game.playerA) === String(perfW.playerId)) || (game.winner === 'B' && String(game.playerB) === String(perfW.playerId))) wins++;
-        else if ((game.winner === 'A' && String(game.playerB) === String(perfW.playerId)) || (game.winner === 'B' && String(game.playerA) === String(perfW.playerId))) losses++;
+    // +15 per set that was a perfect sweep (player won all rounds in the set, and each round has 3 games, all won by the player)
+    for (const set of sets) {
+      let perfectSweep = true;
+      for (const round of (set.rounds || [])) {
+        if ((round.games || []).length !== 3) { perfectSweep = false; break; }
+        for (const game of round.games) {
+          if (!((game.winner === 'A' && String(game.playerA) === String(perfW.playerId)) || (game.winner === 'B' && String(game.playerB) === String(perfW.playerId)))) {
+            perfectSweep = false; break;
+          }
+        }
+        if (!perfectSweep) break;
       }
+      if (perfectSweep && (set.rounds || []).length > 0) pts += BONUS_SET_PERFECT_SWEEP;
     }
-    return wins > losses;
-  })) {
-    pts += BONUS_WEEK_ALL_SETS_POSITIVE;
+
+    // +5 if positive winrate in all sets this week (must have at least 1 set)
+    if (sets.every(set => {
+      let wins = 0, losses = 0;
+      for (const round of (set.rounds || [])) {
+        for (const game of (round.games || [])) {
+          if ((game.winner === 'A' && String(game.playerA) === String(perfW.playerId)) || (game.winner === 'B' && String(game.playerB) === String(perfW.playerId))) wins++;
+          else if ((game.winner === 'A' && String(game.playerB) === String(perfW.playerId)) || (game.winner === 'B' && String(game.playerA) === String(perfW.playerId))) losses++;
+        }
+      }
+      return wins > losses;
+    })) {
+      pts += BONUS_WEEK_ALL_SETS_POSITIVE;
+    }
+  } else {
+    // If sets/rounds/games are missing, fall back to wins/losses for base points only
+    pts += (perfW.wins || 0) * WIN_POINTS;
+    // No bonuses possible
   }
 
   // streak bonuses (check aggregated/per-team results if provided)

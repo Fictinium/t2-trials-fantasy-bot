@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+
 import getActiveSeason from '../utils/getActiveSeason.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 
@@ -36,6 +37,7 @@ export default {
     const week = interaction.options.getInteger('week') ?? null;
     const limit = interaction.options.getInteger('limit') ?? DEFAULT_LIMIT;
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
+
 
     // Pull all fantasy players; we only need username + points arrays
     const fantasyPlayers = await FantasyPlayer.find({season: season._id}, { username: 1, discordId: 1, weeklyPoints: 1, totalPoints: 1 }).lean();

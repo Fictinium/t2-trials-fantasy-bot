@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { computePointsForPerfSimple, totalPointsForPlayer } from '../services/scoring.js';
+import { computePointsForPerfSimple, totalPointsForPlayer, getWeekPerf, computePointsFromPerf } from '../services/scoring.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import isRegistered from '../utils/checkRegistration.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
@@ -92,47 +92,31 @@ export default {
       return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
     }
 
-    // Build lines like: "Week 1 — 10 pts"
+    // Build compact, horizontal lines for each week
     const lines = [];
     for (let i = 0; i < weekly.length; i++) {
       const wk = i + 1;
       const pts = Number.isFinite(weekly[i]) ? weekly[i] : 0;
-
-      // compute per-member contributions using new sets/rounds/games logic
-      const parts = [];
-      function buildBreakdown(entry, member) {
-        if (!entry || !Array.isArray(entry.sets)) return '';
-        return entry.sets.map((set, si) => {
-          const setLabel = `Set ${si + 1}`;
-          const rounds = (set.rounds || []).map((round, ri) => {
-            const games = (round.games || []).map((game, gi) => {
-              let winner;
-              if (game.winner === 'A') winner = String(game.playerA) === String(member._id) ? 'W' : 'L';
-              else if (game.winner === 'B') winner = String(game.playerB) === String(member._id) ? 'W' : 'L';
-              else winner = '-';
-              return `G${gi + 1}:${winner}`;
-            }).join(' ');
-            return `  Round ${ri + 1}: ${games}`;
-          }).join('\n');
-          return `${setLabel}:\n${rounds}`;
-        }).join('\n');
-      }
+      // Per-member points, horizontal
+      const memberParts = [];
       for (const member of team) {
         const mPerf = getWeekPerf(member, wk);
         const mPts = computePointsFromPerf(mPerf, member, wk);
         if (mPts > 0) {
           const mName = member.name || member.username || String(member._id).slice(0, 8);
-          const breakdown = buildBreakdown(mPerf, member);
-          parts.push(`${mName} → ${mPts}${breakdown ? `\n${breakdown}` : ''}`);
+          memberParts.push(`**${mName}**: ${mPts}`);
         }
       }
-      const inline = parts.length ? `\n${parts.join('\n')}` : '';
-      lines.push(`Week ${wk} — ${pts} pts${inline}`);
+      const membersStr = memberParts.length ? memberParts.join(' | ') : '_No player stats_';
+      lines.push(`**Week ${wk}** — **${pts} pts**\n${membersStr}`);
     }
+
+    // Add spacing between weeks for readability
+    const desc = lines.join('\n\u200B\n'); // \u200B is a zero-width space for extra spacing
 
     const embed = new EmbedBuilder()
       .setTitle(`${displayName} — Scores`)
-      .setDescription(lines.join('\n'))
+      .setDescription(desc)
       .setFooter({ text: `Total points: ${storedTotal}` });
 
     return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });

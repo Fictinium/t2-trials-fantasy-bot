@@ -58,11 +58,13 @@ export default {
 
     // Dynamically sum total points from current roster
     const totalPoints = roster.reduce((sum, p) => sum + totalPointsForPlayer(p), 0);
+    const wallet = fantasyPlayer.wallet ?? 0;
+
     const embed = new EmbedBuilder()
       .setTitle(`${fantasyPlayer.username || targetUser.username}’s Fantasy Team`)
       .setDescription(lines.join('\n'))
       .setFooter({
-        text: `Players: ${roster.length}/${MAX_TEAM_SIZE} • Total points: ${totalPoints} • Wallet: ${fantasyPlayer.wallet ?? 0}`
+        text: `Players: ${roster.length}/${MAX_TEAM_SIZE} • Total points: ${totalPoints} • Wallet: ${wallet}`
       });
 
     return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
