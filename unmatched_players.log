@@ -1,0 +1,129 @@
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Mitsurugi) – Joey (Dracotail) (0-1)', pAraw='Benk1w', pBraw='Joey'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 1, set 1, game 1, line: Benk1w (Mitsurugi) – Joey (Dracotail) (0-1)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Mitsurugi) – Ryan (Fiendsmith Gem-Knight) (1-0)', pAraw='Benk1w', pBraw='Ryan'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 1, set 1, game 2, line: Benk1w (Mitsurugi) – Ryan (Fiendsmith Gem-Knight) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Mitsurugi) – jesse kotton (Mitsurugi Ryzeal) (0-1)', pAraw='Benk1w', pBraw='jesse kotton'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 1, set 1, game 3, line: Benk1w (Mitsurugi) – jesse kotton (Mitsurugi Ryzeal) (0-1)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Mitsurugi) – Joey (Dracotail) (1-0)', pAraw='Benk1w', pBraw='Joey'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 1, set 2, game 1, line: Benk1w (Mitsurugi) – Joey (Dracotail) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Man) – Ryan (Fiendsmith Gem-Knight) (0-1)', pAraw='Benk1w', pBraw='Ryan'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 1, set 2, game 2, line: Benk1w (Man) – Ryan (Fiendsmith Gem-Knight) (0-1)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Man) – jesse kotton (Mitsurugi Ryzeal) (1-0)', pAraw='Benk1w', pBraw='jesse kotton'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 1, set 2, game 3, line: Benk1w (Man) – jesse kotton (Mitsurugi Ryzeal) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Orco (Centur-ion Regenesis) – Benk1w (Ryzeal Mitsurugi) (0-1)', pAraw='Orco', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 2, set 1, game 1, line: Orco (Centur-ion Regenesis) – Benk1w (Ryzeal Mitsurugi) (0-1)
+DEBUG: Parsed result line for Benk1w: line='Galiux2 (Jurrac Fire King) – Benk1w (Ryzeal Mitsurugi) (1-0)', pAraw='Galiux2', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 2, set 1, game 2, line: Galiux2 (Jurrac Fire King) – Benk1w (Ryzeal Mitsurugi) (1-0)
+DEBUG: Parsed result line for Benk1w: line='ROZEN (Maliss) – Benk1w (Primite Odion) (0-1)', pAraw='ROZEN', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 2, set 1, game 3, line: ROZEN (Maliss) – Benk1w (Primite Odion) (0-1)
+DEBUG: Parsed result line for Benk1w: line='ROZEN (Maliss) – Benk1w (Ryzeal Mitsurugi) (1-0)', pAraw='ROZEN', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 2, set 2, game 1, line: ROZEN (Maliss) – Benk1w (Ryzeal Mitsurugi) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Orco (Centur-ion Regenesis) – Benk1w (Ryzeal Mitsurugi) (1-0)', pAraw='Orco', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 2, set 2, game 2, line: Orco (Centur-ion Regenesis) – Benk1w (Ryzeal Mitsurugi) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Galiux2 (Jurrac Fire King) – Benk1w (Ryzeal Mitsurugi) (0-1)', pAraw='Galiux2', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 2, set 2, game 3, line: Galiux2 (Jurrac Fire King) – Benk1w (Ryzeal Mitsurugi) (0-1)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Mitsurugi) – Shoma Yusa (Maliss) (1-0)', pAraw='Benk1w', pBraw='Shoma Yusa'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 3, set 1, game 1, line: Benk1w (Mitsurugi) – Shoma Yusa (Maliss) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Mitsurugi) – Victor Li (Odion) (0-1)', pAraw='Benk1w', pBraw='Victor Li'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 3, set 1, game 2, line: Benk1w (Mitsurugi) – Victor Li (Odion) (0-1)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Mitsurugi) – LESTIFISA (Branded Dracotail) (0-1)', pAraw='Benk1w', pBraw='LESTIFISA'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 3, set 1, game 3, line: Benk1w (Mitsurugi) – LESTIFISA (Branded Dracotail) (0-1)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Mitsurugi) – LESTIFISA (Branded Dracotail) (1-0)', pAraw='Benk1w', pBraw='LESTIFISA'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 3, set 2, game 1, line: Benk1w (Mitsurugi) – LESTIFISA (Branded Dracotail) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Mitsurugi) – Shoma Yusa (Maliss) (1-0)', pAraw='Benk1w', pBraw='Shoma Yusa'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 3, set 2, game 2, line: Benk1w (Mitsurugi) – Shoma Yusa (Maliss) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Mitsurugi) – Victor Li (Odion) (1-0)', pAraw='Benk1w', pBraw='Victor Li'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 3, set 2, game 3, line: Benk1w (Mitsurugi) – Victor Li (Odion) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Mitsurugi) – Solar Chan (Maliss) (1-0)', pAraw='Benk1w', pBraw='Solar Chan'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 4, set 1, game 1, line: Benk1w (Mitsurugi) – Solar Chan (Maliss) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Mitsurugi) – Izumi (Mitsu Yummy) (1-0)', pAraw='Benk1w', pBraw='Izumi'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 4, set 1, game 2, line: Benk1w (Mitsurugi) – Izumi (Mitsu Yummy) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Man) – Seia chan (Dracotail) (1-0)', pAraw='Benk1w', pBraw='Seia chan'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 4, set 1, game 3, line: Benk1w (Man) – Seia chan (Dracotail) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Mitsurugi) – Seia chan (Fiendsmith Control) (1-0)', pAraw='Benk1w', pBraw='Seia chan'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 4, set 2, game 1, line: Benk1w (Mitsurugi) – Seia chan (Fiendsmith Control) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Mitsurugi) – Solar Chan (Maliss) (1-0)', pAraw='Benk1w', pBraw='Solar Chan'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 4, set 2, game 2, line: Benk1w (Mitsurugi) – Solar Chan (Maliss) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Yummy) – hipster (Mitsurugi) (1-0)', pAraw='Benk1w', pBraw='hipster'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 5, set 1, game 1, line: Benk1w (Yummy) – hipster (Mitsurugi) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Yummy) – bedorocksf (Lunalight) (1-0)', pAraw='Benk1w', pBraw='bedorocksf'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 5, set 1, game 2, line: Benk1w (Yummy) – bedorocksf (Lunalight) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Maliss) – Mugiwara (Dracotail) (1-0)', pAraw='Benk1w', pBraw='Mugiwara'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 5, set 1, game 3, line: Benk1w (Maliss) – Mugiwara (Dracotail) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Yummy) – Mugiwara (Dracotail) (0-1)', pAraw='Benk1w', pBraw='Mugiwara'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 5, set 2, game 1, line: Benk1w (Yummy) – Mugiwara (Dracotail) (0-1)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Yummy) – hipster (Mitsurugi) (1-0)', pAraw='Benk1w', pBraw='hipster'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 5, set 2, game 2, line: Benk1w (Yummy) – hipster (Mitsurugi) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Benk1w (Yummy) – bedorocksf (Onomat Ryzeal) (1-0)', pAraw='Benk1w', pBraw='bedorocksf'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 5, set 2, game 3, line: Benk1w (Yummy) – bedorocksf (Onomat Ryzeal) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Kevdan (White Forest Azamina FS Mitsurugi) – Benk1w (Mitsurugi) (0-1)', pAraw='Kevdan', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 6, set 1, game 1, line: Kevdan (White Forest Azamina FS Mitsurugi) – Benk1w (Mitsurugi) (0-1)
+DEBUG: Parsed result line for Benk1w: line='Uriel (Drytron) – Benk1w (Mitsurugi) (0-1)', pAraw='Uriel', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 6, set 1, game 2, line: Uriel (Drytron) – Benk1w (Mitsurugi) (0-1)
+DEBUG: Parsed result line for Benk1w: line='Zuca7 (Odion) – Benk1w (Maliss) (0-1)', pAraw='Zuca7', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 6, set 1, game 3, line: Zuca7 (Odion) – Benk1w (Maliss) (0-1)
+DEBUG: Parsed result line for Benk1w: line='Uriel (Yummy) – Benk1w (Maliss) (0-1)', pAraw='Uriel', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 6, set 2, game 1, line: Uriel (Yummy) – Benk1w (Maliss) (0-1)
+DEBUG: Parsed result line for Benk1w: line='Zuca7 (Odion) – Benk1w (Maliss) (0-1)', pAraw='Zuca7', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 6, set 2, game 2, line: Zuca7 (Odion) – Benk1w (Maliss) (0-1)
+DEBUG: Parsed result line for Benk1w: line='Kevdan (White Forest Azamina FS Mitsurugi) – Benk1w (Maliss) (1-0)', pAraw='Kevdan', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 6, set 2, game 3, line: Kevdan (White Forest Azamina FS Mitsurugi) – Benk1w (Maliss) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Zuca7 (Odion) – Benk1w (Maliss) (1-0)', pAraw='Zuca7', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 6, set 3, game 1, line: Zuca7 (Odion) – Benk1w (Maliss) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Uriel (Yummy) – Benk1w (Mitsurugi) (1-0)', pAraw='Uriel', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 6, set 3, game 2, line: Uriel (Yummy) – Benk1w (Mitsurugi) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Kevdan (White Forest Azamina FS Mitsurugi) – Benk1w (Maliss) (0-1)', pAraw='Kevdan', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 6, set 3, game 3, line: Kevdan (White Forest Azamina FS Mitsurugi) – Benk1w (Maliss) (0-1)
+DEBUG: Parsed result line for Benk1w: line='wallskrill (Mitsurugi) – Benk1w (Yummy) (0-1)', pAraw='wallskrill', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 7, set 1, game 1, line: wallskrill (Mitsurugi) – Benk1w (Yummy) (0-1)
+DEBUG: Parsed result line for Benk1w: line='Anderson Strife (Dracotail Branded) – Benk1w (Maliss) (0-1)', pAraw='Anderson Strife', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 7, set 1, game 2, line: Anderson Strife (Dracotail Branded) – Benk1w (Maliss) (0-1)
+DEBUG: Parsed result line for Benk1w: line='wallskrill (S-T-U-N) – Benk1w (Yummy) (1-0)', pAraw='wallskrill', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 7, set 2, game 1, line: wallskrill (S-T-U-N) – Benk1w (Yummy) (1-0)
+DEBUG: Parsed result line for Benk1w: line='Anderson Strife (Dracotail) – Benk1w (Yummy) (0-1)', pAraw='Anderson Strife', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 7, set 2, game 2, line: Anderson Strife (Dracotail) – Benk1w (Yummy) (0-1)
+DEBUG: Parsed result line for Benk1w: line='DorminMax (Yummy) – Benk1w (Yummy) (1-0)', pAraw='DorminMax', pBraw='Benk1w'
+DEBUG: getPlayerId called for name='Benk1w', team='Raid'n'Trade'
+DEBUG: Adding result for Benk1w (ID 100351) in week 7, set 2, game 3, line: DorminMax (Yummy) – Benk1w (Yummy) (1-0)

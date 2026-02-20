@@ -23,18 +23,15 @@ export async function canModifyTeam(discordId, proposedTeamIds /* array of Objec
   const snap = (user?.playoffSnapshot || []).map(String);
   const proposed = (proposedTeamIds || []).map(String);
 
-  // Count swaps = how many snapshot players are missing in proposed
-  let swaps = 0;
-  for (const id of snap) {
-    if (!proposed.includes(id)) swaps++;
+  // Count changes as the number of new player IDs added to the team (not in the snapshot)
+  let changes = 0;
+  for (const id of proposed) {
+    if (!snap.includes(id)) changes++;
   }
 
-  // NOTE: with fixed team size, "swaps" equals the number of replacements.
-  // e.g., replace 3 players -> 3 snapshot players missing -> swaps = 3.
-
-  if (swaps <= limit) {
-    return { allowed: true, reason: 'PLAYOFFS_OK', swapsUsed: swaps, limit };
+  if (changes <= limit) {
+    return { allowed: true, reason: 'PLAYOFFS_OK', swapsUsed: changes, limit };
   } else {
-    return { allowed: false, reason: 'PLAYOFFS_LIMIT', swapsUsed: swaps, limit };
+    return { allowed: false, reason: 'PLAYOFFS_LIMIT', swapsUsed: changes, limit };
   }
 }

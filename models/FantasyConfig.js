@@ -6,7 +6,7 @@ const fantasyConfigSchema = new mongoose.Schema({
   season: { type: mongoose.Schema.Types.ObjectId, ref: 'Season', required: true, index: true },
 
   // how many swaps are allowed in PLAYOFFS (replacements vs snapshot)
-  playoffSwapLimit: { type: Number, default: 2, min: 0 },
+  playoffSwapLimit: { type: Number, default: 3, min: 0 },
 
   // optional: keep track of current week
   currentWeek: { type: Number, default: 1, min: 1 }

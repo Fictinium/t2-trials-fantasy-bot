@@ -39,14 +39,15 @@ export default {
       payload = JSON.parse(text);
       if (!Array.isArray(payload)) throw new Error('Root must be an array of players.');
     } catch (e) {
-      return interaction.editReply(`❌ Invalid JSON: ${e.message}`);
+      await interaction.editReply(`❌ Invalid JSON: ${e.message}`);
+      return;
     }
 
     let updatedPlayers = 0, createdPlayers = 0, skipped = 0, notFoundNoTeam = 0, teamCreated = 0;
 
     for (const p of payload) {
       const playerIdNum   = Number(p?.id);
-      const fantasyCost   = Math.max(0, Number(p?.fantasy_points ?? 0));
+      // const fantasyCost   = Math.max(0, Number(p?.fantasy_points ?? 0)); // Disabled: do not import cost
       const weeks         = Array.isArray(p?.weeks) ? p.weeks : [];
 
       // Lookup player by externalId
@@ -126,7 +127,7 @@ export default {
           externalId: Number.isFinite(playerIdNum) ? playerIdNum : undefined,
           name: playerNameRaw,
           team: teamDoc._id,
-          cost: fantasyCost,
+          // cost: fantasyCost, // Disabled: do not import cost
           performance: [...perfByWeek.values()].sort((a, b) => a.week - b.week),
           season: season._id
         });
@@ -157,10 +158,7 @@ export default {
       }
 
       // Cost refresh
-      if (Number.isFinite(fantasyCost) && dbPlayer.cost !== fantasyCost) {
-        dbPlayer.cost = fantasyCost;
-        anyChange = true;
-      }
+      // Cost refresh disabled: do not update cost from import
 
       // Backfill externalId
       if (Number.isFinite(playerIdNum) && !dbPlayer.externalId) {
@@ -177,7 +175,7 @@ export default {
       }
     }
 
-    return interaction.editReply(
+    await interaction.editReply(
       `✅ Import complete.\n` +
       `• Created players: **${createdPlayers}**\n` +
       `• Updated players: **${updatedPlayers}**\n` +

@@ -3024,6 +3024,7 @@ Game 2 2-1
 Chugioh (Mitsu Ryzeal) – Daniel21564 (Mitsu Ryzeal) (1-0)
 Lucas Rios (Branded Dracotail) – usif (Branded Dracotail) (1-0)
 ChadPiplup (Labrynth) – yuzoria (Maliss) (0-1)
+
 Game 3 1-2
 Chugioh (Mitsu Ryzeal) – yuzoria (Maliss) (0-1)
 Lucas Rios (Branded Dracotail) – Daniel21564 (Mitsu Ryzeal) (1-0)
@@ -3198,6 +3199,7 @@ Game 2 2-1
 usif (Dracotail) – Adnane (Dracotail) (0-1)
 yuzoria (Maliss) – hash (Maliss) (1-0)
 Kindiaka (Onomat Ryzeal) – vins (Mitsu Ryzeal) (1-0)
+
 Game 3 1-2
 usif (Dracotail) – vins (Mitsu Ryzeal) (0-1)
 yuzoria (Maliss) – Adnane (FS Orcust) (1-0)

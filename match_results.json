@@ -1,5 +1,483 @@
 [
   {
+    "id": 49,
+    "weeks": [
+      {
+        "week_number": 2,
+        "games": [
+          {
+            "opponent_id": 100223,
+            "winner_id": 100223,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100334,
+            "winner_id": 49,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100413,
+            "winner_id": 49,
+            "set": 1,
+            "round": 3
+          },
+          {
+            "opponent_id": 100223,
+            "winner_id": 49,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100413,
+            "winner_id": 49,
+            "set": 2,
+            "round": 2
+          }
+        ]
+      },
+      {
+        "week_number": 5,
+        "games": [
+          {
+            "opponent_id": 100454,
+            "winner_id": 49,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100452,
+            "winner_id": 100452,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100455,
+            "winner_id": 49,
+            "set": 1,
+            "round": 3
+          },
+          {
+            "opponent_id": 100454,
+            "winner_id": 100454,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100455,
+            "winner_id": 100455,
+            "set": 2,
+            "round": 2
+          },
+          {
+            "opponent_id": 100452,
+            "winner_id": 100452,
+            "set": 2,
+            "round": 3
+          },
+          {
+            "opponent_id": 100455,
+            "winner_id": 49,
+            "set": 3,
+            "round": 1
+          },
+          {
+            "opponent_id": 100454,
+            "winner_id": 49,
+            "set": 3,
+            "round": 2
+          },
+          {
+            "opponent_id": 100452,
+            "winner_id": 100452,
+            "set": 3,
+            "round": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 50,
+    "weeks": [
+      {
+        "week_number": 1,
+        "games": [
+          {
+            "opponent_id": 100446,
+            "winner_id": 50,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100444,
+            "winner_id": 50,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100281,
+            "winner_id": 100281,
+            "set": 1,
+            "round": 3
+          },
+          {
+            "opponent_id": 100281,
+            "winner_id": 100281,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100446,
+            "winner_id": 100446,
+            "set": 2,
+            "round": 2
+          }
+        ]
+      },
+      {
+        "week_number": 3,
+        "games": [
+          {
+            "opponent_id": 100291,
+            "winner_id": 50,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100294,
+            "winner_id": 50,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100291,
+            "winner_id": 50,
+            "set": 2,
+            "round": 2
+          },
+          {
+            "opponent_id": 100288,
+            "winner_id": 50,
+            "set": 2,
+            "round": 3
+          }
+        ]
+      },
+      {
+        "week_number": 4,
+        "games": [
+          {
+            "opponent_id": 100377,
+            "winner_id": 100377,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100382,
+            "winner_id": 100382,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100501,
+            "winner_id": 100501,
+            "set": 1,
+            "round": 3
+          },
+          {
+            "opponent_id": 100501,
+            "winner_id": 100501,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100377,
+            "winner_id": 50,
+            "set": 2,
+            "round": 2
+          },
+          {
+            "opponent_id": 100382,
+            "winner_id": 50,
+            "set": 2,
+            "round": 3
+          },
+          {
+            "opponent_id": 100382,
+            "winner_id": 100382,
+            "set": 3,
+            "round": 1
+          },
+          {
+            "opponent_id": 100501,
+            "winner_id": 50,
+            "set": 3,
+            "round": 2
+          },
+          {
+            "opponent_id": 100377,
+            "winner_id": 50,
+            "set": 3,
+            "round": 3
+          }
+        ]
+      },
+      {
+        "week_number": 6,
+        "games": [
+          {
+            "opponent_id": 100321,
+            "winner_id": 50,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100325,
+            "winner_id": 100325,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100518,
+            "winner_id": 100518,
+            "set": 1,
+            "round": 3
+          },
+          {
+            "opponent_id": 100518,
+            "winner_id": 50,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100321,
+            "winner_id": 50,
+            "set": 2,
+            "round": 2
+          },
+          {
+            "opponent_id": 100325,
+            "winner_id": 100325,
+            "set": 2,
+            "round": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 240,
+    "weeks": [
+      {
+        "week_number": 1,
+        "games": [
+          {
+            "opponent_id": 100102,
+            "winner_id": 100102,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100108,
+            "winner_id": 100108,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100108,
+            "winner_id": 240,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100508,
+            "winner_id": 100508,
+            "set": 2,
+            "round": 2
+          },
+          {
+            "opponent_id": 100102,
+            "winner_id": 240,
+            "set": 2,
+            "round": 3
+          },
+          {
+            "opponent_id": 100102,
+            "winner_id": 240,
+            "set": 3,
+            "round": 1
+          },
+          {
+            "opponent_id": 100108,
+            "winner_id": 100108,
+            "set": 3,
+            "round": 2
+          },
+          {
+            "opponent_id": 100508,
+            "winner_id": 240,
+            "set": 3,
+            "round": 3
+          }
+        ]
+      },
+      {
+        "week_number": 2,
+        "games": [
+          {
+            "opponent_id": 100206,
+            "winner_id": 100206,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100335,
+            "winner_id": 100335,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100206,
+            "winner_id": 100206,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100335,
+            "winner_id": 100335,
+            "set": 2,
+            "round": 2
+          }
+        ]
+      },
+      {
+        "week_number": 3,
+        "games": [
+          {
+            "opponent_id": 100199,
+            "winner_id": 100199,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100521,
+            "winner_id": 100521,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100197,
+            "winner_id": 240,
+            "set": 1,
+            "round": 3
+          },
+          {
+            "opponent_id": 100199,
+            "winner_id": 100199,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100521,
+            "winner_id": 100521,
+            "set": 2,
+            "round": 2
+          },
+          {
+            "opponent_id": 100199,
+            "winner_id": 240,
+            "set": 3,
+            "round": 1
+          },
+          {
+            "opponent_id": 100521,
+            "winner_id": 100521,
+            "set": 3,
+            "round": 2
+          }
+        ]
+      },
+      {
+        "week_number": 4,
+        "games": [
+          {
+            "opponent_id": 100220,
+            "winner_id": 240,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100222,
+            "winner_id": 100222,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100220,
+            "winner_id": 240,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100222,
+            "winner_id": 240,
+            "set": 2,
+            "round": 2
+          },
+          {
+            "opponent_id": 100219,
+            "winner_id": 240,
+            "set": 2,
+            "round": 3
+          },
+          {
+            "opponent_id": 100219,
+            "winner_id": 240,
+            "set": 3,
+            "round": 1
+          },
+          {
+            "opponent_id": 100220,
+            "winner_id": 100220,
+            "set": 3,
+            "round": 2
+          },
+          {
+            "opponent_id": 100222,
+            "winner_id": 240,
+            "set": 3,
+            "round": 3
+          }
+        ]
+      },
+      {
+        "week_number": 7,
+        "games": [
+          {
+            "opponent_id": 100095,
+            "winner_id": 100095,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100392,
+            "winner_id": 240,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100507,
+            "winner_id": 240,
+            "set": 1,
+            "round": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": 100005,
     "weeks": [
       {
@@ -6509,7 +6987,7 @@
         "week_number": 7,
         "games": [
           {
-            "opponent_id": 100437,
+            "opponent_id": 240,
             "winner_id": 100095,
             "set": 1,
             "round": 1
@@ -6524,6 +7002,81 @@
             "opponent_id": 100358,
             "winner_id": 100095,
             "set": 1,
+            "round": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 100097,
+    "weeks": [
+      {
+        "week_number": 2,
+        "games": [
+          {
+            "opponent_id": 100413,
+            "winner_id": 100097,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100223,
+            "winner_id": 100223,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100334,
+            "winner_id": 100334,
+            "set": 1,
+            "round": 3
+          },
+          {
+            "opponent_id": 100413,
+            "winner_id": 100097,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100334,
+            "winner_id": 100334,
+            "set": 2,
+            "round": 2
+          }
+        ]
+      },
+      {
+        "week_number": 3,
+        "games": [
+          {
+            "opponent_id": 100294,
+            "winner_id": 100097,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100288,
+            "winner_id": 100097,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100288,
+            "winner_id": 100288,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100294,
+            "winner_id": 100294,
+            "set": 2,
+            "round": 2
+          },
+          {
+            "opponent_id": 100291,
+            "winner_id": 100097,
+            "set": 2,
             "round": 3
           }
         ]
@@ -6878,19 +7431,19 @@
         "week_number": 1,
         "games": [
           {
-            "opponent_id": 100437,
+            "opponent_id": 240,
             "winner_id": 100102,
             "set": 1,
             "round": 1
           },
           {
-            "opponent_id": 100436,
-            "winner_id": 100436,
+            "opponent_id": 100277,
+            "winner_id": 100277,
             "set": 1,
             "round": 2
           },
           {
-            "opponent_id": 100436,
+            "opponent_id": 100277,
             "winner_id": 100102,
             "set": 2,
             "round": 1
@@ -6902,20 +7455,20 @@
             "round": 2
           },
           {
-            "opponent_id": 100437,
-            "winner_id": 100437,
+            "opponent_id": 240,
+            "winner_id": 240,
             "set": 2,
             "round": 3
           },
           {
-            "opponent_id": 100437,
-            "winner_id": 100437,
+            "opponent_id": 240,
+            "winner_id": 240,
             "set": 3,
             "round": 1
           },
           {
-            "opponent_id": 100436,
-            "winner_id": 100436,
+            "opponent_id": 100277,
+            "winner_id": 100277,
             "set": 3,
             "round": 2
           },
@@ -7080,19 +7633,19 @@
             "round": 1
           },
           {
-            "opponent_id": 100437,
+            "opponent_id": 240,
             "winner_id": 100108,
             "set": 1,
             "round": 2
           },
           {
-            "opponent_id": 100437,
-            "winner_id": 100437,
+            "opponent_id": 240,
+            "winner_id": 240,
             "set": 2,
             "round": 1
           },
           {
-            "opponent_id": 100436,
+            "opponent_id": 100277,
             "winner_id": 100108,
             "set": 2,
             "round": 2
@@ -7110,14 +7663,14 @@
             "round": 1
           },
           {
-            "opponent_id": 100437,
+            "opponent_id": 240,
             "winner_id": 100108,
             "set": 3,
             "round": 2
           },
           {
-            "opponent_id": 100436,
-            "winner_id": 100436,
+            "opponent_id": 100277,
+            "winner_id": 100277,
             "set": 3,
             "round": 3
           }
@@ -13697,8 +14250,8 @@
             "round": 2
           },
           {
-            "opponent_id": 100437,
-            "winner_id": 100437,
+            "opponent_id": 240,
+            "winner_id": 240,
             "set": 1,
             "round": 3
           },
@@ -14001,7 +14554,7 @@
         "week_number": 3,
         "games": [
           {
-            "opponent_id": 100437,
+            "opponent_id": 240,
             "winner_id": 100199,
             "set": 1,
             "round": 1
@@ -14019,7 +14572,7 @@
             "round": 3
           },
           {
-            "opponent_id": 100437,
+            "opponent_id": 240,
             "winner_id": 100199,
             "set": 2,
             "round": 1
@@ -14031,8 +14584,8 @@
             "round": 2
           },
           {
-            "opponent_id": 100437,
-            "winner_id": 100437,
+            "opponent_id": 240,
+            "winner_id": 240,
             "set": 3,
             "round": 1
           },
@@ -14565,25 +15118,25 @@
         "week_number": 2,
         "games": [
           {
-            "opponent_id": 100437,
+            "opponent_id": 240,
             "winner_id": 100206,
             "set": 1,
             "round": 1
           },
           {
-            "opponent_id": 100436,
+            "opponent_id": 100277,
             "winner_id": 100206,
             "set": 1,
             "round": 2
           },
           {
-            "opponent_id": 100437,
+            "opponent_id": 240,
             "winner_id": 100206,
             "set": 2,
             "round": 1
           },
           {
-            "opponent_id": 100436,
+            "opponent_id": 100277,
             "winner_id": 100206,
             "set": 2,
             "round": 2
@@ -14698,7 +15251,7 @@
         "week_number": 2,
         "games": [
           {
-            "opponent_id": 100436,
+            "opponent_id": 100277,
             "winner_id": 100211,
             "set": 1,
             "round": 1
@@ -14710,7 +15263,7 @@
             "round": 2
           },
           {
-            "opponent_id": 100436,
+            "opponent_id": 100277,
             "winner_id": 100211,
             "set": 2,
             "round": 1
@@ -15784,14 +16337,14 @@
             "round": 2
           },
           {
-            "opponent_id": 100437,
-            "winner_id": 100437,
+            "opponent_id": 240,
+            "winner_id": 240,
             "set": 2,
             "round": 3
           },
           {
-            "opponent_id": 100437,
-            "winner_id": 100437,
+            "opponent_id": 240,
+            "winner_id": 240,
             "set": 3,
             "round": 1
           },
@@ -16041,8 +16594,8 @@
         "week_number": 4,
         "games": [
           {
-            "opponent_id": 100437,
-            "winner_id": 100437,
+            "opponent_id": 240,
+            "winner_id": 240,
             "set": 1,
             "round": 1
           },
@@ -16053,8 +16606,8 @@
             "round": 2
           },
           {
-            "opponent_id": 100437,
-            "winner_id": 100437,
+            "opponent_id": 240,
+            "winner_id": 240,
             "set": 2,
             "round": 1
           },
@@ -16077,7 +16630,7 @@
             "round": 1
           },
           {
-            "opponent_id": 100437,
+            "opponent_id": 240,
             "winner_id": 100220,
             "set": 3,
             "round": 2
@@ -16421,7 +16974,7 @@
             "round": 1
           },
           {
-            "opponent_id": 100437,
+            "opponent_id": 240,
             "winner_id": 100222,
             "set": 1,
             "round": 2
@@ -16433,8 +16986,8 @@
             "round": 1
           },
           {
-            "opponent_id": 100437,
-            "winner_id": 100437,
+            "opponent_id": 240,
+            "winner_id": 240,
             "set": 2,
             "round": 2
           },
@@ -16457,8 +17010,8 @@
             "round": 2
           },
           {
-            "opponent_id": 100437,
-            "winner_id": 100437,
+            "opponent_id": 240,
+            "winner_id": 240,
             "set": 3,
             "round": 3
           }
@@ -16508,6 +17061,146 @@
             "winner_id": 100199,
             "set": 3,
             "round": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 100223,
+    "weeks": [
+      {
+        "week_number": 2,
+        "games": [
+          {
+            "opponent_id": 49,
+            "winner_id": 100223,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100097,
+            "winner_id": 100223,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100336,
+            "winner_id": 100336,
+            "set": 1,
+            "round": 3
+          },
+          {
+            "opponent_id": 49,
+            "winner_id": 49,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100336,
+            "winner_id": 100336,
+            "set": 2,
+            "round": 2
+          }
+        ]
+      },
+      {
+        "week_number": 3,
+        "games": [
+          {
+            "opponent_id": 100386,
+            "winner_id": 100223,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100375,
+            "winner_id": 100223,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100383,
+            "winner_id": 100383,
+            "set": 1,
+            "round": 3
+          },
+          {
+            "opponent_id": 100386,
+            "winner_id": 100386,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100375,
+            "winner_id": 100223,
+            "set": 2,
+            "round": 2
+          },
+          {
+            "opponent_id": 100383,
+            "winner_id": 100223,
+            "set": 2,
+            "round": 3
+          }
+        ]
+      },
+      {
+        "week_number": 6,
+        "games": [
+          {
+            "opponent_id": 100303,
+            "winner_id": 100223,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100452,
+            "winner_id": 100452,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100457,
+            "winner_id": 100223,
+            "set": 1,
+            "round": 3
+          },
+          {
+            "opponent_id": 100452,
+            "winner_id": 100223,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100303,
+            "winner_id": 100223,
+            "set": 2,
+            "round": 2
+          },
+          {
+            "opponent_id": 100457,
+            "winner_id": 100457,
+            "set": 2,
+            "round": 3
+          },
+          {
+            "opponent_id": 100303,
+            "winner_id": 100223,
+            "set": 3,
+            "round": 1
+          },
+          {
+            "opponent_id": 100457,
+            "winner_id": 100457,
+            "set": 3,
+            "round": 2
+          },
+          {
+            "opponent_id": 100452,
+            "winner_id": 100452,
+            "set": 3,
+            "round": 3
           }
         ]
       }
@@ -20420,6 +21113,88 @@
             "round": 3
           }
         ]
+      },
+      {
+        "week_number": 1,
+        "games": [
+          {
+            "opponent_id": 100508,
+            "winner_id": 100508,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100102,
+            "winner_id": 100277,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100102,
+            "winner_id": 100102,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100108,
+            "winner_id": 100108,
+            "set": 2,
+            "round": 2
+          },
+          {
+            "opponent_id": 100508,
+            "winner_id": 100277,
+            "set": 2,
+            "round": 3
+          },
+          {
+            "opponent_id": 100508,
+            "winner_id": 100277,
+            "set": 3,
+            "round": 1
+          },
+          {
+            "opponent_id": 100102,
+            "winner_id": 100277,
+            "set": 3,
+            "round": 2
+          },
+          {
+            "opponent_id": 100108,
+            "winner_id": 100277,
+            "set": 3,
+            "round": 3
+          }
+        ]
+      },
+      {
+        "week_number": 2,
+        "games": [
+          {
+            "opponent_id": 100211,
+            "winner_id": 100211,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 100206,
+            "winner_id": 100206,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100211,
+            "winner_id": 100211,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 100206,
+            "winner_id": 100206,
+            "set": 2,
+            "round": 2
+          }
+        ]
       }
     ]
   },
@@ -20500,13 +21275,13 @@
             "round": 2
           },
           {
-            "opponent_id": 100400,
+            "opponent_id": 50,
             "winner_id": 100281,
             "set": 1,
             "round": 3
           },
           {
-            "opponent_id": 100400,
+            "opponent_id": 50,
             "winner_id": 100281,
             "set": 2,
             "round": 1
@@ -21731,13 +22506,13 @@
         "week_number": 3,
         "games": [
           {
-            "opponent_id": 100399,
-            "winner_id": 100399,
+            "opponent_id": 100097,
+            "winner_id": 100097,
             "set": 1,
             "round": 2
           },
           {
-            "opponent_id": 100399,
+            "opponent_id": 100097,
             "winner_id": 100288,
             "set": 2,
             "round": 1
@@ -21749,8 +22524,8 @@
             "round": 2
           },
           {
-            "opponent_id": 100400,
-            "winner_id": 100400,
+            "opponent_id": 50,
+            "winner_id": 50,
             "set": 2,
             "round": 3
           }
@@ -21993,8 +22768,8 @@
             "round": 1
           },
           {
-            "opponent_id": 100400,
-            "winner_id": 100400,
+            "opponent_id": 50,
+            "winner_id": 50,
             "set": 1,
             "round": 2
           },
@@ -22005,14 +22780,14 @@
             "round": 1
           },
           {
-            "opponent_id": 100400,
-            "winner_id": 100400,
+            "opponent_id": 50,
+            "winner_id": 50,
             "set": 2,
             "round": 2
           },
           {
-            "opponent_id": 100399,
-            "winner_id": 100399,
+            "opponent_id": 100097,
+            "winner_id": 100097,
             "set": 2,
             "round": 3
           }
@@ -22272,8 +23047,8 @@
         "week_number": 3,
         "games": [
           {
-            "opponent_id": 100399,
-            "winner_id": 100399,
+            "opponent_id": 100097,
+            "winner_id": 100097,
             "set": 1,
             "round": 1
           },
@@ -22284,13 +23059,13 @@
             "round": 2
           },
           {
-            "opponent_id": 100400,
-            "winner_id": 100400,
+            "opponent_id": 50,
+            "winner_id": 50,
             "set": 2,
             "round": 1
           },
           {
-            "opponent_id": 100399,
+            "opponent_id": 100097,
             "winner_id": 100294,
             "set": 2,
             "round": 2
@@ -23173,8 +23948,8 @@
         "week_number": 6,
         "games": [
           {
-            "opponent_id": 100418,
-            "winner_id": 100418,
+            "opponent_id": 100223,
+            "winner_id": 100223,
             "set": 1,
             "round": 1
           },
@@ -23197,8 +23972,8 @@
             "round": 1
           },
           {
-            "opponent_id": 100418,
-            "winner_id": 100418,
+            "opponent_id": 100223,
+            "winner_id": 100223,
             "set": 2,
             "round": 2
           },
@@ -23209,8 +23984,8 @@
             "round": 3
           },
           {
-            "opponent_id": 100418,
-            "winner_id": 100418,
+            "opponent_id": 100223,
+            "winner_id": 100223,
             "set": 3,
             "round": 1
           },
@@ -25552,8 +26327,8 @@
         "week_number": 6,
         "games": [
           {
-            "opponent_id": 100400,
-            "winner_id": 100400,
+            "opponent_id": 50,
+            "winner_id": 50,
             "set": 1,
             "round": 1
           },
@@ -25576,8 +26351,8 @@
             "round": 1
           },
           {
-            "opponent_id": 100400,
-            "winner_id": 100400,
+            "opponent_id": 50,
+            "winner_id": 50,
             "set": 2,
             "round": 2
           },
@@ -26078,7 +26853,7 @@
             "round": 1
           },
           {
-            "opponent_id": 100400,
+            "opponent_id": 50,
             "winner_id": 100325,
             "set": 1,
             "round": 2
@@ -26102,7 +26877,7 @@
             "round": 2
           },
           {
-            "opponent_id": 100400,
+            "opponent_id": 50,
             "winner_id": 100325,
             "set": 2,
             "round": 3
@@ -27035,13 +27810,13 @@
             "round": 1
           },
           {
-            "opponent_id": 100395,
-            "winner_id": 100395,
+            "opponent_id": 49,
+            "winner_id": 49,
             "set": 1,
             "round": 2
           },
           {
-            "opponent_id": 100399,
+            "opponent_id": 100097,
             "winner_id": 100334,
             "set": 1,
             "round": 3
@@ -27053,7 +27828,7 @@
             "round": 1
           },
           {
-            "opponent_id": 100399,
+            "opponent_id": 100097,
             "winner_id": 100334,
             "set": 2,
             "round": 2
@@ -27104,6 +27879,40 @@
     ]
   },
   {
+    "id": 100335,
+    "weeks": [
+      {
+        "week_number": 2,
+        "games": [
+          {
+            "opponent_id": 100435,
+            "winner_id": 100335,
+            "set": 1,
+            "round": 1
+          },
+          {
+            "opponent_id": 240,
+            "winner_id": 100335,
+            "set": 1,
+            "round": 2
+          },
+          {
+            "opponent_id": 100435,
+            "winner_id": 100335,
+            "set": 2,
+            "round": 1
+          },
+          {
+            "opponent_id": 240,
+            "winner_id": 100335,
+            "set": 2,
+            "round": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": 100336,
     "weeks": [
       {
@@ -27122,7 +27931,7 @@
             "round": 2
           },
           {
-            "opponent_id": 100418,
+            "opponent_id": 100223,
             "winner_id": 100336,
             "set": 1,
             "round": 3
@@ -27134,7 +27943,7 @@
             "round": 1
           },
           {
-            "opponent_id": 100418,
+            "opponent_id": 100223,
             "winner_id": 100336,
             "set": 2,
             "round": 2
@@ -30354,8 +31163,8 @@
             "round": 1
           },
           {
-            "opponent_id": 100418,
-            "winner_id": 100418,
+            "opponent_id": 100223,
+            "winner_id": 100223,
             "set": 1,
             "round": 2
           },
@@ -30372,8 +31181,8 @@
             "round": 1
           },
           {
-            "opponent_id": 100418,
-            "winner_id": 100418,
+            "opponent_id": 100223,
+            "winner_id": 100223,
             "set": 2,
             "round": 2
           },
@@ -30576,7 +31385,7 @@
         "week_number": 4,
         "games": [
           {
-            "opponent_id": 100400,
+            "opponent_id": 50,
             "winner_id": 100377,
             "set": 1,
             "round": 1
@@ -30600,8 +31409,8 @@
             "round": 1
           },
           {
-            "opponent_id": 100400,
-            "winner_id": 100400,
+            "opponent_id": 50,
+            "winner_id": 50,
             "set": 2,
             "round": 2
           },
@@ -30624,8 +31433,8 @@
             "round": 2
           },
           {
-            "opponent_id": 100400,
-            "winner_id": 100400,
+            "opponent_id": 50,
+            "winner_id": 50,
             "set": 3,
             "round": 3
           }
@@ -30944,7 +31753,7 @@
             "round": 1
           },
           {
-            "opponent_id": 100400,
+            "opponent_id": 50,
             "winner_id": 100382,
             "set": 1,
             "round": 2
@@ -30968,13 +31777,13 @@
             "round": 2
           },
           {
-            "opponent_id": 100400,
-            "winner_id": 100400,
+            "opponent_id": 50,
+            "winner_id": 50,
             "set": 2,
             "round": 3
           },
           {
-            "opponent_id": 100400,
+            "opponent_id": 50,
             "winner_id": 100382,
             "set": 3,
             "round": 1
@@ -31055,7 +31864,7 @@
             "round": 2
           },
           {
-            "opponent_id": 100418,
+            "opponent_id": 100223,
             "winner_id": 100383,
             "set": 1,
             "round": 3
@@ -31073,8 +31882,8 @@
             "round": 2
           },
           {
-            "opponent_id": 100418,
-            "winner_id": 100418,
+            "opponent_id": 100223,
+            "winner_id": 100223,
             "set": 2,
             "round": 3
           }
@@ -31089,8 +31898,8 @@
         "week_number": 3,
         "games": [
           {
-            "opponent_id": 100418,
-            "winner_id": 100418,
+            "opponent_id": 100223,
+            "winner_id": 100223,
             "set": 1,
             "round": 1
           },
@@ -31107,7 +31916,7 @@
             "round": 3
           },
           {
-            "opponent_id": 100418,
+            "opponent_id": 100223,
             "winner_id": 100386,
             "set": 2,
             "round": 1
@@ -32079,8 +32888,8 @@
             "round": 1
           },
           {
-            "opponent_id": 100437,
-            "winner_id": 100437,
+            "opponent_id": 240,
+            "winner_id": 240,
             "set": 1,
             "round": 2
           },
@@ -32168,105 +32977,6 @@
             "opponent_id": 100518,
             "winner_id": 100518,
             "set": 2,
-            "round": 3
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": 100395,
-    "weeks": [
-      {
-        "week_number": 2,
-        "games": [
-          {
-            "opponent_id": 100418,
-            "winner_id": 100418,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100334,
-            "winner_id": 100395,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100413,
-            "winner_id": 100395,
-            "set": 1,
-            "round": 3
-          },
-          {
-            "opponent_id": 100418,
-            "winner_id": 100395,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100413,
-            "winner_id": 100395,
-            "set": 2,
-            "round": 2
-          }
-        ]
-      },
-      {
-        "week_number": 5,
-        "games": [
-          {
-            "opponent_id": 100454,
-            "winner_id": 100395,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100452,
-            "winner_id": 100452,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100455,
-            "winner_id": 100395,
-            "set": 1,
-            "round": 3
-          },
-          {
-            "opponent_id": 100454,
-            "winner_id": 100454,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100455,
-            "winner_id": 100455,
-            "set": 2,
-            "round": 2
-          },
-          {
-            "opponent_id": 100452,
-            "winner_id": 100452,
-            "set": 2,
-            "round": 3
-          },
-          {
-            "opponent_id": 100455,
-            "winner_id": 100395,
-            "set": 3,
-            "round": 1
-          },
-          {
-            "opponent_id": 100454,
-            "winner_id": 100395,
-            "set": 3,
-            "round": 2
-          },
-          {
-            "opponent_id": 100452,
-            "winner_id": 100452,
-            "set": 3,
             "round": 3
           }
         ]
@@ -32453,250 +33163,6 @@
             "winner_id": 100398,
             "set": 2,
             "round": 2
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": 100399,
-    "weeks": [
-      {
-        "week_number": 2,
-        "games": [
-          {
-            "opponent_id": 100413,
-            "winner_id": 100399,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100418,
-            "winner_id": 100418,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100334,
-            "winner_id": 100334,
-            "set": 1,
-            "round": 3
-          },
-          {
-            "opponent_id": 100413,
-            "winner_id": 100399,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100334,
-            "winner_id": 100334,
-            "set": 2,
-            "round": 2
-          }
-        ]
-      },
-      {
-        "week_number": 3,
-        "games": [
-          {
-            "opponent_id": 100294,
-            "winner_id": 100399,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100288,
-            "winner_id": 100399,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100288,
-            "winner_id": 100288,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100294,
-            "winner_id": 100294,
-            "set": 2,
-            "round": 2
-          },
-          {
-            "opponent_id": 100291,
-            "winner_id": 100399,
-            "set": 2,
-            "round": 3
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": 100400,
-    "weeks": [
-      {
-        "week_number": 1,
-        "games": [
-          {
-            "opponent_id": 100446,
-            "winner_id": 100400,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100444,
-            "winner_id": 100400,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100281,
-            "winner_id": 100281,
-            "set": 1,
-            "round": 3
-          },
-          {
-            "opponent_id": 100281,
-            "winner_id": 100281,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100446,
-            "winner_id": 100446,
-            "set": 2,
-            "round": 2
-          }
-        ]
-      },
-      {
-        "week_number": 3,
-        "games": [
-          {
-            "opponent_id": 100291,
-            "winner_id": 100400,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100294,
-            "winner_id": 100400,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100291,
-            "winner_id": 100400,
-            "set": 2,
-            "round": 2
-          },
-          {
-            "opponent_id": 100288,
-            "winner_id": 100400,
-            "set": 2,
-            "round": 3
-          }
-        ]
-      },
-      {
-        "week_number": 4,
-        "games": [
-          {
-            "opponent_id": 100377,
-            "winner_id": 100377,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100382,
-            "winner_id": 100382,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100501,
-            "winner_id": 100501,
-            "set": 1,
-            "round": 3
-          },
-          {
-            "opponent_id": 100501,
-            "winner_id": 100501,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100377,
-            "winner_id": 100400,
-            "set": 2,
-            "round": 2
-          },
-          {
-            "opponent_id": 100382,
-            "winner_id": 100400,
-            "set": 2,
-            "round": 3
-          },
-          {
-            "opponent_id": 100382,
-            "winner_id": 100382,
-            "set": 3,
-            "round": 1
-          },
-          {
-            "opponent_id": 100501,
-            "winner_id": 100400,
-            "set": 3,
-            "round": 2
-          },
-          {
-            "opponent_id": 100377,
-            "winner_id": 100400,
-            "set": 3,
-            "round": 3
-          }
-        ]
-      },
-      {
-        "week_number": 6,
-        "games": [
-          {
-            "opponent_id": 100321,
-            "winner_id": 100400,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100325,
-            "winner_id": 100325,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100518,
-            "winner_id": 100518,
-            "set": 1,
-            "round": 3
-          },
-          {
-            "opponent_id": 100518,
-            "winner_id": 100400,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100321,
-            "winner_id": 100400,
-            "set": 2,
-            "round": 2
-          },
-          {
-            "opponent_id": 100325,
-            "winner_id": 100325,
-            "set": 2,
-            "round": 3
           }
         ]
       }
@@ -33697,48 +34163,14 @@
     ]
   },
   {
-    "id": 100412,
-    "weeks": [
-      {
-        "week_number": 2,
-        "games": [
-          {
-            "opponent_id": 100435,
-            "winner_id": 100412,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100437,
-            "winner_id": 100412,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100435,
-            "winner_id": 100412,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100437,
-            "winner_id": 100412,
-            "set": 2,
-            "round": 2
-          }
-        ]
-      }
-    ]
-  },
-  {
     "id": 100413,
     "weeks": [
       {
         "week_number": 2,
         "games": [
           {
-            "opponent_id": 100399,
-            "winner_id": 100399,
+            "opponent_id": 100097,
+            "winner_id": 100097,
             "set": 1,
             "round": 1
           },
@@ -33749,20 +34181,20 @@
             "round": 2
           },
           {
-            "opponent_id": 100395,
-            "winner_id": 100395,
+            "opponent_id": 49,
+            "winner_id": 49,
             "set": 1,
             "round": 3
           },
           {
-            "opponent_id": 100399,
-            "winner_id": 100399,
+            "opponent_id": 100097,
+            "winner_id": 100097,
             "set": 2,
             "round": 1
           },
           {
-            "opponent_id": 100395,
-            "winner_id": 100395,
+            "opponent_id": 49,
+            "winner_id": 49,
             "set": 2,
             "round": 2
           }
@@ -34019,146 +34451,6 @@
             "opponent_id": 100386,
             "winner_id": 100417,
             "set": 2,
-            "round": 3
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": 100418,
-    "weeks": [
-      {
-        "week_number": 2,
-        "games": [
-          {
-            "opponent_id": 100395,
-            "winner_id": 100418,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100399,
-            "winner_id": 100418,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100336,
-            "winner_id": 100336,
-            "set": 1,
-            "round": 3
-          },
-          {
-            "opponent_id": 100395,
-            "winner_id": 100395,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100336,
-            "winner_id": 100336,
-            "set": 2,
-            "round": 2
-          }
-        ]
-      },
-      {
-        "week_number": 3,
-        "games": [
-          {
-            "opponent_id": 100386,
-            "winner_id": 100418,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100375,
-            "winner_id": 100418,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100383,
-            "winner_id": 100383,
-            "set": 1,
-            "round": 3
-          },
-          {
-            "opponent_id": 100386,
-            "winner_id": 100386,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100375,
-            "winner_id": 100418,
-            "set": 2,
-            "round": 2
-          },
-          {
-            "opponent_id": 100383,
-            "winner_id": 100418,
-            "set": 2,
-            "round": 3
-          }
-        ]
-      },
-      {
-        "week_number": 6,
-        "games": [
-          {
-            "opponent_id": 100303,
-            "winner_id": 100418,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100452,
-            "winner_id": 100452,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100457,
-            "winner_id": 100418,
-            "set": 1,
-            "round": 3
-          },
-          {
-            "opponent_id": 100452,
-            "winner_id": 100418,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100303,
-            "winner_id": 100418,
-            "set": 2,
-            "round": 2
-          },
-          {
-            "opponent_id": 100457,
-            "winner_id": 100457,
-            "set": 2,
-            "round": 3
-          },
-          {
-            "opponent_id": 100303,
-            "winner_id": 100418,
-            "set": 3,
-            "round": 1
-          },
-          {
-            "opponent_id": 100457,
-            "winner_id": 100457,
-            "set": 3,
-            "round": 2
-          },
-          {
-            "opponent_id": 100452,
-            "winner_id": 100452,
-            "set": 3,
             "round": 3
           }
         ]
@@ -36077,8 +36369,8 @@
         "week_number": 2,
         "games": [
           {
-            "opponent_id": 100412,
-            "winner_id": 100412,
+            "opponent_id": 100335,
+            "winner_id": 100335,
             "set": 1,
             "round": 1
           },
@@ -36089,8 +36381,8 @@
             "round": 2
           },
           {
-            "opponent_id": 100412,
-            "winner_id": 100412,
+            "opponent_id": 100335,
+            "winner_id": 100335,
             "set": 2,
             "round": 1
           },
@@ -36258,303 +36550,6 @@
             "winner_id": 100366,
             "set": 3,
             "round": 2
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": 100436,
-    "weeks": [
-      {
-        "week_number": 1,
-        "games": [
-          {
-            "opponent_id": 100508,
-            "winner_id": 100508,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100102,
-            "winner_id": 100436,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100102,
-            "winner_id": 100102,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100108,
-            "winner_id": 100108,
-            "set": 2,
-            "round": 2
-          },
-          {
-            "opponent_id": 100508,
-            "winner_id": 100436,
-            "set": 2,
-            "round": 3
-          },
-          {
-            "opponent_id": 100508,
-            "winner_id": 100436,
-            "set": 3,
-            "round": 1
-          },
-          {
-            "opponent_id": 100102,
-            "winner_id": 100436,
-            "set": 3,
-            "round": 2
-          },
-          {
-            "opponent_id": 100108,
-            "winner_id": 100436,
-            "set": 3,
-            "round": 3
-          }
-        ]
-      },
-      {
-        "week_number": 2,
-        "games": [
-          {
-            "opponent_id": 100211,
-            "winner_id": 100211,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100206,
-            "winner_id": 100206,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100211,
-            "winner_id": 100211,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100206,
-            "winner_id": 100206,
-            "set": 2,
-            "round": 2
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": 100437,
-    "weeks": [
-      {
-        "week_number": 1,
-        "games": [
-          {
-            "opponent_id": 100102,
-            "winner_id": 100102,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100108,
-            "winner_id": 100108,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100108,
-            "winner_id": 100437,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100508,
-            "winner_id": 100508,
-            "set": 2,
-            "round": 2
-          },
-          {
-            "opponent_id": 100102,
-            "winner_id": 100437,
-            "set": 2,
-            "round": 3
-          },
-          {
-            "opponent_id": 100102,
-            "winner_id": 100437,
-            "set": 3,
-            "round": 1
-          },
-          {
-            "opponent_id": 100108,
-            "winner_id": 100108,
-            "set": 3,
-            "round": 2
-          },
-          {
-            "opponent_id": 100508,
-            "winner_id": 100437,
-            "set": 3,
-            "round": 3
-          }
-        ]
-      },
-      {
-        "week_number": 2,
-        "games": [
-          {
-            "opponent_id": 100206,
-            "winner_id": 100206,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100412,
-            "winner_id": 100412,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100206,
-            "winner_id": 100206,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100412,
-            "winner_id": 100412,
-            "set": 2,
-            "round": 2
-          }
-        ]
-      },
-      {
-        "week_number": 3,
-        "games": [
-          {
-            "opponent_id": 100199,
-            "winner_id": 100199,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100521,
-            "winner_id": 100521,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100197,
-            "winner_id": 100437,
-            "set": 1,
-            "round": 3
-          },
-          {
-            "opponent_id": 100199,
-            "winner_id": 100199,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100521,
-            "winner_id": 100521,
-            "set": 2,
-            "round": 2
-          },
-          {
-            "opponent_id": 100199,
-            "winner_id": 100437,
-            "set": 3,
-            "round": 1
-          },
-          {
-            "opponent_id": 100521,
-            "winner_id": 100521,
-            "set": 3,
-            "round": 2
-          }
-        ]
-      },
-      {
-        "week_number": 4,
-        "games": [
-          {
-            "opponent_id": 100220,
-            "winner_id": 100437,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100222,
-            "winner_id": 100222,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100220,
-            "winner_id": 100437,
-            "set": 2,
-            "round": 1
-          },
-          {
-            "opponent_id": 100222,
-            "winner_id": 100437,
-            "set": 2,
-            "round": 2
-          },
-          {
-            "opponent_id": 100219,
-            "winner_id": 100437,
-            "set": 2,
-            "round": 3
-          },
-          {
-            "opponent_id": 100219,
-            "winner_id": 100437,
-            "set": 3,
-            "round": 1
-          },
-          {
-            "opponent_id": 100220,
-            "winner_id": 100220,
-            "set": 3,
-            "round": 2
-          },
-          {
-            "opponent_id": 100222,
-            "winner_id": 100437,
-            "set": 3,
-            "round": 3
-          }
-        ]
-      },
-      {
-        "week_number": 7,
-        "games": [
-          {
-            "opponent_id": 100095,
-            "winner_id": 100095,
-            "set": 1,
-            "round": 1
-          },
-          {
-            "opponent_id": 100392,
-            "winner_id": 100437,
-            "set": 1,
-            "round": 2
-          },
-          {
-            "opponent_id": 100507,
-            "winner_id": 100437,
-            "set": 1,
-            "round": 3
           }
         ]
       }
@@ -37233,8 +37228,8 @@
             "round": 1
           },
           {
-            "opponent_id": 100400,
-            "winner_id": 100400,
+            "opponent_id": 50,
+            "winner_id": 50,
             "set": 1,
             "round": 2
           },
@@ -37342,8 +37337,8 @@
         "week_number": 1,
         "games": [
           {
-            "opponent_id": 100400,
-            "winner_id": 100400,
+            "opponent_id": 50,
+            "winner_id": 50,
             "set": 1,
             "round": 1
           },
@@ -37366,7 +37361,7 @@
             "round": 1
           },
           {
-            "opponent_id": 100400,
+            "opponent_id": 50,
             "winner_id": 100446,
             "set": 2,
             "round": 2
@@ -37887,7 +37882,7 @@
             "round": 1
           },
           {
-            "opponent_id": 100395,
+            "opponent_id": 49,
             "winner_id": 100452,
             "set": 1,
             "round": 2
@@ -37911,7 +37906,7 @@
             "round": 2
           },
           {
-            "opponent_id": 100395,
+            "opponent_id": 49,
             "winner_id": 100452,
             "set": 2,
             "round": 3
@@ -37929,7 +37924,7 @@
             "round": 2
           },
           {
-            "opponent_id": 100395,
+            "opponent_id": 49,
             "winner_id": 100452,
             "set": 3,
             "round": 3
@@ -37946,7 +37941,7 @@
             "round": 1
           },
           {
-            "opponent_id": 100418,
+            "opponent_id": 100223,
             "winner_id": 100452,
             "set": 1,
             "round": 2
@@ -37958,8 +37953,8 @@
             "round": 3
           },
           {
-            "opponent_id": 100418,
-            "winner_id": 100418,
+            "opponent_id": 100223,
+            "winner_id": 100223,
             "set": 2,
             "round": 1
           },
@@ -37988,7 +37983,7 @@
             "round": 2
           },
           {
-            "opponent_id": 100418,
+            "opponent_id": 100223,
             "winner_id": 100452,
             "set": 3,
             "round": 3
@@ -38179,8 +38174,8 @@
         "week_number": 5,
         "games": [
           {
-            "opponent_id": 100395,
-            "winner_id": 100395,
+            "opponent_id": 49,
+            "winner_id": 49,
             "set": 1,
             "round": 1
           },
@@ -38197,7 +38192,7 @@
             "round": 3
           },
           {
-            "opponent_id": 100395,
+            "opponent_id": 49,
             "winner_id": 100454,
             "set": 2,
             "round": 1
@@ -38221,8 +38216,8 @@
             "round": 1
           },
           {
-            "opponent_id": 100395,
-            "winner_id": 100395,
+            "opponent_id": 49,
+            "winner_id": 49,
             "set": 3,
             "round": 2
           },
@@ -38314,8 +38309,8 @@
             "round": 2
           },
           {
-            "opponent_id": 100395,
-            "winner_id": 100395,
+            "opponent_id": 49,
+            "winner_id": 49,
             "set": 1,
             "round": 3
           },
@@ -38326,7 +38321,7 @@
             "round": 1
           },
           {
-            "opponent_id": 100395,
+            "opponent_id": 49,
             "winner_id": 100455,
             "set": 2,
             "round": 2
@@ -38338,8 +38333,8 @@
             "round": 3
           },
           {
-            "opponent_id": 100395,
-            "winner_id": 100395,
+            "opponent_id": 49,
+            "winner_id": 49,
             "set": 3,
             "round": 1
           },
@@ -38519,8 +38514,8 @@
             "round": 2
           },
           {
-            "opponent_id": 100418,
-            "winner_id": 100418,
+            "opponent_id": 100223,
+            "winner_id": 100223,
             "set": 1,
             "round": 3
           },
@@ -38537,7 +38532,7 @@
             "round": 2
           },
           {
-            "opponent_id": 100418,
+            "opponent_id": 100223,
             "winner_id": 100457,
             "set": 2,
             "round": 3
@@ -38549,7 +38544,7 @@
             "round": 1
           },
           {
-            "opponent_id": 100418,
+            "opponent_id": 100223,
             "winner_id": 100457,
             "set": 3,
             "round": 2
@@ -40136,13 +40131,13 @@
             "round": 2
           },
           {
-            "opponent_id": 100400,
+            "opponent_id": 50,
             "winner_id": 100501,
             "set": 1,
             "round": 3
           },
           {
-            "opponent_id": 100400,
+            "opponent_id": 50,
             "winner_id": 100501,
             "set": 2,
             "round": 1
@@ -40166,8 +40161,8 @@
             "round": 1
           },
           {
-            "opponent_id": 100400,
-            "winner_id": 100400,
+            "opponent_id": 50,
+            "winner_id": 50,
             "set": 3,
             "round": 2
           },
@@ -40541,8 +40536,8 @@
             "round": 2
           },
           {
-            "opponent_id": 100437,
-            "winner_id": 100437,
+            "opponent_id": 240,
+            "winner_id": 240,
             "set": 1,
             "round": 3
           }
@@ -40557,7 +40552,7 @@
         "week_number": 1,
         "games": [
           {
-            "opponent_id": 100436,
+            "opponent_id": 100277,
             "winner_id": 100508,
             "set": 1,
             "round": 1
@@ -40575,20 +40570,20 @@
             "round": 1
           },
           {
-            "opponent_id": 100437,
+            "opponent_id": 240,
             "winner_id": 100508,
             "set": 2,
             "round": 2
           },
           {
-            "opponent_id": 100436,
-            "winner_id": 100436,
+            "opponent_id": 100277,
+            "winner_id": 100277,
             "set": 2,
             "round": 3
           },
           {
-            "opponent_id": 100436,
-            "winner_id": 100436,
+            "opponent_id": 100277,
+            "winner_id": 100277,
             "set": 3,
             "round": 1
           },
@@ -40599,8 +40594,8 @@
             "round": 2
           },
           {
-            "opponent_id": 100437,
-            "winner_id": 100437,
+            "opponent_id": 240,
+            "winner_id": 240,
             "set": 3,
             "round": 3
           }
@@ -41719,14 +41714,14 @@
             "round": 2
           },
           {
-            "opponent_id": 100400,
+            "opponent_id": 50,
             "winner_id": 100518,
             "set": 1,
             "round": 3
           },
           {
-            "opponent_id": 100400,
-            "winner_id": 100400,
+            "opponent_id": 50,
+            "winner_id": 50,
             "set": 2,
             "round": 1
           },
@@ -42351,7 +42346,7 @@
             "round": 1
           },
           {
-            "opponent_id": 100437,
+            "opponent_id": 240,
             "winner_id": 100521,
             "set": 1,
             "round": 2
@@ -42369,7 +42364,7 @@
             "round": 1
           },
           {
-            "opponent_id": 100437,
+            "opponent_id": 240,
             "winner_id": 100521,
             "set": 2,
             "round": 2
@@ -42381,7 +42376,7 @@
             "round": 1
           },
           {
-            "opponent_id": 100437,
+            "opponent_id": 240,
             "winner_id": 100521,
             "set": 3,
             "round": 2

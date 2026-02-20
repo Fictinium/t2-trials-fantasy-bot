@@ -146,7 +146,7 @@ function parseMatchText(text) {
         for (const key of keys) {
           triedKeys.push(key.toLowerCase());
           const id = playerIdMap[key.toLowerCase()];
-          if (id) return id;
+          if (id !== undefined && id !== null) return id;
         }
         // Fallback: try all player_ids.txt entries that match this name (with any team)
         const namePattern = new RegExp('^' + name.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ' \((.+)\)$', 'i');
