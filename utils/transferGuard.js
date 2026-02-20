@@ -24,10 +24,9 @@ export async function canModifyTeam(discordId, proposedTeamIds /* array of Objec
   const proposed = (proposedTeamIds || []).map(String);
 
   // Count changes as the number of new player IDs added to the team (not in the snapshot)
-  let changes = 0;
-  for (const id of proposed) {
-    if (!snap.includes(id)) changes++;
-  }
+  // Only count new additions (IDs in proposed, not in snapshot)
+  const additions = proposed.filter(id => !snap.includes(id));
+  const changes = additions.length;
 
   if (changes <= limit) {
     return { allowed: true, reason: 'PLAYOFFS_OK', swapsUsed: changes, limit };

@@ -110,7 +110,11 @@ export default {
         let msg = '⛔ Team changes are locked.';
         if (check.reason === 'SWISS_LOCKED') msg = '⛔ Team changes are locked during the swiss period.';
         else if (check.reason === 'PLAYOFFS_LOCKED') msg = '⛔ Team changes are currently locked for playoffs.';
-        else if (check.reason === 'PLAYOFFS_LIMIT') msg = `⛔ Playoff swap limit reached. You have used **${check.swapsUsed}/${check.limit}** allowed swaps.`;
+        else if (check.reason === 'PLAYOFFS_LIMIT') {
+          // Calculate swaps already made (excluding the attempted addition)
+          const swapsMade = check.limit;
+          msg = `⛔ Playoff swap limit reached. You have used **${swapsMade}/${check.limit}** allowed swaps.`;
+        }
         return interaction.reply({ content: msg, flags: 64 });
       }
 
