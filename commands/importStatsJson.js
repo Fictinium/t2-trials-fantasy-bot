@@ -4,6 +4,7 @@ import { isAuthorizedForCommand } from '../utils/commandAuth.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import Team from '../models/Team.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
+import { normalizeStatsPayload, resolveSeasonFromPayloadNumber } from '../services/importer.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -37,15 +38,28 @@ export default {
       const res = await fetch(file.url);
       const text = await res.text();
       payload = JSON.parse(text);
-      if (!Array.isArray(payload)) throw new Error('Root must be an array of players.');
     } catch (e) {
       await interaction.editReply(`❌ Invalid JSON: ${e.message}`);
       return;
     }
 
+    let parsed;
+    try {
+      parsed = normalizeStatsPayload(payload);
+    } catch (e) {
+      await interaction.editReply(`❌ Invalid JSON: ${e.message}`);
+      return;
+    }
+
+    const { playersArray, seasonNumber } = parsed;
+    const { season: targetSeason, usedFallback } = await resolveSeasonFromPayloadNumber(seasonNumber, season);
+    if (!targetSeason) {
+      return interaction.editReply('❌ Could not resolve a target season for import.');
+    }
+
     let updatedPlayers = 0, createdPlayers = 0, skipped = 0, notFoundNoTeam = 0, teamCreated = 0;
 
-    for (const p of payload) {
+    for (const p of playersArray) {
       const playerIdNum   = Number(p?.id);
       // const fantasyCost   = Math.max(0, Number(p?.fantasy_points ?? 0)); // Disabled: do not import cost
       const weeks         = Array.isArray(p?.weeks) ? p.weeks : [];
@@ -53,7 +67,7 @@ export default {
       // Lookup player by externalId
       let dbPlayer = null;
       if (Number.isFinite(playerIdNum)) {
-        dbPlayer = await T2TrialsPlayer.findOne({ externalId: playerIdNum, season: season._id }).populate('team');
+        dbPlayer = await T2TrialsPlayer.findOne({ externalId: playerIdNum, season: targetSeason._id }).populate('team');
       }
       if (!dbPlayer) { skipped++; continue; }
 
@@ -129,7 +143,7 @@ export default {
           team: teamDoc._id,
           // cost: fantasyCost, // Disabled: do not import cost
           performance: [...perfByWeek.values()].sort((a, b) => a.week - b.week),
-          season: season._id
+          season: targetSeason._id
         });
 
         // Link into Team
@@ -177,6 +191,8 @@ export default {
 
     await interaction.editReply(
       `✅ Import complete.\n` +
+      `• Target season: **${targetSeason.name}**${usedFallback ? ' (fallback to active season)' : ''}\n` +
+      `• Source season number: **${Number.isFinite(seasonNumber) ? seasonNumber : 'N/A'}**\n` +
       `• Created players: **${createdPlayers}**\n` +
       `• Updated players: **${updatedPlayers}**\n` +
       `• Teams created: **${teamCreated}**\n` +

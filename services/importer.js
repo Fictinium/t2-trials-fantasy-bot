@@ -1,13 +1,61 @@
 import getActiveSeason from '../utils/getActiveSeason.js';
+import Season from '../models/Season.js';
 import Team from '../models/Team.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
 
 function escapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
-export async function importStatsArray(playersArray) {
+export function normalizeStatsPayload(raw) {
+  if (Array.isArray(raw)) {
+    return { playersArray: raw, seasonNumber: null };
+  }
+
+  if (raw && typeof raw === 'object') {
+    const seasonNumberRaw = Number(raw.season);
+    const seasonNumber = Number.isFinite(seasonNumberRaw) ? seasonNumberRaw : null;
+
+    const playersArray = Array.isArray(raw.players)
+      ? raw.players
+      : Array.isArray(raw.data)
+        ? raw.data
+        : Array.isArray(raw.payload)
+          ? raw.payload
+          : Array.isArray(raw.stats)
+            ? raw.stats
+            : null;
+
+    if (playersArray) {
+      return { playersArray, seasonNumber };
+    }
+  }
+
+  throw new Error('Invalid JSON root. Expected an array, or an object with a players/data/payload/stats array.');
+}
+
+export async function resolveSeasonFromPayloadNumber(seasonNumber, fallbackSeason = null) {
+  if (Number.isFinite(seasonNumber)) {
+    const n = Number(seasonNumber);
+
+    const directNameCandidates = [String(n), `S${n}`, `s${n}`, `Season ${n}`, `season ${n}`];
+    let season = await Season.findOne({ name: { $in: directNameCandidates } });
+
+    if (!season) {
+      season = await Season.findOne({ name: { $regex: `(^|\\D)${n}$`, $options: 'i' } });
+    }
+
+    if (season) {
+      return { season, usedFallback: false, seasonNumber: n };
+    }
+  }
+
+  const active = fallbackSeason || await getActiveSeason();
+  return { season: active, usedFallback: true, seasonNumber: Number.isFinite(seasonNumber) ? Number(seasonNumber) : null };
+}
+
+export async function importStatsArray(playersArray, seasonId = null) {
   if (!Array.isArray(playersArray)) throw new Error('Expected array root');
 
-  const season = await getActiveSeason();
+  const season = seasonId ? await Season.findById(seasonId) : await getActiveSeason();
   if (!season) throw new Error('No active season');
 
   let createdPlayers = 0;
@@ -126,9 +174,22 @@ export async function importStatsArray(playersArray) {
   return { createdPlayers, updatedPlayers, teamsCreated, skipped, notFound };
 }
 
-export async function importStatsFromUrl(url) {
+export async function importStatsFromUrl(url, fallbackSeasonId = null) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Fetch failed ${res.status}`);
   const data = await res.json();
-  return importStatsArray(data);
+
+  const { playersArray, seasonNumber } = normalizeStatsPayload(data);
+  const fallbackSeason = fallbackSeasonId ? await Season.findById(fallbackSeasonId) : await getActiveSeason();
+  const { season, usedFallback } = await resolveSeasonFromPayloadNumber(seasonNumber, fallbackSeason);
+  if (!season) throw new Error('No season available to import into');
+
+  const importRes = await importStatsArray(playersArray, season._id);
+  return {
+    ...importRes,
+    seasonId: season._id,
+    seasonName: season.name,
+    sourceSeasonNumber: seasonNumber,
+    usedFallbackSeason: usedFallback
+  };
 }

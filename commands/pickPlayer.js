@@ -6,6 +6,26 @@ import isRegistered from '../utils/checkRegistration.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
 import Team from '../models/Team.js';
+import FantasyConfig from '../models/FantasyConfig.js';
+
+async function upsertWeeklyLineupSnapshot(discordId, seasonId) {
+  const cfg = await FantasyConfig.findOne({ season: seasonId }, { scoringMode: 1, currentWeek: 1 }).lean();
+  if ((cfg?.scoringMode ?? 'LEGACY_PHASE') !== 'WEEKLY_SNAPSHOT') return;
+
+  const week = Number(cfg?.currentWeek) || 1;
+  const fp = await FantasyPlayer.findOne({ discordId, season: seasonId }, { team: 1, weeklyLineups: 1 });
+  if (!fp) return;
+
+  const idx = (fp.weeklyLineups || []).findIndex(w => Number(w?.week) === week);
+  const currentTeamIds = Array.isArray(fp.team) ? fp.team.map(p => p?._id ?? p) : [];
+  if (idx >= 0) {
+    fp.weeklyLineups[idx].team = currentTeamIds;
+    fp.weeklyLineups[idx].lockedAt = new Date();
+  } else {
+    fp.weeklyLineups.push({ week, team: currentTeamIds, lockedAt: new Date() });
+  }
+  await fp.save();
+}
 
 export default {
   data: new SlashCommandBuilder()
@@ -110,6 +130,8 @@ export default {
         let msg = '⛔ Team changes are locked.';
         if (check.reason === 'SWISS_LOCKED') msg = '⛔ Team changes are locked during the swiss period.';
         else if (check.reason === 'PLAYOFFS_LOCKED') msg = '⛔ Team changes are currently locked for playoffs.';
+        else if (check.reason === 'WEEK_LOCKED') msg = `⛔ Team changes are locked for week **${check.week}** because matches already started.`;
+        else if (check.reason === 'NO_ACTIVE_SEASON') msg = '❌ No active season set.';
         else if (check.reason === 'PLAYOFFS_LIMIT') {
           // Calculate swaps already made (excluding the attempted addition)
           const swapsMade = check.limit;
@@ -141,6 +163,8 @@ export default {
           leaguePlayer._id,
           { $addToSet: { fantasyTeams: fp._id } } // Add the fantasy player to the fantasyTeams array
         );
+
+        await upsertWeeklyLineupSnapshot(discordId, season._id);
       }
 
       if (!updated) {

@@ -8,6 +8,11 @@ const fantasyPlayerSchema = new mongoose.Schema({
   totalPoints: { type: Number, default: 0, min: 0 },
   wallet: { type: Number, default: 110, min: 0 },
   season: { type: mongoose.Schema.Types.ObjectId, ref: 'Season', required: true, index: true },
+  weeklyLineups: [{
+    week: { type: Number, required: true, min: 1 },
+    team: [{ type: mongoose.Schema.Types.ObjectId, ref: 'T2TrialsPlayer', default: [] }],
+    lockedAt: { type: Date, default: Date.now }
+  }],
   // snapshots for phase boundaries
   swissLockSnapshot: [{ type: mongoose.Schema.Types.ObjectId, ref: 'T2TrialsPlayer', default: [] }],
   playoffSnapshot: [{ type: mongoose.Schema.Types.ObjectId, ref: 'T2TrialsPlayer', default: [] }]

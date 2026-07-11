@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 const fantasyConfigSchema = new mongoose.Schema({
   seasonName: { type: String, default: 'S1' },
   phase: { type: String, enum: ['PRESEASON', 'SWISS', 'PLAYOFFS_OPEN', 'PLAYOFFS_LOCKED', 'SEASON_ENDED'], default: 'PRESEASON' },
+  scoringMode: { type: String, enum: ['LEGACY_PHASE', 'WEEKLY_SNAPSHOT'], default: 'LEGACY_PHASE' },
+  weeklyTransferPhase: { type: String, enum: ['OPEN', 'LOCKED'], default: 'OPEN' },
   season: { type: mongoose.Schema.Types.ObjectId, ref: 'Season', required: true, index: true },
 
   // how many swaps are allowed in PLAYOFFS (replacements vs snapshot)

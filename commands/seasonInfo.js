@@ -27,6 +27,8 @@ export default {
       `**Created:** <t:${Math.floor(new Date(season.createdAt).getTime() / 1000)}:R>\n\n` +
       `**FantasyConfig:**\n` +
       `• Phase: **${cfg?.phase ?? 'N/A'}**\n` +
+      `• Scoring Mode: **${cfg?.scoringMode ?? 'LEGACY_PHASE'}**\n` +
+      `• Weekly Transfer Phase: **${cfg?.weeklyTransferPhase ?? 'OPEN'}**\n` +
       `• Current Week: **${cfg?.currentWeek ?? 'N/A'}**\n` +
       `• Playoff Swap Limit: **${cfg?.playoffSwapLimit ?? 'N/A'}**\n`
     );

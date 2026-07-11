@@ -3,6 +3,7 @@ import { computePointsForPerfSimple, totalPointsForPlayer, getWeekPerf, computeP
 import getActiveSeason from '../utils/getActiveSeason.js';
 import isRegistered from '../utils/checkRegistration.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
+import FantasyConfig from '../models/FantasyConfig.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -41,9 +42,13 @@ export default {
     // Load player doc and populate team (so we can show contributors). Use stored weeklyPoints for totals.
     const user = await FantasyPlayer.findOne(
       { discordId, season: season._id },
-      { username: 1, weeklyPoints: 1, totalPoints: 1, team: 1 }
+      { username: 1, weeklyPoints: 1, totalPoints: 1, team: 1, weeklyLineups: 1 }
     ).populate({ path: 'team', match: { season: season._id }, select: 'name username performance' })
+    .populate({ path: 'weeklyLineups.team', match: { season: season._id }, select: 'name username performance' })
     .lean();
+
+    const cfg = await FantasyConfig.findOne({ season: season._id }, { scoringMode: 1 }).lean();
+    const scoringMode = cfg?.scoringMode ?? 'LEGACY_PHASE';
 
     if (!user) {
       return interaction.reply({
@@ -56,15 +61,23 @@ export default {
     const weekly = Array.isArray(user.weeklyPoints) ? user.weeklyPoints : [];
     const storedTotal = Number.isFinite(user.totalPoints) ? user.totalPoints : 0;
     const team = Array.isArray(user.team) ? user.team : [];
+    const getLineupForWeek = (wk) => {
+      if (scoringMode !== 'WEEKLY_SNAPSHOT') return team;
+      const snap = Array.isArray(user.weeklyLineups)
+        ? user.weeklyLineups.find(w => Number(w?.week) === Number(wk))
+        : null;
+      return Array.isArray(snap?.team) ? snap.team : team;
+    };
 
     // Option A: specific week view -> show stored points + detailed contributor breakdown below
     if (week) {
       const idx = week - 1;
       const points = Number.isFinite(weekly[idx]) ? weekly[idx] : 0;
+      const lineup = getLineupForWeek(week);
 
       const memberLines = [];
       let membersSum = 0;
-      for (const member of team) {
+      for (const member of lineup) {
         const mPerf = getWeekPerf(member, week);
         const mPts = computePointsForPerfSimple(mPerf);
         membersSum += mPts;
@@ -99,7 +112,8 @@ export default {
       const pts = Number.isFinite(weekly[i]) ? weekly[i] : 0;
       // Per-member points, horizontal
       const memberParts = [];
-      for (const member of team) {
+      const lineup = getLineupForWeek(wk);
+      for (const member of lineup) {
         const mPerf = getWeekPerf(member, wk);
         const mPts = computePointsFromPerf(mPerf, member, wk);
         if (mPts > 0) {

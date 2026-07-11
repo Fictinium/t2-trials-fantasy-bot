@@ -5,6 +5,7 @@ import FantasyPlayer from '../models/FantasyPlayer.js';
 import { importStatsFromUrl } from '../services/importer.js';
 import { calculateScoresForWeek } from '../services/scoring.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
+import Season from '../models/Season.js';
 
 export function startWeeklyJob() {
   if (process.env.JOBS_ENABLED !== '1') {
@@ -29,10 +30,18 @@ export async function runWeeklyImportOnce({ fullRecalc = false, advancePointer =
   const url = process.env.STATS_URL;
   if (!url) return { error: 'STATS_URL not set' };
 
-  const season = await getActiveSeason();
-  if (!season) return { error: 'No active season' };
+  const activeSeason = await getActiveSeason();
+  if (!activeSeason) return { error: 'No active season' };
 
-  // find or create config for the active season
+  // 1) import stats; payload may point to a specific season number
+  const importRes = await importStatsFromUrl(url, activeSeason._id);
+  const targetSeasonId = importRes?.seasonId || activeSeason._id;
+  const season = String(targetSeasonId) === String(activeSeason._id)
+    ? activeSeason
+    : await Season.findById(targetSeasonId);
+  if (!season) return { error: 'Resolved season not found' };
+
+  // find or create config for the resolved season
   let cfg = await FantasyConfig.findOne({ season: season._id });
   if (!cfg) {
     cfg = await FantasyConfig.create({
@@ -44,9 +53,6 @@ export async function runWeeklyImportOnce({ fullRecalc = false, advancePointer =
 
   const week = cfg.currentWeek;
   console.log(`[manualImport] season=${season.name} fullRecalc=${fullRecalc} advancePointer=${advancePointer}`);
-
-  // 1) import stats FOR THIS SEASON
-  const importRes = await importStatsFromUrl(url, season._id);
 
   // 2) calculate scores
   if (fullRecalc) {
@@ -81,4 +87,19 @@ export async function runWeeklyImportOnce({ fullRecalc = false, advancePointer =
     }
     return { importRes, recalculatedWeeks: toWeek, totalUpdated, season: season._id };
   }
+
+  // Normal scheduled/manual run: score only the pointer week.
+  const updated = await calculateScoresForWeek(season._id, week);
+  if (advancePointer) {
+    cfg.currentWeek = week + 1;
+    await cfg.save();
+  }
+
+  return {
+    importRes,
+    scoredWeek: week,
+    updated,
+    nextWeek: cfg.currentWeek,
+    season: season._id
+  };
 }

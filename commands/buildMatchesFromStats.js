@@ -5,6 +5,7 @@ import getActiveSeason from '../utils/getActiveSeason.js';
 import Team from '../models/Team.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
 import Match from '../models/Match.js';
+import { normalizeStatsPayload, resolveSeasonFromPayloadNumber } from '../services/importer.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -36,13 +37,30 @@ export default {
 
     // load JSON
     const res = await fetch(file.url);
-    const payload = JSON.parse(await res.text());
-    if (!Array.isArray(payload)) return interaction.editReply('❌ JSON root must be an array.');
+    let rawPayload;
+    try {
+      rawPayload = JSON.parse(await res.text());
+    } catch (e) {
+      return interaction.editReply(`❌ Invalid JSON: ${e.message}`);
+    }
+
+    let parsed;
+    try {
+      parsed = normalizeStatsPayload(rawPayload);
+    } catch (e) {
+      return interaction.editReply(`❌ Invalid JSON: ${e.message}`);
+    }
+
+    const { playersArray: payload, seasonNumber } = parsed;
+    const { season: targetSeason, usedFallback } = await resolveSeasonFromPayloadNumber(seasonNumber, season);
+    if (!targetSeason) {
+      return interaction.editReply('❌ Could not resolve a target season for match build.');
+    }
 
     // resolve teams (case-insensitive exact)
     const [teamA, teamB] = await Promise.all([
-      Team.findOne({ name: { $regex: `^${escapeRegex(teamAName)}$`, $options: 'i' }, season: season._id }),
-      Team.findOne({ name: { $regex: `^${escapeRegex(teamBName)}$`, $options: 'i' }, season: season._id })
+      Team.findOne({ name: { $regex: `^${escapeRegex(teamAName)}$`, $options: 'i' }, season: targetSeason._id }),
+      Team.findOne({ name: { $regex: `^${escapeRegex(teamBName)}$`, $options: 'i' }, season: targetSeason._id })
     ]);
     if (!teamA) return interaction.editReply(`❌ Team not found: ${teamAName}`);
     if (!teamB) return interaction.editReply(`❌ Team not found: ${teamBName}`);
@@ -51,7 +69,7 @@ export default {
     const [tLow, tHigh] = String(teamA._id) < String(teamB._id) ? [teamA, teamB] : [teamB, teamA];
 
     // prevent duplicates (check both orders)
-    const dupe = await Match.findOne({ week, teamA: tLow._id, teamB: tHigh._id, season: season._id });
+    const dupe = await Match.findOne({ week, teamA: tLow._id, teamB: tHigh._id, season: targetSeason._id });
     if (dupe) {
       return interaction.editReply(`❌ Match already exists for Week ${week}: ${tLow.name} vs ${tHigh.name}`);
     }
@@ -60,7 +78,7 @@ export default {
     const byExtId = new Map();
     const teamMap = new Map(); // extId -> 'A' | 'B'
     for (const p of await T2TrialsPlayer.find(
-      { team: { $in: [teamA._id, teamB._id] }, season: season._id },
+      { team: { $in: [teamA._id, teamB._id] }, season: targetSeason._id },
       { externalId: 1, team: 1, name: 1 }
     ).lean()) {
       if (p.externalId !== undefined && p.externalId !== null) {
@@ -163,21 +181,26 @@ export default {
       sets,
       winner: matchWinner,
       playersResults,
-      season: season._id
+      season: targetSeason._id
     });
 
     // --- Update all affected real players' points after match entry ---
     const { totalPointsForPlayer, calculateScoresForWeek } = await import('../services/scoring.js');
     const playerIds = playersResults.map(pr => pr.player).filter(Boolean);
-    const affectedPlayers = await T2TrialsPlayer.find({ _id: { $in: playerIds }, season: season._id });
+    const affectedPlayers = await T2TrialsPlayer.find({ _id: { $in: playerIds }, season: targetSeason._id });
     for (const player of affectedPlayers) {
       player.totalPoints = totalPointsForPlayer(player);
       await player.save();
     }
 
     // --- Recalculate all fantasy teams' scores for this week ---
-    await calculateScoresForWeek(season._id, week);
+    await calculateScoresForWeek(targetSeason._id, week);
 
-    return interaction.editReply(`✅ Built match for Week ${week}: ${tLow.name} vs ${tHigh.name}. All player and fantasy team points recalculated.`);
+    return interaction.editReply(
+      `✅ Built match for Week ${week}: ${tLow.name} vs ${tHigh.name}.\n` +
+      `• Target season: **${targetSeason.name}**${usedFallback ? ' (fallback to active season)' : ''}\n` +
+      `• Source season number: **${Number.isFinite(seasonNumber) ? seasonNumber : 'N/A'}**\n` +
+      `All player and fantasy team points recalculated.`
+    );
   }
 };

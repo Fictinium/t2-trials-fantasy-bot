@@ -43,9 +43,20 @@ export default {
         seasonName: name,
         season: season._id,
         phase: 'PRESEASON',
+        scoringMode: 'LEGACY_PHASE',
+        weeklyTransferPhase: 'OPEN',
         currentWeek: 1,
         playoffSwapLimit: 2
       });
+    } else {
+      let changed = false;
+      if (!cfg.seasonName) { cfg.seasonName = season.name; changed = true; }
+      if (!cfg.phase) { cfg.phase = 'PRESEASON'; changed = true; }
+      if (!cfg.scoringMode) { cfg.scoringMode = 'LEGACY_PHASE'; changed = true; }
+      if (!cfg.weeklyTransferPhase) { cfg.weeklyTransferPhase = 'OPEN'; changed = true; }
+      if (!Number.isFinite(cfg.currentWeek) || cfg.currentWeek < 1) { cfg.currentWeek = 1; changed = true; }
+      if (!Number.isFinite(cfg.playoffSwapLimit) || cfg.playoffSwapLimit < 0) { cfg.playoffSwapLimit = 3; changed = true; }
+      if (changed) await cfg.save();
     }
 
     return interaction.editReply(

@@ -5,11 +5,21 @@ import FantasyPlayer from '../models/FantasyPlayer.js';
 export async function canModifyTeam(discordId, proposedTeamIds /* array of ObjectId|string */) {
   const season = await getActiveSeason();
   if (!season) {
-    return interaction.reply({ content: '❌ No active season set.', flags: 64 });
+    return { allowed: false, reason: 'NO_ACTIVE_SEASON' };
   }
 
   const cfg = await FantasyConfig.findOne({season: season._id}).lean();
   const user = await FantasyPlayer.findOne({ discordId, season: season._id }, { playoffSnapshot: 1 }).lean();
+
+  const scoringMode = cfg?.scoringMode ?? 'LEGACY_PHASE';
+  if (scoringMode === 'WEEKLY_SNAPSHOT') {
+    const currentWeek = Number(cfg?.currentWeek) || 1;
+    const weeklyTransferPhase = cfg?.weeklyTransferPhase ?? 'OPEN';
+    if (weeklyTransferPhase === 'LOCKED') {
+      return { allowed: false, reason: 'WEEK_LOCKED', week: currentWeek };
+    }
+    return { allowed: true, reason: 'WEEK_OPEN', week: currentWeek };
+  }
 
   const phase = cfg?.phase ?? 'PRESEASON';
   if (phase === 'PRESEASON') return { allowed: true, reason: 'PRESEASON' };

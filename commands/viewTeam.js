@@ -1,8 +1,9 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { totalPointsForPlayer } from '../services/scoring.js';
+import { pointsForRealPlayerInFantasyTeam } from '../services/scoring.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 import isRegistered from '../utils/checkRegistration.js';
+import FantasyConfig from '../models/FantasyConfig.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -39,7 +40,11 @@ export default {
         path: 'team',
         populate: { path: 'team', model: 'Team', select: 'name' }
       })
+      .populate({ path: 'weeklyLineups.team', select: 'name team performance cost' })
       .lean();
+
+    const cfg = await FantasyConfig.findOne({ season: season._id }, { scoringMode: 1 }).lean();
+    const scoringMode = cfg?.scoringMode ?? 'LEGACY_PHASE';
 
     const roster = fantasyPlayer?.team ?? [];
     if (!roster.length) {
@@ -52,12 +57,11 @@ export default {
     // Build roster lines
     const lines = roster.map((p, i) => {
       const teamName = p.team?.name ? ` — *${p.team.name}*` : '';
-      const playerPts = totalPointsForPlayer(p);
+      const playerPts = pointsForRealPlayerInFantasyTeam(p, fantasyPlayer, { scoringMode });
       return `**${i + 1}.** ${p.name}${teamName} — ${playerPts} pts`;
     });
 
-    // Dynamically sum total points from current roster
-    const totalPoints = roster.reduce((sum, p) => sum + totalPointsForPlayer(p), 0);
+    const totalPoints = Number.isFinite(fantasyPlayer.totalPoints) ? fantasyPlayer.totalPoints : 0;
     const wallet = fantasyPlayer.wallet ?? 0;
 
     const embed = new EmbedBuilder()

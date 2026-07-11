@@ -1,7 +1,9 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
-import { totalPointsForPlayer } from '../services/scoring.js';
+import FantasyPlayer from '../models/FantasyPlayer.js';
+import FantasyConfig from '../models/FantasyConfig.js';
+import { totalPointsForPlayer, pointsForRealPlayerInFantasyTeam } from '../services/scoring.js';
 
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 25;
@@ -38,11 +40,21 @@ export default {
     const limit = interaction.options.getInteger('limit') ?? DEFAULT_LIMIT;
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
 
+    const cfg = await FantasyConfig.findOne({ season: season._id }, { scoringMode: 1 }).lean();
+    const scoringMode = cfg?.scoringMode ?? 'LEGACY_PHASE';
+
     // Query all T2TrialsPlayers for the current season
     const players = await T2TrialsPlayer.find({ season: season._id }, { name: 1, team: 1, performance: 1 }).populate('team').lean();
     if (!players.length) {
       return interaction.reply({ content: 'ℹ️ No T2 Trials players found.', flags: 64 });
     }
+
+    const fantasyTeams = await FantasyPlayer.find({ season: season._id }, { team: 1, weeklyLineups: 1, weeklyPoints: 1 })
+      .populate({ path: 'team', select: '_id' })
+      .populate({ path: 'weeklyLineups.team', select: '_id' })
+      .lean();
+
+    const maxScoredWeek = fantasyTeams.reduce((m, f) => Math.max(m, Array.isArray(f?.weeklyPoints) ? f.weeklyPoints.length : 0), 0);
 
     // Calculate scores
     const rows = players.map(p => {
@@ -51,11 +63,19 @@ export default {
         const perf = p.performance.find(w => w.week === week);
         wins = perf?.wins || 0;
         losses = perf?.losses || 0;
-        points = perf ? totalPointsForPlayer({ ...p, performance: [perf] }) : 0;
+        if (scoringMode === 'WEEKLY_SNAPSHOT') {
+          points = fantasyTeams.reduce((sum, fp) => sum + pointsForRealPlayerInFantasyTeam(p, fp, { scoringMode, week }), 0);
+        } else {
+          points = perf ? totalPointsForPlayer({ ...p, performance: [perf] }) : 0;
+        }
       } else {
         wins = p.performance.reduce((sum, w) => sum + (w.wins || 0), 0);
         losses = p.performance.reduce((sum, w) => sum + (w.losses || 0), 0);
-        points = totalPointsForPlayer(p);
+        if (scoringMode === 'WEEKLY_SNAPSHOT') {
+          points = fantasyTeams.reduce((sum, fp) => sum + pointsForRealPlayerInFantasyTeam(p, fp, { scoringMode, upToWeek: maxScoredWeek }), 0);
+        } else {
+          points = totalPointsForPlayer(p);
+        }
       }
       return {
         name: p.name,

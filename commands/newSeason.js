@@ -26,6 +26,9 @@ export default {
 
     const name = interaction.options.getString('name');
 
+    // Capture the season we are cloning from before we deactivate anything.
+    const sourceSeason = await Season.findOne({ isActive: true }).lean();
+
     // 1. Check if a season with that name already exists
     const existing = await Season.findOne({ name });
     if (existing) {
@@ -46,22 +49,37 @@ export default {
       seasonName: name,
       season: newSeason._id,
       phase: 'PRESEASON',
+      scoringMode: 'LEGACY_PHASE',
+      weeklyTransferPhase: 'OPEN',
       currentWeek: 1,
       playoffSwapLimit: 2
     });
 
     // 5. Duplicate existing fantasy users into the new season
-    const previousPlayers = await FantasyPlayer.find().lean();
+    const previousPlayers = sourceSeason
+      ? await FantasyPlayer.find({ season: sourceSeason._id }).lean()
+      : [];
+
+    const uniquePlayers = new Map();
+    for (const fp of previousPlayers) {
+      if (!fp?.discordId || uniquePlayers.has(fp.discordId)) continue;
+      uniquePlayers.set(fp.discordId, fp);
+    }
+
     let createdCount = 0;
 
-    for (const fp of previousPlayers) {
+    for (const fp of uniquePlayers.values()) {
       await FantasyPlayer.create({
         discordId: fp.discordId,
         username: fp.username,
         season: newSeason._id,
         team: [],
+        weeklyLineups: [],
         weeklyPoints: [],
-        totalPoints: 0
+        totalPoints: 0,
+        wallet: fp.wallet ?? 110,
+        swissLockSnapshot: [],
+        playoffSnapshot: []
       });
       createdCount++;
     }

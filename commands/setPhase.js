@@ -7,17 +7,19 @@ import FantasyPlayer from '../models/FantasyPlayer.js';
 export default {
   data: new SlashCommandBuilder()
     .setName('setphase')
-    .setDescription('Admin: set season phase and take snapshots as needed')
+    .setDescription('Admin: set phase (legacy) or weekly transfer phase (weekly snapshot mode)')
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .addStringOption(opt =>
       opt.setName('phase')
-        .setDescription('Target phase')
+        .setDescription('Legacy phase, or OPEN/LOCKED for weekly snapshot mode')
         .addChoices(
           { name: 'PRESEASON', value: 'PRESEASON' },
           { name: 'SWISS', value: 'SWISS' },
           { name: 'PLAYOFFS_OPEN', value: 'PLAYOFFS_OPEN' },
           { name: 'PLAYOFFS_LOCKED', value: 'PLAYOFFS_LOCKED' },
-          { name: 'SEASON_ENDED', value: 'SEASON_ENDED' }
+          { name: 'SEASON_ENDED', value: 'SEASON_ENDED' },
+          { name: 'OPEN (weekly transfers)', value: 'OPEN' },
+          { name: 'LOCKED (weekly transfers)', value: 'LOCKED' }
         )
         .setRequired(true)
     ),
@@ -36,14 +38,50 @@ export default {
     const phase = interaction.options.getString('phase', true);
 
     let cfg = await FantasyConfig.findOne({season: season._id});
-    if (!cfg) cfg = await FantasyConfig.create({});
+    if (!cfg) {
+      cfg = await FantasyConfig.create({
+        season: season._id,
+        seasonName: season.name,
+        scoringMode: 'LEGACY_PHASE',
+        weeklyTransferPhase: 'OPEN'
+      });
+    }
+
+    const scoringMode = cfg.scoringMode ?? 'LEGACY_PHASE';
+    const isWeeklyPhase = phase === 'OPEN' || phase === 'LOCKED';
+
+    if (scoringMode === 'WEEKLY_SNAPSHOT') {
+      if (!isWeeklyPhase) {
+        return interaction.reply({
+          content: '❌ In WEEKLY_SNAPSHOT mode, use `OPEN` or `LOCKED` with `/setphase`.',
+          flags: 64
+        });
+      }
+
+      const prev = cfg.weeklyTransferPhase ?? 'OPEN';
+      cfg.weeklyTransferPhase = phase;
+      await cfg.save();
+
+      return interaction.reply({
+        content: `✅ Weekly transfer phase changed: **${prev} → ${phase}** (mode: **${scoringMode}**)`,
+        flags: 64
+      });
+    }
+
+    if (isWeeklyPhase) {
+      return interaction.reply({
+        content: '❌ OPEN/LOCKED is only valid when scoring mode is WEEKLY_SNAPSHOT.',
+        flags: 64
+      });
+    }
+
     const prev = cfg.phase;
 
-    // Update phase
+    // Legacy phase update
     cfg.phase = phase;
     await cfg.save();
 
-    // Snapshots on transitions
+    // Snapshots on transitions (legacy mode)
     if (phase === 'SWISS') {
       // snapshot every user's current team -> swissLockSnapshot
       await FantasyPlayer.updateMany({season: season._id}, [
@@ -55,7 +93,6 @@ export default {
         { $set: { playoffSnapshot: '$team' } }
       ]);
     }
-    // No snapshots for PLAYOFFS_LOCKED or SEASON_ENDED
 
     return interaction.reply({
       content: `✅ Phase changed: **${prev} → ${phase}**${(phase === 'SWISS' || phase === 'PLAYOFFS_OPEN') ? ' (snapshots updated)' : ''}`,

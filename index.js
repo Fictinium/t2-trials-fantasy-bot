@@ -25,6 +25,27 @@ const client = new Client({
 });
 client.commands = new Collection();
 
+function resolveComponentCommand(customId, commandsCollection) {
+  if (!customId || !commandsCollection) return null;
+
+  for (const command of commandsCollection.values()) {
+    if (typeof command?.handleComponent !== 'function') continue;
+
+    if (typeof command.matchesCustomId === 'function' && command.matchesCustomId(customId)) {
+      return command;
+    }
+
+    const prefixes = Array.isArray(command.componentCustomIdPrefixes)
+      ? command.componentCustomIdPrefixes
+      : [];
+    if (prefixes.some(prefix => customId.startsWith(prefix))) {
+      return command;
+    }
+  }
+
+  return null;
+}
+
 // Load commands dynamically
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js') && !file.startsWith('.'));
@@ -125,10 +146,11 @@ client.on(Events.InteractionCreate, async interaction => {
   // String/role/user select menus & buttons
   if (interaction.isStringSelectMenu() || interaction.isButton()) {
     try {
-      // Route to your component handler or the command module that created them
-      // e.g., playersBook handles its own customIds:
       const customId = interaction.customId;
-      // dispatch based on customId
+      const command = resolveComponentCommand(customId, client.commands);
+      if (!command) return;
+
+      await command.handleComponent(interaction);
     } catch (error) {
       console.error(error);
       const payload = { content: 'There was an error handling that action.', flags: 64 };

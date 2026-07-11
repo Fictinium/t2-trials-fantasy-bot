@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
-import { computePointsForPerfSimple, totalPointsForPlayer } from '../services/scoring.js';
+import { computePointsForPerfSimple, totalPointsForPlayer, computePointsFromPerf } from '../services/scoring.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import Team from '../models/Team.js';
 
