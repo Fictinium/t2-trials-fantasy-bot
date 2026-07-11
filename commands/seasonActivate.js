@@ -29,12 +29,23 @@ export default {
       return interaction.editReply(`❌ Season **${name}** does not exist.`);
     }
 
+    const activeSeason = await Season.findOne({ isActive: true });
+    const isAlreadyActive = activeSeason && String(activeSeason._id) === String(season._id);
+
+    // Toggle behavior: selecting the currently active season deactivates it.
+    if (isAlreadyActive) {
+      await Season.updateOne({ _id: season._id }, { isActive: false });
+      return interaction.editReply(
+        `✅ Season **${name}** was already active, so it has now been **deactivated**.\n` +
+        `• There is currently **no active season**.`
+      );
+    }
+
     // Deactivate all
     await Season.updateMany({}, { isActive: false });
 
     // Activate selected
-    season.isActive = true;
-    await season.save();
+    await Season.updateOne({ _id: season._id }, { isActive: true });
 
     // Ensure config exists
     let cfg = await FantasyConfig.findOne({ season: season._id });
@@ -55,7 +66,7 @@ export default {
       if (!cfg.scoringMode) { cfg.scoringMode = 'LEGACY_PHASE'; changed = true; }
       if (!cfg.weeklyTransferPhase) { cfg.weeklyTransferPhase = 'OPEN'; changed = true; }
       if (!Number.isFinite(cfg.currentWeek) || cfg.currentWeek < 1) { cfg.currentWeek = 1; changed = true; }
-      if (!Number.isFinite(cfg.playoffSwapLimit) || cfg.playoffSwapLimit < 0) { cfg.playoffSwapLimit = 3; changed = true; }
+      if (!Number.isFinite(cfg.playoffSwapLimit) || cfg.playoffSwapLimit < 0) { cfg.playoffSwapLimit = 2; changed = true; }
       if (changed) await cfg.save();
     }
 

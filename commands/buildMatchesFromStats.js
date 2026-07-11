@@ -94,21 +94,37 @@ export default {
     //    Each game must have: set, round, gameNumber, playerA, playerB, winner
     //    We'll build sets -> rounds -> games from this
     const allGames = [];
+    const seenGames = new Set();
     for (const row of payload) {
       const ext = String(row?.id);
       if (!ext || !byExtId.has(ext)) continue;
       const weekObj = (Array.isArray(row.weeks) ? row.weeks : []).find(w => String(w.week_number) === String(week));
       if (!weekObj) continue;
       const games = Array.isArray(weekObj.games) ? weekObj.games : [];
-      for (const g of games) {
+      for (let gi = 0; gi < games.length; gi++) {
+        const g = games[gi];
         // Expect: set, round, gameNumber, opponent_id, winner_id
         const setNumber = Number(g?.set) || 1;
         const roundNumber = Number(g?.round) || 1;
-        const gameNumber = Number(g?.gameNumber) || 1;
-        const playerA = byExtId.get(ext)?._id;
-        const playerB = byExtId.get(String(g?.opponent_id))?._id;
+        const gameNumber = Number(g?.gameNumber ?? g?.game ?? gi + 1) || 1;
+
+        const opponentExt = String(g?.opponent_id ?? '');
+        if (!opponentExt) continue;
+
+        const [lowExt, highExt] = [ext, opponentExt].sort();
+        const winnerExt = g?.winner_id == null ? 'None' : String(g.winner_id);
+        const dedupeKey = `${setNumber}|${roundNumber}|${gameNumber}|${lowExt}|${highExt}|${winnerExt}`;
+        if (seenGames.has(dedupeKey)) continue;
+        seenGames.add(dedupeKey);
+
+        const playerA = byExtId.get(lowExt)?._id;
+        const playerB = byExtId.get(highExt)?._id;
         if (!playerA || !playerB) continue;
-        const winner = g?.winner_id == null ? 'None' : (String(g.winner_id) === ext ? 'A' : (String(g.winner_id) === String(g.opponent_id) ? 'B' : 'None'));
+
+        let winner = 'None';
+        if (winnerExt === lowExt) winner = 'A';
+        else if (winnerExt === highExt) winner = 'B';
+
         allGames.push({ setNumber, roundNumber, gameNumber, playerA, playerB, winner });
       }
     }

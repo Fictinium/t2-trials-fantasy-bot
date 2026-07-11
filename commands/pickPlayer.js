@@ -130,11 +130,11 @@ export default {
         let msg = '⛔ Team changes are locked.';
         if (check.reason === 'SWISS_LOCKED') msg = '⛔ Team changes are locked during the swiss period.';
         else if (check.reason === 'PLAYOFFS_LOCKED') msg = '⛔ Team changes are currently locked for playoffs.';
-        else if (check.reason === 'WEEK_LOCKED') msg = `⛔ Team changes are locked for week **${check.week}** because matches already started.`;
+        else if (check.reason === 'WEEK_LOCKED') msg = `⛔ Team changes are locked for week **${check.week}**.`;
         else if (check.reason === 'NO_ACTIVE_SEASON') msg = '❌ No active season set.';
         else if (check.reason === 'PLAYOFFS_LIMIT') {
           // Calculate swaps already made (excluding the attempted addition)
-          const swapsMade = check.limit;
+          const swapsMade = check.swapsUsed;
           msg = `⛔ Playoff swap limit reached. You have used **${swapsMade}/${check.limit}** allowed swaps.`;
         }
         return interaction.reply({ content: msg, flags: 64 });
@@ -199,38 +199,31 @@ export default {
         else                            await interaction.followUp(payload);
       } catch {}
     }
-  }/*,
-  
+  },
+
   async autocomplete(interaction) {
     try {
-      const focusedValue = interaction.options.getFocused(); // Get the current input
-      console.log('Focused value:', focusedValue); // Debugging
+      const focusedValue = interaction.options.getFocused() || '';
 
       const season = await getActiveSeason();
       if (!season) {
-        console.error('No active season found.');
-        return interaction.respond([]); // Return empty response if no season is active
+        return interaction.respond([]);
       }
 
-      // Fetch players whose names match the input
-      const players = await T2TrialsPlayer.find({ season: season._id, name: { $regex: new RegExp(focusedValue, 'i') } })
-        .limit(25) // Discord allows up to 25 suggestions
+      const players = await T2TrialsPlayer.find({
+        season: season._id,
+        name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
+      })
+        .select('name')
+        .limit(100)
         .lean();
 
-      console.log('Players found:', players); // Debugging
-
-      // Format suggestions
-      const suggestions = players.map(player => ({
-        name: `${player.name} (${player.team?.name || 'Unknown Team'})`,
-        value: player.name
-      }));
-
-      console.log('Suggestions:', suggestions); // Debugging
-
+      const uniqueNames = [...new Set(players.map(p => p?.name).filter(Boolean))].slice(0, 25);
+      const suggestions = uniqueNames.map(name => ({ name, value: name }));
       return interaction.respond(suggestions);
     } catch (err) {
-      console.error('Error in autocomplete:', err); // Log errors
-      return interaction.respond([]); // Return empty response on error
+      console.error('Error in pickPlayer autocomplete:', err);
+      return interaction.respond([]);
     }
-  }*/
+  }
 };

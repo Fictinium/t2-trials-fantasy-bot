@@ -118,6 +118,23 @@ client.on(Events.InteractionCreate, async interaction => {
     customId: interaction.customId,
   });
 
+  // Autocomplete interactions
+  if (interaction.isAutocomplete()) {
+    const command = client.commands.get(interaction.commandName);
+    if (!command || typeof command.autocomplete !== 'function') {
+      try { await interaction.respond([]); } catch {}
+      return;
+    }
+
+    try {
+      await command.autocomplete(interaction);
+    } catch (error) {
+      console.error(error);
+      try { await interaction.respond([]); } catch {}
+    }
+    return;
+  }
+
   // Slash commands
   if (interaction.isChatInputCommand()) {
     const command = client.commands.get(interaction.commandName);

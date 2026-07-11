@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
+import { escapeRegex } from '../utils/escapeRegex.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -32,7 +33,10 @@ export default {
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
 
     // Find the player
-    const query = { name, season: season._id };
+    const query = {
+      name: { $regex: `^${escapeRegex(name)}$`, $options: 'i' },
+      season: season._id
+    };
     let players = await T2TrialsPlayer.find(query).populate('team', 'name').lean();
 
     if (teamName) {
