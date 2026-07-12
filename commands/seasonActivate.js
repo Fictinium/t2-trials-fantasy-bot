@@ -57,7 +57,8 @@ export default {
         scoringMode: 'LEGACY_PHASE',
         weeklyTransferPhase: 'OPEN',
         currentWeek: 1,
-        playoffSwapLimit: 2
+        playoffSwapLimit: 3,
+        maxWallet: 110
       });
     } else {
       let changed = false;
@@ -66,7 +67,8 @@ export default {
       if (!cfg.scoringMode) { cfg.scoringMode = 'LEGACY_PHASE'; changed = true; }
       if (!cfg.weeklyTransferPhase) { cfg.weeklyTransferPhase = 'OPEN'; changed = true; }
       if (!Number.isFinite(cfg.currentWeek) || cfg.currentWeek < 1) { cfg.currentWeek = 1; changed = true; }
-      if (!Number.isFinite(cfg.playoffSwapLimit) || cfg.playoffSwapLimit < 0) { cfg.playoffSwapLimit = 2; changed = true; }
+      if (!Number.isFinite(cfg.playoffSwapLimit) || cfg.playoffSwapLimit < 0) { cfg.playoffSwapLimit = 3; changed = true; }
+      if (!Number.isFinite(cfg.maxWallet) || cfg.maxWallet < 0) { cfg.maxWallet = 110; changed = true; }
       if (changed) await cfg.save();
     }
 

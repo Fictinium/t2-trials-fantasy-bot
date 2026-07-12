@@ -2,11 +2,10 @@ import mongoose from 'mongoose';
 import '../models/modelsIndex.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
+import FantasyConfig from '../models/FantasyConfig.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import dotenv from 'dotenv';
 dotenv.config();
-
-const DEFAULT_WALLET = 110;
 
 async function recalcWallets() {
   try {
@@ -20,6 +19,9 @@ async function recalcWallets() {
     }
     console.log(`Active season: ${season.name}`);
 
+    const cfg = await FantasyConfig.findOne({ season: season._id }, { maxWallet: 1 }).lean();
+    const maxWallet = Number.isFinite(cfg?.maxWallet) ? cfg.maxWallet : 110;
+
     const fantasyPlayers = await FantasyPlayer.find({ season: season._id }).populate('team');
     if (!fantasyPlayers.length) {
       console.log('No fantasy players found for the active season.');
@@ -29,7 +31,7 @@ async function recalcWallets() {
 
     let updatedCount = 0;
     for (const fp of fantasyPlayers) {
-      let wallet = DEFAULT_WALLET;
+      let wallet = maxWallet;
       if (Array.isArray(fp.team) && fp.team.length > 0) {
         const playerIds = fp.team.map(p => p._id);
         const players = await T2TrialsPlayer.find({ _id: { $in: playerIds } }, 'cost');

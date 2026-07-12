@@ -43,7 +43,8 @@ export default {
         season: season._id,
         seasonName: season.name,
         scoringMode: 'LEGACY_PHASE',
-        weeklyTransferPhase: 'OPEN'
+        weeklyTransferPhase: 'OPEN',
+        maxWallet: 110
       });
     }
 

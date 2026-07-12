@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from 'discord.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
+import FantasyConfig from '../models/FantasyConfig.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -22,11 +23,15 @@ export default {
       });
     }
 
+    const cfg = await FantasyConfig.findOne({ season: season._id }, { maxWallet: 1 }).lean();
+    const maxWallet = Number.isFinite(cfg?.maxWallet) ? cfg.maxWallet : 110;
+
     const newFantasyPlayer = new FantasyPlayer({
       discordId: interaction.user.id,
       username: interaction.user.username,
       weeklyPoints: [],
       totalPoints: 0,
+      wallet: maxWallet,
       season: season._id
     });
 

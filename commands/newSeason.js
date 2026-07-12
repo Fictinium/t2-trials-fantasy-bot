@@ -13,6 +13,12 @@ export default {
       o.setName('name')
        .setDescription('Season name, e.g. S2, Winter2025, etc')
        .setRequired(true)
+    )
+    .addIntegerOption(o =>
+      o.setName('walletmax')
+       .setDescription('Optional max wallet baseline for this new season')
+       .setMinValue(0)
+       .setRequired(false)
     ),
 
   async execute(interaction) {
@@ -25,9 +31,15 @@ export default {
     await interaction.deferReply({ flags: 64 });
 
     const name = interaction.options.getString('name');
+    const walletMaxOption = interaction.options.getInteger('walletmax');
 
     // Capture the season we are cloning from before we deactivate anything.
     const sourceSeason = await Season.findOne({ isActive: true }).lean();
+    const sourceCfg = sourceSeason
+      ? await FantasyConfig.findOne({ season: sourceSeason._id }, { maxWallet: 1 }).lean()
+      : null;
+    const sourceMaxWallet = Number.isFinite(sourceCfg?.maxWallet) ? sourceCfg.maxWallet : 110;
+    const targetMaxWallet = Number.isFinite(walletMaxOption) ? walletMaxOption : sourceMaxWallet;
 
     // 1. Check if a season with that name already exists
     const existing = await Season.findOne({ name });
@@ -52,7 +64,8 @@ export default {
       scoringMode: 'LEGACY_PHASE',
       weeklyTransferPhase: 'OPEN',
       currentWeek: 1,
-      playoffSwapLimit: 2
+      playoffSwapLimit: 3,
+      maxWallet: targetMaxWallet
     });
 
     // 5. Duplicate existing fantasy users into the new season
@@ -67,8 +80,12 @@ export default {
     }
 
     let createdCount = 0;
+    const walletDelta = targetMaxWallet - sourceMaxWallet;
 
     for (const fp of uniquePlayers.values()) {
+      const baseWallet = Number.isFinite(fp.wallet) ? fp.wallet : sourceMaxWallet;
+      const adjustedWallet = Math.max(0, baseWallet + walletDelta);
+
       await FantasyPlayer.create({
         discordId: fp.discordId,
         username: fp.username,
@@ -77,7 +94,7 @@ export default {
         weeklyLineups: [],
         weeklyPoints: [],
         totalPoints: 0,
-        wallet: fp.wallet ?? 110,
+        wallet: adjustedWallet,
         swissLockSnapshot: [],
         playoffSnapshot: []
       });
@@ -88,6 +105,7 @@ export default {
     return interaction.editReply(
       `✅ **New season created successfully!**\n` +
       `• Season: **${name}**\n` +
+      `• Max wallet: **${targetMaxWallet}**${walletDelta !== 0 ? ` (delta vs previous: ${walletDelta > 0 ? '+' : ''}${walletDelta})` : ''}\n` +
       `• FantasyConfig created (week=1, phase=PRESEASON)\n` +
       `• Duplicated **${createdCount}** fantasy users\n\n` +
       `The system is now ready for:\n` +

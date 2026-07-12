@@ -43,12 +43,14 @@ export default {
         phase: 'PRESEASON',
         weeklyTransferPhase: 'OPEN',
         currentWeek: 1,
-        playoffSwapLimit: 2,
+        playoffSwapLimit: 3,
+        maxWallet: 110,
         scoringMode: mode
       });
     } else {
       cfg.scoringMode = mode;
       if (!cfg.weeklyTransferPhase) cfg.weeklyTransferPhase = 'OPEN';
+      if (!Number.isFinite(cfg.maxWallet) || cfg.maxWallet < 0) cfg.maxWallet = 110;
       await cfg.save();
     }
 
