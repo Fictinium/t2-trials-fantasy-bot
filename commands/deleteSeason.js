@@ -6,6 +6,7 @@ import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
 import Match from '../models/Match.js';
 import FantasyConfig from '../models/FantasyConfig.js';
+import { escapeRegex } from '../utils/escapeRegex.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -15,6 +16,7 @@ export default {
     .addStringOption(opt =>
       opt.setName('name')
         .setDescription('Season name to delete (e.g., S1, Winter2025)')
+        .setAutocomplete(true)
         .setRequired(true)
     ),
 
@@ -28,7 +30,9 @@ export default {
     const seasonName = interaction.options.getString('name', true).trim();
 
     // Find the season
-    const season = await Season.findOne({ name: seasonName });
+    const season = await Season.findOne({
+      name: { $regex: `^${escapeRegex(seasonName)}$`, $options: 'i' }
+    });
     if (!season) {
       return interaction.reply({ content: `❌ Season **${seasonName}** not found.`, ephemeral: true });
     }
@@ -51,6 +55,29 @@ export default {
     } catch (err) {
       console.error('[deleteSeason]', err);
       return interaction.reply({ content: `❌ Error deleting season: ${err.message || err}`, ephemeral: true });
+    }
+  },
+
+  async autocomplete(interaction) {
+    try {
+      const focused = interaction.options.getFocused(true);
+      if (focused?.name !== 'name') {
+        return interaction.respond([]);
+      }
+
+      const focusedValue = focused?.value || '';
+      const seasons = await Season.find({
+        name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
+      })
+        .select('name')
+        .sort({ name: 1 })
+        .limit(25)
+        .lean();
+
+      return interaction.respond(seasons.map(s => ({ name: s.name, value: s.name })));
+    } catch (err) {
+      console.error(err);
+      return interaction.respond([]);
     }
   }
 };

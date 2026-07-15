@@ -13,8 +13,8 @@ export default {
     .setDescription('Admin: create ONE Match doc from the website per-player JSON for a given week & pair')
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .addIntegerOption(o => o.setName('week').setDescription('Week number').setMinValue(1).setRequired(true))
-    .addStringOption(o => o.setName('team_a').setDescription('Team A name').setRequired(true))
-    .addStringOption(o => o.setName('team_b').setDescription('Team B name').setRequired(true))
+    .addStringOption(o => o.setName('team_a').setDescription('Team A name').setAutocomplete(true).setRequired(true))
+    .addStringOption(o => o.setName('team_b').setDescription('Team B name').setAutocomplete(true).setRequired(true))
     .addAttachmentOption(o => o.setName('file').setDescription('Website JSON file').setRequired(true)),
 
   async execute(interaction) {
@@ -218,5 +218,34 @@ export default {
       `• Source season number: **${Number.isFinite(seasonNumber) ? seasonNumber : 'N/A'}**\n` +
       `All player and fantasy team points recalculated.`
     );
+  },
+
+  async autocomplete(interaction) {
+    try {
+      const focused = interaction.options.getFocused(true);
+      if (focused?.name !== 'team_a' && focused?.name !== 'team_b') {
+        return interaction.respond([]);
+      }
+
+      const focusedValue = focused?.value || '';
+      const season = await getActiveSeason();
+      if (!season) {
+        return interaction.respond([]);
+      }
+
+      const teams = await Team.find({
+        season: season._id,
+        name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
+      })
+        .select('name')
+        .sort({ name: 1 })
+        .limit(25)
+        .lean();
+
+      return interaction.respond(teams.map(t => ({ name: t.name, value: t.name })));
+    } catch (err) {
+      console.error(err);
+      return interaction.respond([]);
+    }
   }
 };

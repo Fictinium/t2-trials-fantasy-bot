@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { isAuthorizedForCommand } from '../utils/commandAuth.js';
 import Season from '../models/Season.js';
 import FantasyConfig from '../models/FantasyConfig.js';
+import { escapeRegex } from '../utils/escapeRegex.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -11,6 +12,7 @@ export default {
     .addStringOption(o =>
       o.setName('name')
        .setDescription('Season name, e.g. S1, S2, Winter2025')
+       .setAutocomplete(true)
        .setRequired(true)
     ),
 
@@ -24,7 +26,7 @@ export default {
     await interaction.deferReply({ flags: 64 });
     const name = interaction.options.getString('name');
 
-    const season = await Season.findOne({ name });
+    const season = await Season.findOne({ name: { $regex: `^${escapeRegex(name)}$`, $options: 'i' } });
     if (!season) {
       return interaction.editReply(`❌ Season **${name}** does not exist.`);
     }
@@ -77,5 +79,28 @@ export default {
       `• Phase: **${cfg.phase}**\n` +
       `• Current week: **${cfg.currentWeek}**`
     );
+  },
+
+  async autocomplete(interaction) {
+    try {
+      const focused = interaction.options.getFocused(true);
+      if (focused?.name !== 'name') {
+        return interaction.respond([]);
+      }
+
+      const focusedValue = focused?.value || '';
+      const seasons = await Season.find({
+        name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
+      })
+        .select('name')
+        .sort({ name: 1 })
+        .limit(25)
+        .lean();
+
+      return interaction.respond(seasons.map(s => ({ name: s.name, value: s.name })));
+    } catch (err) {
+      console.error(err);
+      return interaction.respond([]);
+    }
   }
 };

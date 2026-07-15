@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
+import Team from '../models/Team.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
 
 export default {
@@ -10,11 +11,13 @@ export default {
     .addStringOption(opt =>
       opt.setName('name')
         .setDescription('Name of the player to check')
+        .setAutocomplete(true)
         .setRequired(true)
     )
     .addStringOption(opt =>
       opt.setName('team')
         .setDescription('Team name (optional, for disambiguation)')
+        .setAutocomplete(true)
         .setRequired(false)
     )
     .addBooleanOption(opt =>
@@ -67,38 +70,84 @@ export default {
       .setFooter({ text: `Season: ${season.name}` });
 
     return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
-  }/*,
-  
+  },
+
   async autocomplete(interaction) {
     try {
-      const focusedValue = interaction.options.getFocused(); // Get the current input
-      console.log('Focused value:', focusedValue); // Debugging
+      const focused = interaction.options.getFocused(true);
+      const focusedValue = focused?.value || '';
 
       const season = await getActiveSeason();
       if (!season) {
-        console.error('No active season found.');
-        return interaction.respond([]); // Return empty response if no season is active
+        return interaction.respond([]);
       }
 
-      // Fetch players whose names match the input
-      const players = await T2TrialsPlayer.find({ season: season._id, name: { $regex: new RegExp(focusedValue, 'i') } })
-        .limit(25) // Discord allows up to 25 suggestions
-        .lean();
+      if (focused?.name === 'name') {
+        const teamName = interaction.options.getString('team') || null;
+        let teamId = null;
+        if (teamName) {
+          const teamDoc = await Team.findOne({
+            season: season._id,
+            name: { $regex: `^${escapeRegex(teamName)}$`, $options: 'i' }
+          }).select('_id').lean();
+          teamId = teamDoc?._id ?? null;
+        }
 
-      console.log('Players found:', players); // Debugging
+        const query = {
+          season: season._id,
+          name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
+        };
+        if (teamId) query.team = teamId;
 
-      // Format suggestions
-      const suggestions = players.map(player => ({
-        name: `${player.name} (${player.team?.name || 'Unknown Team'})`,
-        value: player.name
-      }));
+        const players = await T2TrialsPlayer.find(query)
+          .select('name')
+          .limit(100)
+          .lean();
 
-      console.log('Suggestions:', suggestions); // Debugging
+        const uniqueNames = [...new Set(players.map(p => p?.name).filter(Boolean))].slice(0, 25);
+        return interaction.respond(uniqueNames.map(name => ({ name, value: name })));
+      }
 
-      return interaction.respond(suggestions);
+      if (focused?.name === 'team') {
+        const playerName = interaction.options.getString('name') || null;
+
+        if (playerName) {
+          const teamIds = await T2TrialsPlayer.distinct('team', {
+            season: season._id,
+            name: { $regex: `^${escapeRegex(playerName)}$`, $options: 'i' }
+          });
+
+          if (teamIds.length) {
+            const teams = await Team.find({
+              _id: { $in: teamIds },
+              season: season._id,
+              name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
+            })
+              .select('name')
+              .sort({ name: 1 })
+              .limit(25)
+              .lean();
+
+            return interaction.respond(teams.map(t => ({ name: t.name, value: t.name })));
+          }
+        }
+
+        const teams = await Team.find({
+          season: season._id,
+          name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
+        })
+          .select('name')
+          .sort({ name: 1 })
+          .limit(25)
+          .lean();
+
+        return interaction.respond(teams.map(t => ({ name: t.name, value: t.name })));
+      }
+
+      return interaction.respond([]);
     } catch (err) {
-      console.error('Error in autocomplete:', err); // Log errors
-      return interaction.respond([]); // Return empty response on error
+      console.error(err);
+      return interaction.respond([]);
     }
-  }*/
+  }
 };

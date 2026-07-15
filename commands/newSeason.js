@@ -32,13 +32,17 @@ export default {
 
     const name = interaction.options.getString('name');
     const walletMaxOption = interaction.options.getInteger('walletmax');
+    const cfgWalletDefaultRaw = FantasyConfig.schema.path('maxWallet')?.defaultValue;
+    const cfgWalletDefault = Number.isFinite(cfgWalletDefaultRaw)
+      ? cfgWalletDefaultRaw
+      : 110;
 
     // Capture the season we are cloning from before we deactivate anything.
     const sourceSeason = await Season.findOne({ isActive: true }).lean();
     const sourceCfg = sourceSeason
       ? await FantasyConfig.findOne({ season: sourceSeason._id }, { maxWallet: 1 }).lean()
       : null;
-    const sourceMaxWallet = Number.isFinite(sourceCfg?.maxWallet) ? sourceCfg.maxWallet : 110;
+    const sourceMaxWallet = Number.isFinite(sourceCfg?.maxWallet) ? sourceCfg.maxWallet : cfgWalletDefault;
     const targetMaxWallet = Number.isFinite(walletMaxOption) ? walletMaxOption : sourceMaxWallet;
 
     // 1. Check if a season with that name already exists
@@ -60,11 +64,6 @@ export default {
     const cfg = await FantasyConfig.create({
       seasonName: name,
       season: newSeason._id,
-      phase: 'PRESEASON',
-      scoringMode: 'LEGACY_PHASE',
-      weeklyTransferPhase: 'OPEN',
-      currentWeek: 1,
-      playoffSwapLimit: 3,
       maxWallet: targetMaxWallet
     });
 

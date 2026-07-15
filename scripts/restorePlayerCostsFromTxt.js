@@ -1,6 +1,6 @@
-// Script to restore player costs from player scores.txt
+// Script to restore player costs from player_costs.txt
 // Usage: node scripts/restorePlayerCostsFromTxt.js
-// Reads player scores.txt and updates T2TrialsPlayer costs in the database
+// Reads player_costs.txt and updates T2TrialsPlayer costs in the database
 
 import fs from 'fs';
 import path from 'path';
@@ -10,7 +10,7 @@ import Team from '../models/Team.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const SCORES_PATH = path.resolve('player scores.txt');
+const SCORES_PATH = path.resolve('player_costs.txt');
 const MONGO_URI = process.env.MONGO_URI;
 
 async function main() {

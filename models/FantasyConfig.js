@@ -14,7 +14,15 @@ const fantasyConfigSchema = new mongoose.Schema({
   currentWeek: { type: Number, default: 1, min: 1 },
 
   // max wallet baseline for this season (used for joins and season-wide wallet cap changes)
-  maxWallet: { type: Number, default: 110, min: 0 },
+  maxWallet: { type: Number, default: 50, min: 0 },
+
+  // score calculation safeguards (per scoring mode)
+  scoreCalculation: {
+    processedWeeksByMode: {
+      LEGACY_PHASE: { type: [Number], default: [] },
+      WEEKLY_SNAPSHOT: { type: [Number], default: [] }
+    }
+  },
 
   // legacy mode pick history used by /mostpickedplayers
   legacyPickStats: {

@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import { isAuthorizedForCommand } from '../utils/commandAuth.js';
+import { escapeRegex } from '../utils/escapeRegex.js';
 import Team from '../models/Team.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
 
@@ -12,11 +13,13 @@ export default {
     .addStringOption(opt =>
       opt.setName('name')
         .setDescription('Player name (for add or substitution)')
+        .setAutocomplete(true)
         .setRequired(true)
     )
     .addStringOption(opt =>
       opt.setName('team')
         .setDescription('Team name to add the player to')
+        .setAutocomplete(true)
         .setRequired(true)
     )
     .addIntegerOption(opt =>
@@ -56,12 +59,32 @@ export default {
     const newName = interaction.options.getString('newname', false)?.trim();
 
     // Find the team
-    const team = await Team.findOne({ name: teamName, season: season._id });
+    const team = await Team.findOne({
+      name: { $regex: `^${escapeRegex(teamName)}$`, $options: 'i' },
+      season: season._id
+    });
     if (!team) {
       return interaction.reply({ content: `❌ Team **${teamName}** not found in season **${season.name}**.`, flags: 64 });
     }
 
     if (substitution) {
+      // Fast path for cost correction: if player exists in this team/season, update cost directly.
+      // This is resilient to problematic existing values (e.g. negative costs) and case differences.
+      const directPlayer = await T2TrialsPlayer.findOne({
+        name: { $regex: `^${escapeRegex(name)}$`, $options: 'i' },
+        team: team._id,
+        season: season._id
+      });
+
+      if (directPlayer && Number(directPlayer.cost) !== Number(cost)) {
+        directPlayer.cost = cost;
+        await directPlayer.save();
+        return interaction.reply({
+          content: `✅ Updated player cost for **${directPlayer.name}** in **${team.name}**: **${directPlayer.cost}**.`,
+          flags: 64
+        });
+      }
+
       // Substitution logic: allow changing any one of name, team, or cost, as long as the other two match
       // Try all three possible substitutions
       const candidates = await T2TrialsPlayer.find({ season: season._id });
@@ -154,38 +177,84 @@ export default {
         flags: 64
       });
     }
-  }/*,
-  
+  },
+
   async autocomplete(interaction) {
     try {
-      const focusedValue = interaction.options.getFocused(); // Get the current input
-      console.log('Focused value:', focusedValue); // Debugging
+      const focused = interaction.options.getFocused(true);
+      const focusedValue = focused?.value || '';
 
       const season = await getActiveSeason();
       if (!season) {
-        console.error('No active season found.');
-        return interaction.respond([]); // Return empty response if no season is active
+        return interaction.respond([]);
       }
 
-      // Fetch players whose names match the input
-      const players = await T2TrialsPlayer.find({ season: season._id, name: { $regex: new RegExp(focusedValue, 'i') } })
-        .limit(25) // Discord allows up to 25 suggestions
-        .lean();
+      if (focused?.name === 'name') {
+        const teamName = interaction.options.getString('team') || null;
+        let teamId = null;
+        if (teamName) {
+          const teamDoc = await Team.findOne({
+            season: season._id,
+            name: { $regex: `^${escapeRegex(teamName)}$`, $options: 'i' }
+          }).select('_id').lean();
+          teamId = teamDoc?._id ?? null;
+        }
 
-      console.log('Players found:', players); // Debugging
+        const query = {
+          season: season._id,
+          name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
+        };
+        if (teamId) query.team = teamId;
 
-      // Format suggestions
-      const suggestions = players.map(player => ({
-        name: `${player.name} (${player.team?.name || 'Unknown Team'})`,
-        value: player.name
-      }));
+        const players = await T2TrialsPlayer.find(query)
+          .select('name')
+          .limit(100)
+          .lean();
 
-      console.log('Suggestions:', suggestions); // Debugging
+        const uniqueNames = [...new Set(players.map(p => p?.name).filter(Boolean))].slice(0, 25);
+        return interaction.respond(uniqueNames.map(name => ({ name, value: name })));
+      }
 
-      return interaction.respond(suggestions);
+      if (focused?.name === 'team') {
+        const playerName = interaction.options.getString('name') || null;
+
+        if (playerName) {
+          const teamIds = await T2TrialsPlayer.distinct('team', {
+            season: season._id,
+            name: { $regex: `^${escapeRegex(playerName)}$`, $options: 'i' }
+          });
+
+          if (teamIds.length) {
+            const teams = await Team.find({
+              _id: { $in: teamIds },
+              season: season._id,
+              name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
+            })
+              .select('name')
+              .sort({ name: 1 })
+              .limit(25)
+              .lean();
+
+            return interaction.respond(teams.map(t => ({ name: t.name, value: t.name })));
+          }
+        }
+
+        const teams = await Team.find({
+          season: season._id,
+          name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
+        })
+          .select('name')
+          .sort({ name: 1 })
+          .limit(25)
+          .lean();
+
+        return interaction.respond(teams.map(t => ({ name: t.name, value: t.name })));
+      }
+
+      return interaction.respond([]);
     } catch (err) {
-      console.error('Error in autocomplete:', err); // Log errors
-      return interaction.respond([]); // Return empty response on error
+      console.error(err);
+      return interaction.respond([]);
     }
-  }*/
+  }
 };

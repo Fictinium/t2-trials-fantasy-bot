@@ -11,6 +11,7 @@ export default {
     .addStringOption(opt =>
       opt.setName('team')
         .setDescription('Team name')
+        .setAutocomplete(true)
         .setRequired(true)
     )
     .addIntegerOption(opt =>
@@ -93,5 +94,34 @@ export default {
       .setFooter({ text: `Team total: ${totalWins}-${totalLosses} • Points: ${totalPoints}` });
 
     return interaction.reply({ embeds: [embed], flags: ephemeral ? 64 : undefined });
+  },
+
+  async autocomplete(interaction) {
+    try {
+      const focused = interaction.options.getFocused(true);
+      if (focused?.name !== 'team') {
+        return interaction.respond([]);
+      }
+
+      const focusedValue = focused?.value || '';
+      const season = await getActiveSeason();
+      if (!season) {
+        return interaction.respond([]);
+      }
+
+      const teams = await Team.find({
+        season: season._id,
+        name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
+      })
+        .select('name')
+        .sort({ name: 1 })
+        .limit(25)
+        .lean();
+
+      return interaction.respond(teams.map(t => ({ name: t.name, value: t.name })));
+    } catch (err) {
+      console.error(err);
+      return interaction.respond([]);
+    }
   }
 };

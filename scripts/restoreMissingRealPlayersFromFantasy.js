@@ -12,7 +12,7 @@ dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const NOTEPAD_PATH = path.resolve(__dirname, '../player scores.txt');
+const NOTEPAD_PATH = path.resolve(__dirname, '../player_costs.txt');
 
 // Parse notepad for authoritative player names
 function parseNotepad() {

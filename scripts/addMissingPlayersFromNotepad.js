@@ -12,7 +12,8 @@ dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const NOTEPAD_PATH = path.resolve(__dirname, '../player scores.txt');
+const NOTEPAD_PATH = path.resolve(__dirname, '../player_costs.txt');
+const DRY_RUN = process.argv.includes('--dry-run');
 
 // Parse notepad for all players and their teams/costs
 function parseNotepad() {
@@ -46,31 +47,95 @@ async function main() {
     console.error('No active season set. Aborting.');
     process.exit(1);
   }
+  if (!players.length) {
+    console.log(`No players parsed from ${NOTEPAD_PATH}.`);
+    await mongoose.disconnect();
+    return;
+  }
+
   let createdCount = 0;
-  for (const { name, teamName, cost } of players) {
-    // Find or create the team for this season
+  let updatedCostCount = 0;
+  let skippedCount = 0;
+  let createdTeams = 0;
+
+  const teamCache = new Map();
+  const getTeamDoc = async (teamName) => {
+    const key = teamName.toLowerCase();
+    if (teamCache.has(key)) return teamCache.get(key);
+
     let teamDoc = await Team.findOne({ name: teamName, season: season._id });
     if (!teamDoc) {
-      teamDoc = await Team.create({ name: teamName, season: season._id, players: [] });
-      console.log(`Created missing team: ${teamName}`);
+      if (!DRY_RUN) {
+        teamDoc = await Team.create({ name: teamName, season: season._id, players: [] });
+      } else {
+        teamDoc = { _id: null, name: teamName, players: [] };
+      }
+      createdTeams++;
+      console.log(`${DRY_RUN ? '[DRY] ' : ''}Created missing team: ${teamName}`);
     }
-    // Check if player already exists (by name+team)
-    const exists = await T2TrialsPlayer.findOne({ name, team: teamDoc._id });
-    if (exists) continue;
+
+    teamCache.set(key, teamDoc);
+    return teamDoc;
+  };
+
+  for (const { name, teamName, cost } of players) {
+    const teamDoc = await getTeamDoc(teamName);
+
+    // Check if player already exists in this season/team
+    const existing = await T2TrialsPlayer.findOne({ name, team: teamDoc._id, season: season._id });
+    if (existing) {
+      if (Number(existing.cost) !== Number(cost)) {
+        if (!DRY_RUN) {
+          existing.cost = cost;
+          await existing.save();
+        }
+        updatedCostCount++;
+        console.log(`${DRY_RUN ? '[DRY] ' : ''}Updated cost for '${name}' in '${teamName}' to ${cost}.`);
+      } else {
+        skippedCount++;
+      }
+
+      // Ensure team.players includes the player
+      if (teamDoc._id) {
+        const hasInTeam = Array.isArray(teamDoc.players)
+          && teamDoc.players.some(id => String(id) === String(existing._id));
+        if (!hasInTeam && !DRY_RUN) {
+          await Team.updateOne({ _id: teamDoc._id }, { $addToSet: { players: existing._id } });
+        }
+      }
+      continue;
+    }
+
     // Create the player
-    await T2TrialsPlayer.create({
-      name,
-      team: teamDoc._id,
-      cost,
-      performance: [],
-      season: season._id
-    });
+    let newPlayer = null;
+    if (!DRY_RUN) {
+      newPlayer = await T2TrialsPlayer.create({
+        name,
+        team: teamDoc._id,
+        cost,
+        performance: [],
+        season: season._id
+      });
+
+      await Team.updateOne({ _id: teamDoc._id }, { $addToSet: { players: newPlayer._id } });
+    }
+
     createdCount++;
-    console.log(`Created missing player '${name}' in team '${teamName}' (cost: ${cost}).`);
+    console.log(`${DRY_RUN ? '[DRY] ' : ''}Created missing player '${name}' in team '${teamName}' (cost: ${cost}).`);
   }
-  console.log(`Created ${createdCount} missing players from notepad.`);
+
+  console.log(
+    `${DRY_RUN ? '[DRY] ' : ''}Summary:\n` +
+    `• Source file: ${NOTEPAD_PATH}\n` +
+    `• Season: ${season.name}\n` +
+    `• Teams created: ${createdTeams}\n` +
+    `• Players created: ${createdCount}\n` +
+    `• Costs updated: ${updatedCostCount}\n` +
+    `• Unchanged/skipped: ${skippedCount}`
+  );
+
   await mongoose.disconnect();
-  console.log('Done adding missing players.');
+  console.log(`${DRY_RUN ? '[DRY] ' : ''}Done adding missing players.`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

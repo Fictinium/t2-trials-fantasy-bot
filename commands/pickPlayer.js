@@ -40,6 +40,7 @@ export default {
     .addStringOption(opt =>
       opt.setName('team')
         .setDescription('Team name (only if duplicate player names exist)')
+        .setAutocomplete(true)
         .setRequired(false)
     ),
 
@@ -203,24 +204,86 @@ export default {
 
   async autocomplete(interaction) {
     try {
-      const focusedValue = interaction.options.getFocused() || '';
+      const focused = interaction.options.getFocused(true);
+      const focusedValue = focused?.value || '';
 
       const season = await getActiveSeason();
       if (!season) {
         return interaction.respond([]);
       }
 
-      const players = await T2TrialsPlayer.find({
-        season: season._id,
-        name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
-      })
-        .select('name')
-        .limit(100)
-        .lean();
+      if (focused?.name === 'player') {
+        const teamName = interaction.options.getString('team') || null;
+        let teamId = null;
+        if (teamName) {
+          const teamDoc = await Team.findOne({
+            season: season._id,
+            name: { $regex: `^${escapeRegex(teamName)}$`, $options: 'i' }
+          }).select('_id').lean();
+          teamId = teamDoc?._id ?? null;
+        }
 
-      const uniqueNames = [...new Set(players.map(p => p?.name).filter(Boolean))].slice(0, 25);
-      const suggestions = uniqueNames.map(name => ({ name, value: name }));
-      return interaction.respond(suggestions);
+        const query = {
+          season: season._id,
+          name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
+        };
+        if (teamId) query.team = teamId;
+
+        const players = await T2TrialsPlayer.find(query)
+          .select('name')
+          .limit(100)
+          .lean();
+
+        const uniqueNames = [...new Set(players.map(p => p?.name).filter(Boolean))].slice(0, 25);
+        const suggestions = uniqueNames.map(name => ({ name, value: name }));
+        return interaction.respond(suggestions);
+      }
+
+      if (focused?.name === 'team') {
+        const playerName = interaction.options.getString('player') || null;
+
+        if (playerName) {
+          const teamIds = await T2TrialsPlayer.distinct('team', {
+            season: season._id,
+            name: { $regex: `^${escapeRegex(playerName)}$`, $options: 'i' }
+          });
+
+          if (teamIds.length) {
+            const teams = await Team.find({
+              _id: { $in: teamIds },
+              season: season._id,
+              name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
+            })
+              .select('name')
+              .sort({ name: 1 })
+              .limit(25)
+              .lean();
+
+            const suggestions = teams
+              .map(t => t?.name)
+              .filter(Boolean)
+              .map(name => ({ name, value: name }));
+            return interaction.respond(suggestions);
+          }
+        }
+
+        const teams = await Team.find({
+          season: season._id,
+          name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
+        })
+          .select('name')
+          .sort({ name: 1 })
+          .limit(25)
+          .lean();
+
+        const suggestions = teams
+          .map(t => t?.name)
+          .filter(Boolean)
+          .map(name => ({ name, value: name }));
+        return interaction.respond(suggestions);
+      }
+
+      return interaction.respond([]);
     } catch (err) {
       console.error('Error in pickPlayer autocomplete:', err);
       return interaction.respond([]);
