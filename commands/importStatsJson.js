@@ -76,7 +76,7 @@ export default {
       const teamDoc = dbPlayer.team;
       if (!playerNameRaw || !teamDoc) { notFoundNoTeam++; continue; }
 
-      // 3) Build performance map (ignore null winners)
+      // 3) Build performance map
       const perfByWeek = new Map();
       for (const w of weeks) {
         const weekNum = Number(w?.week_number);
@@ -100,9 +100,10 @@ export default {
           });
         }
 
-        // Compose sets/rounds/games array
+        // Compose sets/rounds/games array + round aggregates used by scoring/model schema
         const sets = [];
         let totalWins = 0, totalLosses = 0;
+        const roundsAgg = new Map(); // roundNumber -> { roundNumber, wins, losses, duels }
         for (const [setNumber, roundsMap] of setsMap.entries()) {
           const rounds = [];
           for (const [roundNumber, gamesArr] of roundsMap.entries()) {
@@ -113,6 +114,18 @@ export default {
               // Count wins/losses for this player
               if (winner === 'A') totalWins++;
               else if (winner === 'B') totalLosses++;
+
+              const curr = roundsAgg.get(roundNumber) || {
+                roundNumber,
+                wins: 0,
+                losses: 0,
+                duels: 0
+              };
+              curr.duels += 1;
+              if (winner === 'A') curr.wins += 1;
+              else if (winner === 'B') curr.losses += 1;
+              roundsAgg.set(roundNumber, curr);
+
               return {
                 playerA: g.playerId,
                 playerB: g.opponentId,
@@ -126,10 +139,13 @@ export default {
           sets.push({ setNumber, rounds });
         }
 
+        const rounds = [...roundsAgg.values()].sort((a, b) => a.roundNumber - b.roundNumber);
+
         perfByWeek.set(weekNum, {
           week: weekNum,
           wins: totalWins,
           losses: totalLosses,
+          rounds,
           sets
         });
       }

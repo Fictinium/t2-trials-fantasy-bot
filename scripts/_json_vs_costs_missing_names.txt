@@ -1,0 +1,36 @@
+JSON vs player_costs Missing Names Report
+
+JSON file: C:\Users\Guilherme Lourenço\T2 Trials Fantasy League Bot\players.json
+Costs file: C:\Users\Guilherme Lourenço\T2 Trials Fantasy League Bot\player_costs.txt
+
+Summary
+- JSON rows: 523
+- JSON unique teams: 54
+- JSON unique player names: 523
+- Costs teams: 54
+- Costs unique player names: 528
+
+Missing team names in costs: 0
+Missing player names in costs (with JSON teams): 8
+Missing player-team pairs in costs: 14
+
+=== Missing Team Names (present in JSON, absent in player_costs) ===
+(none)
+
+=== Missing Player Names (present in JSON, absent in player_costs) ===
+
+=== Missing Player-Team Pairs (JSON pair not found in player_costs) ===
+- id=412 Alva<3 @ 
+- id=383 Aomine @ 
+- id=419 fugo2732 @ 
+- id=386 Javieroh @ 
+- id=384 Joan @ 
+- id=387 R_RGlez @ 
+- id=641 RuneArc @ 
+- id=510 Shadow-KOH @ 
+- id=388 Shatar @ 
+- id=390 teezy @ 
+- id=385 Yuny @ 
+- id=389 Zen @ 
+- id=644 夏游 @ 
+- id=646 纯爱 @ 

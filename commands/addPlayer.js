@@ -4,6 +4,64 @@ import { isAuthorizedForCommand } from '../utils/commandAuth.js';
 import { escapeRegex } from '../utils/escapeRegex.js';
 import Team from '../models/Team.js';
 import T2TrialsPlayer from '../models/T2TrialsPlayer.js';
+import FantasyPlayer from '../models/FantasyPlayer.js';
+
+async function applyCostChangeWithWalletGuard(playerDoc, newCost, seasonId) {
+  const oldCost = Number(playerDoc?.cost ?? 0);
+  const targetCost = Number(newCost);
+  if (!Number.isFinite(targetCost) || targetCost < 0) {
+    return { ok: false, message: '❌ Invalid target cost.' };
+  }
+
+  const delta = targetCost - oldCost;
+  if (delta === 0) {
+    return { ok: true, changed: false, owners: 0, delta: 0 };
+  }
+
+  const owners = await FantasyPlayer.find(
+    { season: seasonId, team: playerDoc._id },
+    { wallet: 1, username: 1, discordId: 1 }
+  ).lean();
+
+  if (delta > 0 && owners.length) {
+    const insufficient = owners.filter(fp => Number(fp?.wallet ?? 0) < delta);
+    if (insufficient.length) {
+      const list = insufficient
+        .slice(0, 20)
+        .map(fp => `• ${fp.username || fp.discordId} (wallet=${Number(fp?.wallet ?? 0)}, needs ${delta})`)
+        .join('\n');
+      return {
+        ok: false,
+        message:
+          `❌ Cost change blocked for **${playerDoc.name}**: ` +
+          `${insufficient.length} fantasy team(s) cannot afford the increase of **${delta}**.\n` +
+          `${list}${insufficient.length > 20 ? '\n• ...' : ''}`
+      };
+    }
+  }
+
+  if (owners.length) {
+    await FantasyPlayer.updateMany(
+      { season: seasonId, team: playerDoc._id },
+      { $inc: { wallet: -delta } }
+    );
+  }
+
+  try {
+    playerDoc.cost = targetCost;
+    await playerDoc.save();
+  } catch (err) {
+    if (owners.length) {
+      await FantasyPlayer.updateMany(
+        { season: seasonId, team: playerDoc._id },
+        { $inc: { wallet: delta } }
+      );
+    }
+    throw err;
+  }
+
+  return { ok: true, changed: true, owners: owners.length, delta };
+}
 
 export default {
   data: new SlashCommandBuilder()
@@ -77,10 +135,16 @@ export default {
       });
 
       if (directPlayer && Number(directPlayer.cost) !== Number(cost)) {
-        directPlayer.cost = cost;
-        await directPlayer.save();
+        const res = await applyCostChangeWithWalletGuard(directPlayer, cost, season._id);
+        if (!res.ok) {
+          return interaction.reply({ content: res.message, flags: 64 });
+        }
+
+        const walletMsg = res.changed
+          ? ` Updated wallets for **${res.owners}** fantasy team(s).`
+          : '';
         return interaction.reply({
-          content: `✅ Updated player cost for **${directPlayer.name}** in **${team.name}**: **${directPlayer.cost}**.`,
+          content: `✅ Updated player cost for **${directPlayer.name}** in **${team.name}**: **${directPlayer.cost}**.${walletMsg}`,
           flags: 64
         });
       }
@@ -127,18 +191,63 @@ export default {
         return interaction.reply({ content: `❌ No player found where exactly one of name, team, or cost differs.`, flags: 64 });
       }
 
+      const previousTeamId = playerToUpdate.team;
+
       // Perform the substitution
       if (fieldToChange === 'cost') {
-        playerToUpdate.cost = cost;
+        const res = await applyCostChangeWithWalletGuard(playerToUpdate, cost, season._id);
+        if (!res.ok) {
+          return interaction.reply({ content: res.message, flags: 64 });
+        }
       } else if (fieldToChange === 'team') {
+        const oldTeamId = playerToUpdate.team;
+        if (String(oldTeamId) !== String(team._id)) {
+          const duplicateInTarget = await T2TrialsPlayer.findOne({
+            season: season._id,
+            team: team._id,
+            name: { $regex: `^${escapeRegex(playerToUpdate.name)}$`, $options: 'i' },
+            _id: { $ne: playerToUpdate._id }
+          }).lean();
+
+          if (duplicateInTarget) {
+            return interaction.reply({
+              content: `❌ Cannot move **${playerToUpdate.name}**: a player with that name already exists in **${team.name}**.`,
+              flags: 64
+            });
+          }
+        }
+
         playerToUpdate.team = team._id;
       } else if (fieldToChange === 'name') {
-        playerToUpdate.name = newName || name;
+        const targetName = newName || name;
+        const duplicateInTeam = await T2TrialsPlayer.findOne({
+          season: season._id,
+          team: playerToUpdate.team,
+          name: { $regex: `^${escapeRegex(targetName)}$`, $options: 'i' },
+          _id: { $ne: playerToUpdate._id }
+        }).lean();
+
+        if (duplicateInTeam) {
+          return interaction.reply({
+            content: `❌ Cannot rename player to **${targetName}**: that name already exists in this team.`,
+            flags: 64
+          });
+        }
+
+        playerToUpdate.name = targetName;
       }
+
       await playerToUpdate.save();
 
+      if (fieldToChange === 'team' && String(previousTeamId) !== String(team._id)) {
+        await Team.updateOne({ _id: previousTeamId }, { $pull: { players: playerToUpdate._id } });
+        await Team.updateOne({ _id: team._id }, { $addToSet: { players: playerToUpdate._id } });
+      }
+
       return interaction.reply({
-        content: `✅ Updated player: changed ${fieldToChange} for **${playerToUpdate.name}** (now team: **${team.name}**, cost: ${playerToUpdate.cost}).`,
+        content: fieldToChange === 'cost'
+          ? `✅ Updated player cost for **${playerToUpdate.name}** to **${playerToUpdate.cost}** with wallet sync for all affected fantasy teams.`
+          : `✅ Updated player: changed ${fieldToChange} for **${playerToUpdate.name}** (now team: **${team.name}**, cost: ${playerToUpdate.cost}).`,
         flags: 64
       });
     } else {

@@ -1,0 +1,1823 @@
+{
+  "totals": {
+    "jsonRows": 524,
+    "jsonUniqueTeams": 54,
+    "jsonUniquePlayerNames": 524,
+    "costsTeams": 54,
+    "costsUniquePlayerNames": 509
+  },
+  "missing": {
+    "teamsInJsonNotInCostsCount": 11,
+    "playerNamesInJsonNotInCostsCount": 141,
+    "playerTeamPairsInJsonNotInCostsCount": 230
+  },
+  "samples": {
+    "teamsInJsonNotInCosts": [
+      "Team Terribly Tired Trishula",
+      "Millennium Legacy",
+      "Team SKS",
+      "Shadow DarkScythe",
+      "MRG Team",
+      "Nada A Declar",
+      "A1",
+      "Disasters",
+      "Frontier Card Gaming",
+      "MRC Team",
+      "B&E & ITB"
+    ],
+    "playerNamesInJsonNotInCosts": [
+      "ACE-AT",
+      "Japan",
+      "Shadi",
+      "h.man_.",
+      "sitake",
+      "香草皮尔莉",
+      "블우",
+      "AT La Dispute",
+      "DЯDOOM",
+      "RedSaber",
+      "TDP || Trash",
+      "TDP|| Rinka",
+      "That Guy",
+      "Zen-WCH",
+      "ann",
+      "miya318",
+      "s_w_rhapsody",
+      "saawasekkyouto",
+      "saipachi",
+      "원풍경",
+      "CK | ERMAC",
+      "I'm out",
+      "Oblue/오블",
+      "TFG Furhire",
+      "Toast",
+      "Kevdan919",
+      "Skilla10",
+      "natsume",
+      "Destiny",
+      "Doomsday",
+      "KingCrimson",
+      "Luis Fate",
+      "Shatar",
+      "(CK)Hades",
+      ".qqtrox",
+      "1_yu",
+      "Aguiar",
+      "Alex",
+      "Alva<3",
+      "Anderson Strife",
+      "Ant.xnxo",
+      "Auberginen",
+      "Aɴᴛ.xɴxø",
+      "Boss-ML",
+      "Bᵣₒₛ | Murad",
+      "Cloudy",
+      "Doom Guy",
+      "EL AQUILES",
+      "Erika",
+      "F3NR1R",
+      "FM 内葉 itachi",
+      "Fugarta",
+      "GoldX金将",
+      "HolyFath*r",
+      "Jose12Ubilla",
+      "KilluaSenko",
+      "Kitty :3",
+      "Koala",
+      "Leo/CorvoRobot",
+      "LucaFIRE12",
+      "Lust",
+      "MSB",
+      "Matt",
+      "Maxciber",
+      "Milito-22",
+      "MoonVeil",
+      "Mordred-G",
+      "Ne0_Hawkeye",
+      "NepStorm",
+      "NgôDũng",
+      "Orco MRC",
+      "Pandalex",
+      "PlagueMeister",
+      "Quinncy",
+      "Rafael RDU",
+      "RazerX",
+      "Rei",
+      "Roto",
+      "RuneArc",
+      "Shadow-KOH"
+    ],
+    "playerTeamPairsInJsonNotInCosts": [
+      {
+        "id": 493,
+        "name": "NobodyTsuna",
+        "team": "Team Terribly Tired Trishula"
+      },
+      {
+        "id": 465,
+        "name": "ACE-AT",
+        "team": "Apex Tactics"
+      },
+      {
+        "id": 564,
+        "name": "Crister",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 584,
+        "name": "Izumi Yuuki",
+        "team": "Team SKS"
+      },
+      {
+        "id": 601,
+        "name": "Japan",
+        "team": "Tyrant Typhoon"
+      },
+      {
+        "id": 108,
+        "name": "Ruka",
+        "team": "Team SKS"
+      },
+      {
+        "id": 330,
+        "name": "Shadi",
+        "team": "Box of Friends"
+      },
+      {
+        "id": 494,
+        "name": "Xion",
+        "team": "Team Terribly Tired Trishula"
+      },
+      {
+        "id": 599,
+        "name": "h.man_.",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 608,
+        "name": "sitake",
+        "team": "Tyrant Typhoon"
+      },
+      {
+        "id": 654,
+        "name": "無敗伝説",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 635,
+        "name": "香草皮尔莉",
+        "team": "CNMD"
+      },
+      {
+        "id": 524,
+        "name": "블우",
+        "team": "Simsim Server"
+      },
+      {
+        "id": 464,
+        "name": "AT La Dispute",
+        "team": "Apex Tactics"
+      },
+      {
+        "id": 521,
+        "name": "Dharc",
+        "team": "MRG Team"
+      },
+      {
+        "id": 590,
+        "name": "DЯDOOM",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 131,
+        "name": "Lucas Rios",
+        "team": "Nada A Declar"
+      },
+      {
+        "id": 262,
+        "name": "RedSaber",
+        "team": "Los Inservibles"
+      },
+      {
+        "id": 426,
+        "name": "SBS",
+        "team": "A1"
+      },
+      {
+        "id": 673,
+        "name": "TDP || Trash",
+        "team": "The Dystopian"
+      },
+      {
+        "id": 679,
+        "name": "TDP|| Rinka",
+        "team": "The Dystopian"
+      },
+      {
+        "id": 371,
+        "name": "That Guy",
+        "team": "Phoenix Force"
+      },
+      {
+        "id": 672,
+        "name": "Zen-WCH",
+        "team": "Wanted Crown Hunters"
+      },
+      {
+        "id": 527,
+        "name": "ann",
+        "team": "Simsim Server"
+      },
+      {
+        "id": 653,
+        "name": "kappa",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 684,
+        "name": "miya318",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 680,
+        "name": "s_w_rhapsody",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 689,
+        "name": "saawasekkyouto",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 611,
+        "name": "saipachi",
+        "team": "Tyrant Typhoon"
+      },
+      {
+        "id": 431,
+        "name": "원풍경",
+        "team": "A1"
+      },
+      {
+        "id": 589,
+        "name": "CK | ERMAC",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 721,
+        "name": "Dis Sorrow",
+        "team": "Disasters"
+      },
+      {
+        "id": 568,
+        "name": "GanoHack",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 621,
+        "name": "I'm out",
+        "team": "Mickey Mouse Clubhouse"
+      },
+      {
+        "id": 127,
+        "name": "Justinian",
+        "team": "Nada A Declar"
+      },
+      {
+        "id": 519,
+        "name": "Levi",
+        "team": "MRG Team"
+      },
+      {
+        "id": 525,
+        "name": "Oblue/오블",
+        "team": "Simsim Server"
+      },
+      {
+        "id": 627,
+        "name": "Pedreco",
+        "team": "Nada A Declar"
+      },
+      {
+        "id": 723,
+        "name": "Raino",
+        "team": "Disasters"
+      },
+      {
+        "id": 547,
+        "name": "Rjay",
+        "team": "Frontier Card Gaming"
+      },
+      {
+        "id": 532,
+        "name": "TFG Furhire",
+        "team": "Team Frost Gaming"
+      },
+      {
+        "id": 693,
+        "name": "Toast",
+        "team": "Big Banana"
+      },
+      {
+        "id": 82,
+        "name": "bebel",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 495,
+        "name": "buttertits",
+        "team": "Team Terribly Tired Trishula"
+      },
+      {
+        "id": 421,
+        "name": "cutesnail",
+        "team": "A1"
+      },
+      {
+        "id": 582,
+        "name": "BanHom",
+        "team": "Team SKS"
+      },
+      {
+        "id": 480,
+        "name": "Kevdan919",
+        "team": "Rising Duelists Union"
+      },
+      {
+        "id": 565,
+        "name": "MFM Danyus",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 135,
+        "name": "Ming",
+        "team": "Frontier Card Gaming"
+      },
+      {
+        "id": 327,
+        "name": "Skilla10",
+        "team": "Phoenix Gaming"
+      },
+      {
+        "id": 726,
+        "name": "Yousay",
+        "team": "Disasters"
+      },
+      {
+        "id": 552,
+        "name": "handsome jack",
+        "team": "Frontier Card Gaming"
+      },
+      {
+        "id": 454,
+        "name": "natsume",
+        "team": "Evil Family"
+      },
+      {
+        "id": 478,
+        "name": "Destiny",
+        "team": "Yuri"
+      },
+      {
+        "id": 342,
+        "name": "Doomsday",
+        "team": "Evil Family"
+      },
+      {
+        "id": 271,
+        "name": "KingCrimson",
+        "team": "Los Inservibles"
+      },
+      {
+        "id": 515,
+        "name": "LMHC",
+        "team": "MRC Team"
+      },
+      {
+        "id": 249,
+        "name": "Luis Fate",
+        "team": "MRG Team"
+      },
+      {
+        "id": 388,
+        "name": "Shatar",
+        "team": ""
+      },
+      {
+        "id": 429,
+        "name": "$iz",
+        "team": "A1"
+      },
+      {
+        "id": 588,
+        "name": "(CK)Hades",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 675,
+        "name": ".qqtrox",
+        "team": "The Dystopian"
+      },
+      {
+        "id": 725,
+        "name": "1_yu",
+        "team": "Disasters"
+      },
+      {
+        "id": 757,
+        "name": "Abigail",
+        "team": "B&E & ITB"
+      },
+      {
+        "id": 284,
+        "name": "Aguiar",
+        "team": "Team Frost Gaming"
+      },
+      {
+        "id": 522,
+        "name": "Alex",
+        "team": "MRG Team"
+      },
+      {
+        "id": 412,
+        "name": "Alva<3",
+        "team": "Duelist Encore"
+      },
+      {
+        "id": 293,
+        "name": "Anderson Strife",
+        "team": "Honored Dragon Star"
+      },
+      {
+        "id": 696,
+        "name": "Ant.xnxo",
+        "team": "Knights Of Nerona"
+      },
+      {
+        "id": 383,
+        "name": "Aomine",
+        "team": ""
+      },
+      {
+        "id": 553,
+        "name": "ArtiQno",
+        "team": "Frontier Card Gaming"
+      },
+      {
+        "id": 275,
+        "name": "Auberginen",
+        "team": "DS Celebeast"
+      },
+      {
+        "id": 774,
+        "name": "Aɴᴛ.xɴxø",
+        "team": "Team Terribly Tired Trishula"
+      },
+      {
+        "id": 563,
+        "name": "Boss-ML",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 591,
+        "name": "Bᵣₒₛ | Murad",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 103,
+        "name": "Chuoi",
+        "team": "Team SKS"
+      },
+      {
+        "id": 226,
+        "name": "Cloudy",
+        "team": "Team Terribly Tired Trishula"
+      },
+      {
+        "id": 520,
+        "name": "DAHERO",
+        "team": "MRG Team"
+      },
+      {
+        "id": 573,
+        "name": "Dark revolver12",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 514,
+        "name": "Dinastik",
+        "team": "MRC Team"
+      }
+    ]
+  },
+  "full": {
+    "teamsInJsonNotInCosts": [
+      "Team Terribly Tired Trishula",
+      "Millennium Legacy",
+      "Team SKS",
+      "Shadow DarkScythe",
+      "MRG Team",
+      "Nada A Declar",
+      "A1",
+      "Disasters",
+      "Frontier Card Gaming",
+      "MRC Team",
+      "B&E & ITB"
+    ],
+    "playerNamesInJsonNotInCosts": [
+      "ACE-AT",
+      "Japan",
+      "Shadi",
+      "h.man_.",
+      "sitake",
+      "香草皮尔莉",
+      "블우",
+      "AT La Dispute",
+      "DЯDOOM",
+      "RedSaber",
+      "TDP || Trash",
+      "TDP|| Rinka",
+      "That Guy",
+      "Zen-WCH",
+      "ann",
+      "miya318",
+      "s_w_rhapsody",
+      "saawasekkyouto",
+      "saipachi",
+      "원풍경",
+      "CK | ERMAC",
+      "I'm out",
+      "Oblue/오블",
+      "TFG Furhire",
+      "Toast",
+      "Kevdan919",
+      "Skilla10",
+      "natsume",
+      "Destiny",
+      "Doomsday",
+      "KingCrimson",
+      "Luis Fate",
+      "Shatar",
+      "(CK)Hades",
+      ".qqtrox",
+      "1_yu",
+      "Aguiar",
+      "Alex",
+      "Alva<3",
+      "Anderson Strife",
+      "Ant.xnxo",
+      "Auberginen",
+      "Aɴᴛ.xɴxø",
+      "Boss-ML",
+      "Bᵣₒₛ | Murad",
+      "Cloudy",
+      "Doom Guy",
+      "EL AQUILES",
+      "Erika",
+      "F3NR1R",
+      "FM 内葉 itachi",
+      "Fugarta",
+      "GoldX金将",
+      "HolyFath*r",
+      "Jose12Ubilla",
+      "KilluaSenko",
+      "Kitty :3",
+      "Koala",
+      "Leo/CorvoRobot",
+      "LucaFIRE12",
+      "Lust",
+      "MSB",
+      "Matt",
+      "Maxciber",
+      "Milito-22",
+      "MoonVeil",
+      "Mordred-G",
+      "Ne0_Hawkeye",
+      "NepStorm",
+      "NgôDũng",
+      "Orco MRC",
+      "Pandalex",
+      "PlagueMeister",
+      "Quinncy",
+      "Rafael RDU",
+      "RazerX",
+      "Rei",
+      "Roto",
+      "RuneArc",
+      "Shadow-KOH",
+      "Shinobidoh",
+      "Sir Guaxinim",
+      "Thereal",
+      "Thynako",
+      "Tonny",
+      "Towlie",
+      "UchihaManu07",
+      "Wyatt",
+      "Yuki Mya",
+      "Yunari",
+      "ZERO",
+      "Zanza",
+      "Zu Libo",
+      "Zα lοrδ mαrκ",
+      "abduallah237",
+      "ado3147",
+      "alhag114",
+      "asta05960",
+      "bard666",
+      "camo",
+      "cbtk",
+      "ddata25_md",
+      "ddd",
+      "f-scf",
+      "fugo2732",
+      "hell_o_briar",
+      "hihi.real",
+      "inonakanoutubo",
+      "luv.chu~",
+      "mas",
+      "nemurun",
+      "oumisoka",
+      "shimotsukasa",
+      "stars",
+      "taitai",
+      "unknown-user",
+      "ushi_ushi",
+      "yatsuga_take",
+      "yoyoyo8443",
+      "yuki8322",
+      "しょう",
+      "すみす",
+      "はぶらし",
+      "ふー",
+      "クロニア",
+      "シーナ",
+      "チェダッカ〜",
+      "ミッチー",
+      "又大又白裁决龙",
+      "夏游",
+      "帷幕后的星宿|ω･`)",
+      "梦小恒",
+      "沐月千里",
+      "紫鸣天琴",
+      "継桜",
+      "纯爱",
+      "随能所任",
+      "거던의 망령(이였던 것)",
+      "공만이",
+      "너서리",
+      "전선잼병"
+    ],
+    "playerTeamPairsInJsonNotInCosts": [
+      {
+        "id": 493,
+        "name": "NobodyTsuna",
+        "team": "Team Terribly Tired Trishula"
+      },
+      {
+        "id": 465,
+        "name": "ACE-AT",
+        "team": "Apex Tactics"
+      },
+      {
+        "id": 564,
+        "name": "Crister",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 584,
+        "name": "Izumi Yuuki",
+        "team": "Team SKS"
+      },
+      {
+        "id": 601,
+        "name": "Japan",
+        "team": "Tyrant Typhoon"
+      },
+      {
+        "id": 108,
+        "name": "Ruka",
+        "team": "Team SKS"
+      },
+      {
+        "id": 330,
+        "name": "Shadi",
+        "team": "Box of Friends"
+      },
+      {
+        "id": 494,
+        "name": "Xion",
+        "team": "Team Terribly Tired Trishula"
+      },
+      {
+        "id": 599,
+        "name": "h.man_.",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 608,
+        "name": "sitake",
+        "team": "Tyrant Typhoon"
+      },
+      {
+        "id": 654,
+        "name": "無敗伝説",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 635,
+        "name": "香草皮尔莉",
+        "team": "CNMD"
+      },
+      {
+        "id": 524,
+        "name": "블우",
+        "team": "Simsim Server"
+      },
+      {
+        "id": 464,
+        "name": "AT La Dispute",
+        "team": "Apex Tactics"
+      },
+      {
+        "id": 521,
+        "name": "Dharc",
+        "team": "MRG Team"
+      },
+      {
+        "id": 590,
+        "name": "DЯDOOM",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 131,
+        "name": "Lucas Rios",
+        "team": "Nada A Declar"
+      },
+      {
+        "id": 262,
+        "name": "RedSaber",
+        "team": "Los Inservibles"
+      },
+      {
+        "id": 426,
+        "name": "SBS",
+        "team": "A1"
+      },
+      {
+        "id": 673,
+        "name": "TDP || Trash",
+        "team": "The Dystopian"
+      },
+      {
+        "id": 679,
+        "name": "TDP|| Rinka",
+        "team": "The Dystopian"
+      },
+      {
+        "id": 371,
+        "name": "That Guy",
+        "team": "Phoenix Force"
+      },
+      {
+        "id": 672,
+        "name": "Zen-WCH",
+        "team": "Wanted Crown Hunters"
+      },
+      {
+        "id": 527,
+        "name": "ann",
+        "team": "Simsim Server"
+      },
+      {
+        "id": 653,
+        "name": "kappa",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 684,
+        "name": "miya318",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 680,
+        "name": "s_w_rhapsody",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 689,
+        "name": "saawasekkyouto",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 611,
+        "name": "saipachi",
+        "team": "Tyrant Typhoon"
+      },
+      {
+        "id": 431,
+        "name": "원풍경",
+        "team": "A1"
+      },
+      {
+        "id": 589,
+        "name": "CK | ERMAC",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 721,
+        "name": "Dis Sorrow",
+        "team": "Disasters"
+      },
+      {
+        "id": 568,
+        "name": "GanoHack",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 621,
+        "name": "I'm out",
+        "team": "Mickey Mouse Clubhouse"
+      },
+      {
+        "id": 127,
+        "name": "Justinian",
+        "team": "Nada A Declar"
+      },
+      {
+        "id": 519,
+        "name": "Levi",
+        "team": "MRG Team"
+      },
+      {
+        "id": 525,
+        "name": "Oblue/오블",
+        "team": "Simsim Server"
+      },
+      {
+        "id": 627,
+        "name": "Pedreco",
+        "team": "Nada A Declar"
+      },
+      {
+        "id": 723,
+        "name": "Raino",
+        "team": "Disasters"
+      },
+      {
+        "id": 547,
+        "name": "Rjay",
+        "team": "Frontier Card Gaming"
+      },
+      {
+        "id": 532,
+        "name": "TFG Furhire",
+        "team": "Team Frost Gaming"
+      },
+      {
+        "id": 693,
+        "name": "Toast",
+        "team": "Big Banana"
+      },
+      {
+        "id": 82,
+        "name": "bebel",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 495,
+        "name": "buttertits",
+        "team": "Team Terribly Tired Trishula"
+      },
+      {
+        "id": 421,
+        "name": "cutesnail",
+        "team": "A1"
+      },
+      {
+        "id": 582,
+        "name": "BanHom",
+        "team": "Team SKS"
+      },
+      {
+        "id": 480,
+        "name": "Kevdan919",
+        "team": "Rising Duelists Union"
+      },
+      {
+        "id": 565,
+        "name": "MFM Danyus",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 135,
+        "name": "Ming",
+        "team": "Frontier Card Gaming"
+      },
+      {
+        "id": 327,
+        "name": "Skilla10",
+        "team": "Phoenix Gaming"
+      },
+      {
+        "id": 726,
+        "name": "Yousay",
+        "team": "Disasters"
+      },
+      {
+        "id": 552,
+        "name": "handsome jack",
+        "team": "Frontier Card Gaming"
+      },
+      {
+        "id": 454,
+        "name": "natsume",
+        "team": "Evil Family"
+      },
+      {
+        "id": 478,
+        "name": "Destiny",
+        "team": "Yuri"
+      },
+      {
+        "id": 342,
+        "name": "Doomsday",
+        "team": "Evil Family"
+      },
+      {
+        "id": 271,
+        "name": "KingCrimson",
+        "team": "Los Inservibles"
+      },
+      {
+        "id": 515,
+        "name": "LMHC",
+        "team": "MRC Team"
+      },
+      {
+        "id": 249,
+        "name": "Luis Fate",
+        "team": "MRG Team"
+      },
+      {
+        "id": 388,
+        "name": "Shatar",
+        "team": ""
+      },
+      {
+        "id": 429,
+        "name": "$iz",
+        "team": "A1"
+      },
+      {
+        "id": 588,
+        "name": "(CK)Hades",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 675,
+        "name": ".qqtrox",
+        "team": "The Dystopian"
+      },
+      {
+        "id": 725,
+        "name": "1_yu",
+        "team": "Disasters"
+      },
+      {
+        "id": 757,
+        "name": "Abigail",
+        "team": "B&E & ITB"
+      },
+      {
+        "id": 284,
+        "name": "Aguiar",
+        "team": "Team Frost Gaming"
+      },
+      {
+        "id": 522,
+        "name": "Alex",
+        "team": "MRG Team"
+      },
+      {
+        "id": 412,
+        "name": "Alva<3",
+        "team": "Duelist Encore"
+      },
+      {
+        "id": 293,
+        "name": "Anderson Strife",
+        "team": "Honored Dragon Star"
+      },
+      {
+        "id": 696,
+        "name": "Ant.xnxo",
+        "team": "Knights Of Nerona"
+      },
+      {
+        "id": 383,
+        "name": "Aomine",
+        "team": ""
+      },
+      {
+        "id": 553,
+        "name": "ArtiQno",
+        "team": "Frontier Card Gaming"
+      },
+      {
+        "id": 275,
+        "name": "Auberginen",
+        "team": "DS Celebeast"
+      },
+      {
+        "id": 774,
+        "name": "Aɴᴛ.xɴxø",
+        "team": "Team Terribly Tired Trishula"
+      },
+      {
+        "id": 563,
+        "name": "Boss-ML",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 591,
+        "name": "Bᵣₒₛ | Murad",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 103,
+        "name": "Chuoi",
+        "team": "Team SKS"
+      },
+      {
+        "id": 226,
+        "name": "Cloudy",
+        "team": "Team Terribly Tired Trishula"
+      },
+      {
+        "id": 520,
+        "name": "DAHERO",
+        "team": "MRG Team"
+      },
+      {
+        "id": 573,
+        "name": "Dark revolver12",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 514,
+        "name": "Dinastik",
+        "team": "MRC Team"
+      },
+      {
+        "id": 263,
+        "name": "Doom Guy",
+        "team": "Los Inservibles"
+      },
+      {
+        "id": 761,
+        "name": "DreAmVirGo",
+        "team": "B&E & ITB"
+      },
+      {
+        "id": 583,
+        "name": "Dyu",
+        "team": "Team SKS"
+      },
+      {
+        "id": 782,
+        "name": "EL AQUILES",
+        "team": "Tier Zero"
+      },
+      {
+        "id": 48,
+        "name": "EarlGB",
+        "team": "Team Terribly Tired Trishula"
+      },
+      {
+        "id": 562,
+        "name": "ElTioSteven",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 4,
+        "name": "Erika",
+        "team": "Genesis of Losing Coin"
+      },
+      {
+        "id": 778,
+        "name": "F3NR1R",
+        "team": "Apex Tactics"
+      },
+      {
+        "id": 405,
+        "name": "FM 内葉 itachi",
+        "team": "PKIDS"
+      },
+      {
+        "id": 566,
+        "name": "Fabricio557",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 122,
+        "name": "Flaviofc",
+        "team": "Nada A Declar"
+      },
+      {
+        "id": 607,
+        "name": "Fugarta",
+        "team": "Tyrant Typhoon"
+      },
+      {
+        "id": 720,
+        "name": "Gaap",
+        "team": "Disasters"
+      },
+      {
+        "id": 220,
+        "name": "Gimlet",
+        "team": "B&E & ITB"
+      },
+      {
+        "id": 57,
+        "name": "GoldX金将",
+        "team": "Evil Family"
+      },
+      {
+        "id": 577,
+        "name": "HolyFath*r",
+        "team": "DS Celebeast"
+      },
+      {
+        "id": 569,
+        "name": "Horus",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 386,
+        "name": "Javieroh",
+        "team": ""
+      },
+      {
+        "id": 384,
+        "name": "Joan",
+        "team": ""
+      },
+      {
+        "id": 518,
+        "name": "Jorge (E)",
+        "team": "MRG Team"
+      },
+      {
+        "id": 490,
+        "name": "Jose12Ubilla",
+        "team": "Rising Duelists Union"
+      },
+      {
+        "id": 428,
+        "name": "Jugiur",
+        "team": "A1"
+      },
+      {
+        "id": 410,
+        "name": "KilluaSenko",
+        "team": "Duelist Encore"
+      },
+      {
+        "id": 451,
+        "name": "Kitty :3",
+        "team": "Evil Family"
+      },
+      {
+        "id": 19,
+        "name": "Koala",
+        "team": "Phoenix Gaming"
+      },
+      {
+        "id": 438,
+        "name": "Leo/CorvoRobot",
+        "team": "Divine Arsenal"
+      },
+      {
+        "id": 436,
+        "name": "LucaFIRE12",
+        "team": "Divine Arsenal"
+      },
+      {
+        "id": 773,
+        "name": "Lust",
+        "team": "Box of Friends"
+      },
+      {
+        "id": 561,
+        "name": "MLPSchino",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 307,
+        "name": "MSB",
+        "team": "The Island"
+      },
+      {
+        "id": 781,
+        "name": "Matt",
+        "team": "Tier Zero"
+      },
+      {
+        "id": 783,
+        "name": "Maxciber",
+        "team": "Tier Zero"
+      },
+      {
+        "id": 592,
+        "name": "Milito-22",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 595,
+        "name": "MoonVeil",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 12,
+        "name": "Mordred-G",
+        "team": "Genesis of Losing Coin"
+      },
+      {
+        "id": 200,
+        "name": "MrDarus",
+        "team": "MRC Team"
+      },
+      {
+        "id": 16,
+        "name": "Ne0_Hawkeye",
+        "team": "Phoenix Force"
+      },
+      {
+        "id": 775,
+        "name": "NepStorm",
+        "team": "Knights Of Nerona"
+      },
+      {
+        "id": 581,
+        "name": "NgôDũng",
+        "team": "Team SKS"
+      },
+      {
+        "id": 238,
+        "name": "Orco MRC",
+        "team": "MRC Team"
+      },
+      {
+        "id": 209,
+        "name": "Pandalex",
+        "team": "Mickey Mouse Clubhouse"
+      },
+      {
+        "id": 172,
+        "name": "PlagueMeister",
+        "team": "Knights of Hell"
+      },
+      {
+        "id": 571,
+        "name": "Plimo #939",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 567,
+        "name": "Punk Fiction",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 112,
+        "name": "Quinncy",
+        "team": "Team SKS"
+      },
+      {
+        "id": 387,
+        "name": "R_RGlez",
+        "team": ""
+      },
+      {
+        "id": 484,
+        "name": "Rafael RDU",
+        "team": "Rising Duelists Union"
+      },
+      {
+        "id": 596,
+        "name": "RazerX",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 617,
+        "name": "Rei",
+        "team": "Synthesis cross Familiar"
+      },
+      {
+        "id": 129,
+        "name": "Rogerinho",
+        "team": "Nada A Declar"
+      },
+      {
+        "id": 652,
+        "name": "Roto",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 641,
+        "name": "RuneArc",
+        "team": ""
+      },
+      {
+        "id": 572,
+        "name": "Samy-YG",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 430,
+        "name": "Sana",
+        "team": "A1"
+      },
+      {
+        "id": 109,
+        "name": "Seia-chan",
+        "team": "Team SKS"
+      },
+      {
+        "id": 427,
+        "name": "Shadel",
+        "team": "A1"
+      },
+      {
+        "id": 510,
+        "name": "Shadow-KOH",
+        "team": ""
+      },
+      {
+        "id": 404,
+        "name": "Shinobidoh",
+        "team": "PKIDS"
+      },
+      {
+        "id": 513,
+        "name": "Sinaloense70",
+        "team": "MRC Team"
+      },
+      {
+        "id": 125,
+        "name": "Sir Guaxinim",
+        "team": "Nada A Declar"
+      },
+      {
+        "id": 101,
+        "name": "Solar-chan",
+        "team": "Team SKS"
+      },
+      {
+        "id": 585,
+        "name": "Sophia De Clare",
+        "team": "Team SKS"
+      },
+      {
+        "id": 600,
+        "name": "Thereal",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 381,
+        "name": "Thynako",
+        "team": "Genesis of Losing Coin"
+      },
+      {
+        "id": 784,
+        "name": "Tonny",
+        "team": "Tier Zero"
+      },
+      {
+        "id": 118,
+        "name": "Towlie",
+        "team": "Level Up, Buy Banana"
+      },
+      {
+        "id": 417,
+        "name": "UchihaManu07",
+        "team": "Duelist Encore"
+      },
+      {
+        "id": 780,
+        "name": "Wyatt",
+        "team": "Tier Zero"
+      },
+      {
+        "id": 560,
+        "name": "Xarlie Ve",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 603,
+        "name": "Yuki Mya",
+        "team": "Tyrant Typhoon"
+      },
+      {
+        "id": 779,
+        "name": "Yunari",
+        "team": "The Dystopian"
+      },
+      {
+        "id": 385,
+        "name": "Yuny",
+        "team": ""
+      },
+      {
+        "id": 301,
+        "name": "ZERO",
+        "team": "Tier Zero"
+      },
+      {
+        "id": 517,
+        "name": "Zalda",
+        "team": "MRG Team"
+      },
+      {
+        "id": 391,
+        "name": "Zanza",
+        "team": "ARES"
+      },
+      {
+        "id": 389,
+        "name": "Zen",
+        "team": ""
+      },
+      {
+        "id": 114,
+        "name": "Zu Libo",
+        "team": "Phoenix Gaming"
+      },
+      {
+        "id": 593,
+        "name": "Zα lοrδ mαrκ",
+        "team": "CYDRA KAI"
+      },
+      {
+        "id": 722,
+        "name": "abduallah237",
+        "team": "Disasters"
+      },
+      {
+        "id": 681,
+        "name": "ado3147",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 719,
+        "name": "alhag114",
+        "team": "Disasters"
+      },
+      {
+        "id": 586,
+        "name": "asta05960",
+        "team": "Team SKS"
+      },
+      {
+        "id": 489,
+        "name": "bard666",
+        "team": "Rising Duelists Union"
+      },
+      {
+        "id": 151,
+        "name": "camo",
+        "team": "No Skill Just Luck"
+      },
+      {
+        "id": 682,
+        "name": "cbtk",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 628,
+        "name": "charlustor",
+        "team": "Nada A Declar"
+      },
+      {
+        "id": 425,
+        "name": "chm",
+        "team": "A1"
+      },
+      {
+        "id": 512,
+        "name": "daniel6ta",
+        "team": "MRC Team"
+      },
+      {
+        "id": 690,
+        "name": "ddata25_md",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 550,
+        "name": "ddd",
+        "team": "Frontier Card Gaming"
+      },
+      {
+        "id": 724,
+        "name": "elgmatihero",
+        "team": "Disasters"
+      },
+      {
+        "id": 615,
+        "name": "f-scf",
+        "team": "Synthesis cross Familiar"
+      },
+      {
+        "id": 419,
+        "name": "fugo2732",
+        "team": "Duelist Encore"
+      },
+      {
+        "id": 549,
+        "name": "godwar神戰",
+        "team": "Frontier Card Gaming"
+      },
+      {
+        "id": 677,
+        "name": "hell_o_briar",
+        "team": "The Dystopian"
+      },
+      {
+        "id": 251,
+        "name": "hihi.real",
+        "team": "No Skill Just Luck"
+      },
+      {
+        "id": 602,
+        "name": "inonakanoutubo",
+        "team": "Tyrant Typhoon"
+      },
+      {
+        "id": 727,
+        "name": "isma3ilsaber",
+        "team": "Disasters"
+      },
+      {
+        "id": 587,
+        "name": "luv.chu~",
+        "team": "Team SKS"
+      },
+      {
+        "id": 616,
+        "name": "mas",
+        "team": "Synthesis cross Familiar"
+      },
+      {
+        "id": 516,
+        "name": "metalliwar34",
+        "team": "MRC Team"
+      },
+      {
+        "id": 548,
+        "name": "mimoei",
+        "team": "Frontier Card Gaming"
+      },
+      {
+        "id": 686,
+        "name": "nemurun",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 215,
+        "name": "noobs",
+        "team": "B&E & ITB"
+      },
+      {
+        "id": 691,
+        "name": "oumisoka",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 658,
+        "name": "pina",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 650,
+        "name": "potato4d",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 424,
+        "name": "profit",
+        "team": "A1"
+      },
+      {
+        "id": 755,
+        "name": "quench",
+        "team": "B&E & ITB"
+      },
+      {
+        "id": 423,
+        "name": "qwerty",
+        "team": "A1"
+      },
+      {
+        "id": 126,
+        "name": "rafa",
+        "team": "Nada A Declar"
+      },
+      {
+        "id": 610,
+        "name": "shimotsukasa",
+        "team": "Tyrant Typhoon"
+      },
+      {
+        "id": 475,
+        "name": "stars",
+        "team": "Yuri"
+      },
+      {
+        "id": 605,
+        "name": "taitai",
+        "team": "Tyrant Typhoon"
+      },
+      {
+        "id": 390,
+        "name": "teezy",
+        "team": ""
+      },
+      {
+        "id": 703,
+        "name": "unknown-user",
+        "team": "Maxx C Society"
+      },
+      {
+        "id": 688,
+        "name": "ushi_ushi",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 728,
+        "name": "uxreda",
+        "team": "Disasters"
+      },
+      {
+        "id": 687,
+        "name": "yatsuga_take",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 551,
+        "name": "youngluke",
+        "team": "Frontier Card Gaming"
+      },
+      {
+        "id": 683,
+        "name": "yoyoyo8443",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 685,
+        "name": "yuki8322",
+        "team": "Cross Aritifact Soldiers"
+      },
+      {
+        "id": 762,
+        "name": "yx",
+        "team": "B&E & ITB"
+      },
+      {
+        "id": 609,
+        "name": "しょう",
+        "team": "Tyrant Typhoon"
+      },
+      {
+        "id": 651,
+        "name": "すみす",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 612,
+        "name": "はぶらし",
+        "team": "Tyrant Typhoon"
+      },
+      {
+        "id": 656,
+        "name": "ふー",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 649,
+        "name": "クロニア",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 541,
+        "name": "シーナ",
+        "team": "Eye's of Sauron"
+      },
+      {
+        "id": 657,
+        "name": "スカイラーク",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 655,
+        "name": "チェダッカ〜",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 606,
+        "name": "ミッチー",
+        "team": "Tyrant Typhoon"
+      },
+      {
+        "id": 758,
+        "name": "乌坦城 萧炎",
+        "team": "B&E & ITB"
+      },
+      {
+        "id": 320,
+        "name": "又大又白裁决龙",
+        "team": "B&E & ITB"
+      },
+      {
+        "id": 644,
+        "name": "夏游",
+        "team": ""
+      },
+      {
+        "id": 768,
+        "name": "帷幕后的星宿|ω･`)",
+        "team": "B&E 2"
+      },
+      {
+        "id": 570,
+        "name": "朱Itachi",
+        "team": "Millennium Legacy"
+      },
+      {
+        "id": 216,
+        "name": "梦小恒",
+        "team": "B&E & ITB"
+      },
+      {
+        "id": 760,
+        "name": "沐月千里",
+        "team": "B&E & ITB"
+      },
+      {
+        "id": 221,
+        "name": "紫鸣天琴",
+        "team": "B&E 2"
+      },
+      {
+        "id": 409,
+        "name": "継桜",
+        "team": "Duelist Encore"
+      },
+      {
+        "id": 646,
+        "name": "纯爱",
+        "team": ""
+      },
+      {
+        "id": 554,
+        "name": "艋舺金城武",
+        "team": "Frontier Card Gaming"
+      },
+      {
+        "id": 759,
+        "name": "觉",
+        "team": "B&E & ITB"
+      },
+      {
+        "id": 659,
+        "name": "開闢同盟(Alliance)",
+        "team": "Shadow DarkScythe"
+      },
+      {
+        "id": 212,
+        "name": "随能所任",
+        "team": "B&E & ITB"
+      },
+      {
+        "id": 530,
+        "name": "거던의 망령(이였던 것)",
+        "team": "Simsim Server"
+      },
+      {
+        "id": 531,
+        "name": "공만이",
+        "team": "Simsim Server"
+      },
+      {
+        "id": 422,
+        "name": "너서리",
+        "team": "A1"
+      },
+      {
+        "id": 528,
+        "name": "전선잼병",
+        "team": "Simsim Server"
+      }
+    ]
+  }
+}
