@@ -460,7 +460,6 @@ Meta Man X - 10
 TempestSpeed - 5
 abdulmalek_ - 15
 root - 5
-EarlGB - 10
 SimoTea - 5
 kaito - 5
 
@@ -630,7 +629,7 @@ NobodyTsuna - 10
 Xion - 10
 buttertits - 15
 ˖✿˚⋆Cloudy⋆˚✿˖ - 10
-EarlGB - 20
+EarlGB - 10
 Ant.xnxo - 10
 
 
