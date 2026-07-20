@@ -7,6 +7,14 @@ const BONUS_WEEK_ALL_SETS_POSITIVE = 5; // +5 if positive winrate in all sets th
 const BONUS_STREAK_3W_ALL_SETS_POSITIVE = 40; // +40 for 3-week streak of all sets positive
 const BONUS_STREAK_3W_PERFECT_SWEEP = 100; // +100 for 3-week streak of perfect sweeps
 
+function toPlain(doc) {
+  if (!doc) return doc;
+  if (typeof doc.toObject === 'function') {
+    return doc.toObject({ depopulate: false, flattenMaps: true });
+  }
+  return doc;
+}
+
 export async function calculateScoresForWeek(seasonId, week) {
   if (!seasonId) throw new Error('seasonId required');
   if (!week || typeof week !== 'number') throw new Error('week (number) required');
@@ -48,7 +56,8 @@ export async function calculateScoresForWeek(seasonId, week) {
 }
 
 function getPerformanceUpToWeek(playerDoc, week) {
-  const arr = Array.isArray(playerDoc?.performance) ? playerDoc.performance : [];
+  const plain = toPlain(playerDoc);
+  const arr = Array.isArray(plain?.performance) ? plain.performance : [];
   return arr
     .filter(e => Number(e?.week) <= Number(week))
     .sort((a, b) => a.week - b.week);
@@ -68,14 +77,15 @@ export function getWeekContribution(playerDoc, week) {
 }
 
 function computePlayerWeekPoints(playerDoc, week) {
+  const plain = toPlain(playerDoc);
   // 1) If the doc directly has performance (a T2TrialsPlayer), use it
-  const perfW = getWeekPerf(playerDoc, week);
+  const perfW = getWeekPerf(plain, week);
   if (perfW) {
-    return getWeekContribution(playerDoc, week);
+    return getWeekContribution(plain, week);
   }
 
   // 2) If this is a FantasyPlayer, try to aggregate its populated team members' performance
-  const team = Array.isArray(playerDoc.team) ? playerDoc.team.filter(Boolean) : [];
+  const team = Array.isArray(plain?.team) ? plain.team.filter(Boolean) : [];
   if (team.length === 0) return 0;
 
   // Sum the weekly contribution for each team member so week bonuses and streak bonuses
@@ -89,7 +99,8 @@ function computePlayerWeekPoints(playerDoc, week) {
 
 export function getWeekPerf(playerDoc, week) {
   if (!week || week < 1) return null;
-  const arr = Array.isArray(playerDoc?.performance) ? playerDoc.performance : [];
+  const plain = toPlain(playerDoc);
+  const arr = Array.isArray(plain?.performance) ? plain.performance : [];
   return arr.find(e => e.week === week) || null;
 }
 
@@ -228,16 +239,17 @@ export function computePointsForPerfSimple(perfW) {
  * This is intended for showing how many points an individual real player has contributed so far.
  */
 export function totalPointsForPlayer(playerDoc) {
-  const perf = Array.isArray(playerDoc?.performance) ? playerDoc.performance.slice().sort((a,b)=>a.week - b.week) : [];
+  const plain = toPlain(playerDoc);
+  const perf = Array.isArray(plain?.performance) ? plain.performance.slice().sort((a,b)=>a.week - b.week) : [];
   if (!perf.length) return 0;
   let total = 0;
   // per-week base + bonuses (no cross-fantasy aggregation)
-  for (const w of perf) total += computePointsForPerfSimple({ ...w, playerId: playerDoc._id });
+  for (const w of perf) total += computePointsForPerfSimple({ ...w, playerId: plain._id });
   // per-player 3-week streak bonuses
   for (let i = 2; i < perf.length; i++) {
-    const w1 = { ...perf[i], playerId: playerDoc._id };
-    const w2 = { ...perf[i - 1], playerId: playerDoc._id };
-    const w3 = { ...perf[i - 2], playerId: playerDoc._id };
+    const w1 = { ...perf[i], playerId: plain._id };
+    const w2 = { ...perf[i - 1], playerId: plain._id };
+    const w3 = { ...perf[i - 2], playerId: plain._id };
     if (w1 && w2 && w3) {
       if (hasAllRoundsPositive(w1) && hasAllRoundsPositive(w2) && hasAllRoundsPositive(w3)) {
         total += BONUS_STREAK_3W_ALL_SETS_POSITIVE;
@@ -251,15 +263,16 @@ export function totalPointsForPlayer(playerDoc) {
 }
 
 export function getFantasyLineupForWeek(fantasyPlayerDoc, week, scoringMode = 'LEGACY_PHASE') {
+  const plain = toPlain(fantasyPlayerDoc);
   if (scoringMode !== 'WEEKLY_SNAPSHOT') {
-    return Array.isArray(fantasyPlayerDoc?.team) ? fantasyPlayerDoc.team : [];
+    return Array.isArray(plain?.team) ? plain.team : [];
   }
 
-  const snaps = Array.isArray(fantasyPlayerDoc?.weeklyLineups) ? fantasyPlayerDoc.weeklyLineups : [];
+  const snaps = Array.isArray(plain?.weeklyLineups) ? plain.weeklyLineups : [];
   const snap = snaps.find(w => Number(w?.week) === Number(week));
   if (Array.isArray(snap?.team)) return snap.team;
 
-  return Array.isArray(fantasyPlayerDoc?.team) ? fantasyPlayerDoc.team : [];
+  return Array.isArray(plain?.team) ? plain.team : [];
 }
 
 export function pointsForRealPlayerInFantasyTeam(realPlayerDoc, fantasyPlayerDoc, {
@@ -267,49 +280,52 @@ export function pointsForRealPlayerInFantasyTeam(realPlayerDoc, fantasyPlayerDoc
   week = null,
   upToWeek = null
 } = {}) {
-  if (!realPlayerDoc || !fantasyPlayerDoc) return 0;
+  const realPlain = toPlain(realPlayerDoc);
+  const fantasyPlain = toPlain(fantasyPlayerDoc);
+  if (!realPlain || !fantasyPlain) return 0;
 
   if (scoringMode !== 'WEEKLY_SNAPSHOT') {
     if (week) {
-      const perfW = getWeekPerf(realPlayerDoc, week);
-      return computePointsForPerfSimple({ ...perfW, playerId: realPlayerDoc?._id });
+      const perfW = getWeekPerf(realPlain, week);
+      return computePointsForPerfSimple({ ...perfW, playerId: realPlain?._id });
     }
-    return totalPointsForPlayer(realPlayerDoc);
+    return totalPointsForPlayer(realPlain);
   }
 
-  const perf = Array.isArray(realPlayerDoc?.performance) ? realPlayerDoc.performance : [];
+  const perf = Array.isArray(realPlain?.performance) ? realPlain.performance : [];
   const maxPerfWeek = perf.reduce((m, e) => Math.max(m, Number(e?.week) || 0), 0);
-  const maxScoredWeek = Array.isArray(fantasyPlayerDoc?.weeklyPoints) ? fantasyPlayerDoc.weeklyPoints.length : 0;
+  const maxScoredWeek = Array.isArray(fantasyPlain?.weeklyPoints) ? fantasyPlain.weeklyPoints.length : 0;
   const endWeek = Number(upToWeek) || Math.max(maxPerfWeek, maxScoredWeek);
 
   const weeks = week ? [Number(week)] : Array.from({ length: Math.max(0, endWeek) }, (_, i) => i + 1);
-  const realId = String(realPlayerDoc?._id);
+  const realId = String(realPlain?._id);
 
   let total = 0;
   for (const w of weeks) {
     if (!w || w < 1) continue;
 
-    const lineup = getFantasyLineupForWeek(fantasyPlayerDoc, w, 'WEEKLY_SNAPSHOT');
+    const lineup = getFantasyLineupForWeek(fantasyPlain, w, 'WEEKLY_SNAPSHOT');
     const inLineup = Array.isArray(lineup) && lineup.some(id => String(id?._id ?? id) === realId);
     if (!inLineup) continue;
 
-    const perfW = getWeekPerf(realPlayerDoc, w);
-    total += computePointsForPerfSimple({ ...perfW, playerId: realPlayerDoc?._id });
+    const perfW = getWeekPerf(realPlain, w);
+    total += computePointsForPerfSimple({ ...perfW, playerId: realPlain?._id });
   }
 
   return total;
 }
 
 function computeFantasyWeekPoints(fp, week, scoringMode) {
+  const plainFp = toPlain(fp);
   if (scoringMode === 'WEEKLY_SNAPSHOT') {
-    const snap = Array.isArray(fp.weeklyLineups)
-      ? fp.weeklyLineups.find(w => Number(w?.week) === Number(week))
+    const snap = Array.isArray(plainFp.weeklyLineups)
+      ? plainFp.weeklyLineups.find(w => Number(w?.week) === Number(week))
       : null;
 
     if (!snap) {
-      const liveTeam = Array.isArray(fp.team) ? fp.team.filter(Boolean) : [];
-      fp.weeklyLineups = Array.isArray(fp.weeklyLineups) ? fp.weeklyLineups : [];
-      fp.weeklyLineups.push({ week, team: liveTeam.map(p => p?._id ?? p), lockedAt: new Date() });
+      const liveTeam = Array.isArray(plainFp.team) ? plainFp.team.filter(Boolean) : [];
+      plainFp.weeklyLineups = Array.isArray(plainFp.weeklyLineups) ? plainFp.weeklyLineups : [];
+      plainFp.weeklyLineups.push({ week, team: liveTeam.map(p => p?._id ?? p), lockedAt: new Date() });
       return { weekPoints: computeTeamWeekPoints(liveTeam, week), createdSnapshot: true };
     }
 
@@ -317,7 +333,7 @@ function computeFantasyWeekPoints(fp, week, scoringMode) {
     return { weekPoints: computeTeamWeekPoints(snapTeam, week), createdSnapshot: false };
   }
 
-  return { weekPoints: computePlayerWeekPoints(fp, week), createdSnapshot: false };
+  return { weekPoints: computePlayerWeekPoints(plainFp, week), createdSnapshot: false };
 }
 
 function computeTeamWeekPoints(team, week) {
