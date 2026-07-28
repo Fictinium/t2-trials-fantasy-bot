@@ -68,8 +68,9 @@ mizuki - 10
 帷幕后的星宿 - 10
 江离 - 10
 Allan - 10
-冬雪莲 - 5
 白雪公主与七个小矮人 - 5
+中(Azekah) - 10
+冬雪莲 - 5
 
 
 B&E & Ivory Tower:
@@ -245,11 +246,11 @@ Shurit - 10
 PoisonRose - 15
 Kitty :3 - 5
 Døømsday - 5
-arcthec - 5
 Riky - 5
 natsume - 5
 GoldX - 5
 ReleaseTheCrken - 5
+arcthec - 5
 
 
 Eye's of Sauron:
@@ -334,7 +335,7 @@ Taku - 5
 jimbe san - 5
 Numeronpro - 5
 Eric - 5
-NepStorm - 5
+Nepstorm - 5
 
 
 Lampi & Friends:
@@ -462,6 +463,7 @@ abdulmalek_ - 15
 root - 5
 SimoTea - 5
 kaito - 5
+XTrager - 5
 
 
 Phoenix Force:
@@ -642,6 +644,7 @@ Riens - 5
 thefool - 10
 Rinka - 5
 Yunari - 5
+Nino - 5
 
 
 The Help:
@@ -649,11 +652,12 @@ The Help:
 chomp - 5
 GalacticJoey - 10
 LeftOnRed - 10
-XTrager - 5
 Photon - 5
 plu - 5
 flygon - 5
 Aleska - 5
+namden - 5
+Aleksa - 5
 
 
 The Island:

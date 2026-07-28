@@ -75,7 +75,8 @@ export default {
         leaguePlayer = await T2TrialsPlayer.findOne({
           name: { $regex: `^${escapeRegex(playerName)}$`, $options: 'i' },
           team: teamDoc._id,
-          season: season._id
+          season: season._id,
+          hiddenFromFantasy: { $ne: true }
         }).lean();
 
         if (!leaguePlayer) {
@@ -87,7 +88,8 @@ export default {
       } else {
         const matches = await T2TrialsPlayer.find({
           name: { $regex: `^${escapeRegex(playerName)}$`, $options: 'i' },
-          season: season._id
+          season: season._id,
+          hiddenFromFantasy: { $ne: true }
         }).populate('team', 'name').lean();
 
         if (matches.length === 0) {
@@ -225,6 +227,7 @@ export default {
 
         const query = {
           season: season._id,
+          hiddenFromFantasy: { $ne: true },
           name: { $regex: new RegExp(escapeRegex(focusedValue), 'i') }
         };
         if (teamId) query.team = teamId;
@@ -245,6 +248,7 @@ export default {
         if (playerName) {
           const teamIds = await T2TrialsPlayer.distinct('team', {
             season: season._id,
+            hiddenFromFantasy: { $ne: true },
             name: { $regex: `^${escapeRegex(playerName)}$`, $options: 'i' }
           });
 

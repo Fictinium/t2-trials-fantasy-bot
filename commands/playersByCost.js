@@ -52,7 +52,7 @@ export default {
       teamFilter = teamDoc;
     }
 
-    const query = { season: season._id };
+    const query = { season: season._id, hiddenFromFantasy: { $ne: true } };
     if (teamFilter?._id) query.team = teamFilter._id;
 
     const players = await T2TrialsPlayer.find(query)

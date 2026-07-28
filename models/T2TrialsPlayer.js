@@ -18,6 +18,7 @@ const t2TrialsPlayerSchema = new mongoose.Schema({
   externalId: { type: Number, index: true, sparse: true }, // website ID
   name: { type: String, required: true },
   team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true },
+  hiddenFromFantasy: { type: Boolean, default: false, index: true },
   cost: { type: Number, required: true, min: 0 },
   season: { type: mongoose.Schema.Types.ObjectId, ref: 'Season', required: true, index: true },
   performance: { type: [performanceSchema], default: [] },

@@ -31,7 +31,12 @@ export default {
     // Load teams + players (name + cost only)
     const teams = await Team.find({ season: season._id })
       .sort({ name: 1 })
-      .populate({ path: 'players', select: 'name cost', options: { sort: { cost: -1, name: 1 } } })
+      .populate({
+        path: 'players',
+        select: 'name cost',
+        match: { hiddenFromFantasy: { $ne: true } },
+        options: { sort: { cost: -1, name: 1 } }
+      })
       .lean();
 
     if (!teams.length) {

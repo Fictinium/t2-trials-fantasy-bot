@@ -34,7 +34,12 @@ export default {
     const ephemeral = interaction.options.getBoolean('ephemeral') ?? false;
 
     const team = await Team.findOne({ name: { $regex: `^${escapeRegex(teamName)}$`, $options: 'i' }, season: season._id })
-      .populate({ path: 'players', select: 'name performance', options: { sort: { name: 1 } } })
+      .populate({
+        path: 'players',
+        select: 'name performance',
+        match: { hiddenFromFantasy: { $ne: true } },
+        options: { sort: { name: 1 } }
+      })
       .lean();
 
     if (!team) {
