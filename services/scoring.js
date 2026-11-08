@@ -21,6 +21,10 @@ export async function calculateScoresForWeek(seasonId, week) {
 
   const cfg = await FantasyConfig.findOne({ season: seasonId }).lean();
   const scoringMode = cfg?.scoringMode ?? 'LEGACY_PHASE';
+  const currentWeek = Number(cfg?.currentWeek) || 1;
+  const allowSnapshotCreation = scoringMode === 'WEEKLY_SNAPSHOT' &&
+    Number(week) === currentWeek &&
+    cfg?.weeklyTransferPhase === 'LOCKED';
 
   // fetch fantasy players for the season with populated team/performance for season
   const fps = await FantasyPlayer.find({ season: seasonId })
@@ -32,7 +36,10 @@ export async function calculateScoresForWeek(seasonId, week) {
 
   for (const fp of fps) {
     // compute week points using active mode
-    const { weekPoints, createdSnapshot } = computeFantasyWeekPoints(fp, week, scoringMode);
+    const { weekPoints, createdSnapshot } = computeFantasyWeekPoints(fp, week, scoringMode, {
+      allowSnapshotCreation
+    });
+    if (weekPoints === null) continue;
 
     const idx = week - 1;
     while (fp.weeklyPoints.length <= idx) fp.weeklyPoints.push(0); // ensure index exists
@@ -272,7 +279,7 @@ export function getFantasyLineupForWeek(fantasyPlayerDoc, week, scoringMode = 'L
   const snap = snaps.find(w => Number(w?.week) === Number(week));
   if (Array.isArray(snap?.team)) return snap.team;
 
-  return Array.isArray(plain?.team) ? plain.team : [];
+  return [];
 }
 
 export function pointsForRealPlayerInFantasyTeam(realPlayerDoc, fantasyPlayerDoc, {
@@ -315,17 +322,20 @@ export function pointsForRealPlayerInFantasyTeam(realPlayerDoc, fantasyPlayerDoc
   return total;
 }
 
-function computeFantasyWeekPoints(fp, week, scoringMode) {
-  const plainFp = toPlain(fp);
+function computeFantasyWeekPoints(fp, week, scoringMode, { allowSnapshotCreation = false } = {}) {
   if (scoringMode === 'WEEKLY_SNAPSHOT') {
-    const snap = Array.isArray(plainFp.weeklyLineups)
-      ? plainFp.weeklyLineups.find(w => Number(w?.week) === Number(week))
+    const snap = Array.isArray(fp.weeklyLineups)
+      ? fp.weeklyLineups.find(w => Number(w?.week) === Number(week))
       : null;
 
     if (!snap) {
-      const liveTeam = Array.isArray(plainFp.team) ? plainFp.team.filter(Boolean) : [];
-      plainFp.weeklyLineups = Array.isArray(plainFp.weeklyLineups) ? plainFp.weeklyLineups : [];
-      plainFp.weeklyLineups.push({ week, team: liveTeam.map(p => p?._id ?? p), lockedAt: new Date() });
+      if (!allowSnapshotCreation) {
+        return { weekPoints: null, createdSnapshot: false };
+      }
+
+      const liveTeam = Array.isArray(fp.team) ? fp.team.filter(Boolean) : [];
+      fp.weeklyLineups = Array.isArray(fp.weeklyLineups) ? fp.weeklyLineups : [];
+      fp.weeklyLineups.push({ week, team: liveTeam.map(p => p?._id ?? p), lockedAt: new Date() });
       return { weekPoints: computeTeamWeekPoints(liveTeam, week), createdSnapshot: true };
     }
 
@@ -333,7 +343,7 @@ function computeFantasyWeekPoints(fp, week, scoringMode) {
     return { weekPoints: computeTeamWeekPoints(snapTeam, week), createdSnapshot: false };
   }
 
-  return { weekPoints: computePlayerWeekPoints(plainFp, week), createdSnapshot: false };
+  return { weekPoints: computePlayerWeekPoints(fp, week), createdSnapshot: false };
 }
 
 function computeTeamWeekPoints(team, week) {

@@ -3,6 +3,7 @@ import { isAuthorizedForCommand } from '../utils/commandAuth.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import FantasyConfig from '../models/FantasyConfig.js';
 import FantasyPlayer from '../models/FantasyPlayer.js';
+import { ensureWeeklyLineupSnapshots } from '../utils/weeklyLineupSnapshots.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -63,8 +64,32 @@ export default {
       cfg.weeklyTransferPhase = phase;
       await cfg.save();
 
+      let snapshotStatus = null;
+      if (phase === 'LOCKED') {
+        try {
+          snapshotStatus = await ensureWeeklyLineupSnapshots(season._id, cfg.currentWeek || 1);
+        } catch (err) {
+          console.error('Failed to snapshot weekly lineups:', err);
+          return interaction.reply({
+            content: `⚠️ Transfers are locked, but lineup snapshots could not be completed for week **${cfg.currentWeek || 1}**. Retry the LOCKED command before advancing the week.`,
+            flags: 64
+          });
+        }
+
+        if (snapshotStatus.missing > 0) {
+          return interaction.reply({
+            content: `⚠️ Transfers are locked, but **${snapshotStatus.missing}** fantasy team snapshot(s) are still missing for week **${cfg.currentWeek || 1}**. Retry the LOCKED command before advancing the week.`,
+            flags: 64
+          });
+        }
+      }
+
       return interaction.reply({
-        content: `✅ Weekly transfer phase changed: **${prev} → ${phase}** (mode: **${scoringMode}**)`,
+        content:
+          `✅ Weekly transfer phase changed: **${prev} → ${phase}** (mode: **${scoringMode}**)` +
+          (snapshotStatus
+            ? `\n• Week **${cfg.currentWeek || 1}** snapshots: **${snapshotStatus.snapshots}/${snapshotStatus.total}** (${snapshotStatus.created} created)`
+            : ''),
         flags: 64
       });
     }

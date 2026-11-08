@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { isAuthorizedForCommand } from '../utils/commandAuth.js';
 import getActiveSeason from '../utils/getActiveSeason.js';
 import FantasyConfig from '../models/FantasyConfig.js';
+import { getWeeklyLineupSnapshotCoverage } from '../utils/weeklyLineupSnapshots.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -48,6 +49,23 @@ export default {
         content: `ℹ️ Current week is already **${currentWeek}**. No changes were applied.`,
         flags: 64
       });
+    }
+
+    if ((cfg.scoringMode ?? 'LEGACY_PHASE') === 'WEEKLY_SNAPSHOT' && nextWeek > currentWeek) {
+      if ((cfg.weeklyTransferPhase ?? 'OPEN') !== 'LOCKED') {
+        return interaction.reply({
+          content: `❌ Cannot advance from week **${currentWeek}** while transfers are OPEN. Lock the week first.`,
+          flags: 64
+        });
+      }
+
+      const coverage = await getWeeklyLineupSnapshotCoverage(season._id, currentWeek);
+      if (coverage.missing > 0) {
+        return interaction.reply({
+          content: `❌ Cannot advance: **${coverage.missing}** fantasy team snapshot(s) are missing for week **${currentWeek}**. Retry the LOCKED command to complete them.`,
+          flags: 64
+        });
+      }
     }
 
     cfg.currentWeek = nextWeek;

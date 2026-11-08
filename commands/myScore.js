@@ -66,7 +66,7 @@ export default {
       const snap = Array.isArray(user.weeklyLineups)
         ? user.weeklyLineups.find(w => Number(w?.week) === Number(wk))
         : null;
-      return Array.isArray(snap?.team) ? snap.team : team;
+      return Array.isArray(snap?.team) ? snap.team : null;
     };
 
     // Option A: specific week view -> show stored points + detailed contributor breakdown below
@@ -76,16 +76,18 @@ export default {
       const lineup = getLineupForWeek(week);
 
       const memberLines = [];
-      let membersSum = 0;
-      for (const member of lineup) {
-        const mPerf = getWeekPerf(member, week);
-        const mPts = computePointsForPerfSimple(mPerf);
-        membersSum += mPts;
-        const mName = member.name || member.username || String(member._id).slice(0, 8);
-        memberLines.push(`• ${mName} → ${mPts} pts`);
+      if (!lineup) {
+        memberLines.push('Historical lineup unavailable: no saved snapshot exists for this week.');
+      } else {
+        for (const member of lineup) {
+          const mPerf = getWeekPerf(member, week);
+          const mPts = computePointsForPerfSimple(mPerf);
+          const mName = member.name || member.username || String(member._id).slice(0, 8);
+          memberLines.push(`• ${mName} → ${mPts} pts`);
+        }
       }
 
-      if (memberLines.length === 0) memberLines.push('No player stats found for this week.');
+      if (lineup && memberLines.length === 0) memberLines.push('No player stats found for this week.');
 
       const embed = new EmbedBuilder()
         .setTitle(`${displayName} — Week ${week}`)
@@ -113,6 +115,10 @@ export default {
       // Per-member points, horizontal
       const memberParts = [];
       const lineup = getLineupForWeek(wk);
+      if (!lineup) {
+        lines.push(`**Week ${wk}** — **${pts} pts**\n_Historical lineup unavailable (no saved snapshot)._`);
+        continue;
+      }
       for (const member of lineup) {
         const mPerf = getWeekPerf(member, wk);
         const mPts = computePointsFromPerf(mPerf, member, wk);
